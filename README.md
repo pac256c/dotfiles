@@ -21,3 +21,4 @@ After this, there are a few more steps to complete:
 A few additional notes:
 * The setup.sh script is written for 64-bit ubuntu. Setup will currently not work for other distros / instruction lengths.
 * As per the commands above, this setup will require sudo privileges. I am planning on making a version for local install instead.
+* The setup script sets alacritty as default terminal emulator with nerd font 0xProto, so you should use alacritty as your terminal emulator if using a GUI on your linux distro. Changing the font in the TTY linux console as part of this setup is on my todo list.
