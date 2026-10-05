@@ -168,5 +168,13 @@ tar -xzf opencode-linux-x86_64.tar.gz
 chmod +x opencodei
 sudo mv opencode /usr/local/bin/opencode
 
+
+
+# later stuff - install zen browser
+wget https://github.com/zen-browser/desktop/releases/download/1.23b/zen.linux-x86_64.tar.xz
+tar -zxf zen.linux-x86_64.tar.xz
+sudo mv zen /opt/zen-browser
+sudo ln -s /opt/zen-browser/zen /usr/local/bin/zen
+
 # cd back to ~ after installs
 cd ~
