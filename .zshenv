@@ -9,7 +9,6 @@ export XDG_STATE_HOME=$HOME/.local/state
 
 #reroute program paths
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
-export PYTHON_HISTORY=$XDG_STATE_HOME/python_history
 export PYTHONSTARTUP=$XDG_CONFIG_HOME/python/pythonrc.py
 export NVM_DIR=$XDG_DATA_HOME/nvm
 export NODE_REPL_HISTORY=$XDG_STATE_HOME/node_repl_history
@@ -27,8 +26,10 @@ export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
 export HISTFILE=$XDG_STATE_HOME/bash/history
 export RUSTUP_HOME=/opt/rustup
 export CARGO_HOME=/opt/cargo
+export GOPATH=$XDG_CONFIG_HOME/go
 
 
 #edit path variable
 export PATH=$PATH:/opt/nvim-linux-x86_64/bin
 export PATH=$PATH:$CARGO_HOME/bin
+export PATH=$PATH:/usr/local/go/bin

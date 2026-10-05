@@ -108,5 +108,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 
-[ -f $XDG_CONFIG_HOME/zsh/zfunctions ] && source $XDG_CONFIG_HOME/zsh/zfunctions
-[ -f $XDG_CONFIG_HOME/zsh/zaliases ] && source $XDG_CONFIG_HOME/zsh/zaliases
+[ -f $XDG_CONFIG_HOME/zsh/functions ] && source $XDG_CONFIG_HOME/zsh/functions
+[ -f $XDG_CONFIG_HOME/zsh/aliases ] && source $XDG_CONFIG_HOME/zsh/aliases
+
+. "$HOME/.local/share/../bin/env"

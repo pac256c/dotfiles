@@ -26,6 +26,7 @@
 # make gitignore positive.
 # can probably delete code that substitutes into xdg dirs file
 # move todo list to notes.md so i can use a checklist?
+# replace some of these installs with webinstall.dev versions (no package manager needed)
 
 # clean up dotfiles in home directory.
 cd ~
@@ -114,6 +115,55 @@ echo "sudo systemctrl start ssh" > ssh_start.sh
 chmod +x ssh_start.sh
 sudo mv ssh_start.sh /usr/local/bin/ssh_start.sh
 (sudo crontab -l 2>/dev/null; echo "@reboot /usr/local/bin/ssh_start.sh") | sudo crontab -
+
+# install fzf
+sudo apt update && sudo apt install fzf
+
+# install go
+wget https://go.dev/dl/go1.27.1.linux-amd64.tar.gz
+tar -zxf go1.27.1.linux-amd64.tar.gz
+sudo mv go /usr/local/go
+
+# install bootdotdev
+go install github.com/bootdotdev/bootdev@latest
+
+# install python3
+sudo apt update && sudo apt install python3
+sudo apt update && sudo apt install python3-pip
+python3 -m pip install pint
+python3 -m pip install numpy
+
+# install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# install octave, java, jshell
+sudo apt update && sudo apt install octave
+sudo apt update && sudo apt install default-jdk
+
+# install clang/cling for repl
+sudo apt update && sudo apt install build-essential cmake ninja-buld libz-dev libtinfo-dev
+mkdir cling-build-src
+cd cling-build-src
+git clone https://github.com/root-project/llvm-project.git src
+cd src/clang-tools-extra
+git clone https://github.com/root-project/cling.git cling
+echo "add_subdirectory(cling)" >> CMakeLists.txt
+cd /tmp/cling-build-src
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/usr/local \
+      -DLLVM_ENABLE_PROJECTS="clang" \
+      ../src/llvm
+make -j2
+sudo make install
+cd /tmp
+
+# install opencode - figure this out later with npm
+curl -LO https://github.com/opencode-ai/opencode/releases/download/v0.0.55/opencode-linux-x86_64.tar.gz
+tar -xzf opencode-linux-x86_64.tar.gz
+chmod +x opencodei
+sudo mv opencode /usr/local/bin/opencode
 
 # cd back to ~ after installs
 cd ~

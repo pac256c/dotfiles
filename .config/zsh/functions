@@ -12,6 +12,7 @@ repl() {
     [TS]="ts"
     [JS]="js"
     [C++]="c++"
+    [C]="c"
     [Octave]="octave"
     [Java]="java"
   )
@@ -29,7 +30,7 @@ repl() {
 
     case "$input" in
       "${OPTIONS[Python]}")
-        python
+        python3
         valid=true
         ;;
       "${OPTIONS[TS]}")
@@ -43,10 +44,13 @@ repl() {
         valid=true
         ;;
       "${OPTIONS[C++]}")
-        pushd /opt/cling-build/bin
-        ./cling -include stdio.h -include stdlib.h -include string.h -include math.h -include stdbool.h -include stdint.h -include ctype.h -include time.h -include assert.h -include errno.h
-        popd
-        rm -f ~/.clang-repl-history
+        echo -e "\e[1;32m=== Entering C++ REPL ===\e[0m"
+        clang-repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/cpp_init.h"
+        valid=true
+        ;;
+      "${OPTIONS[C]}")
+        echo -e "\e[1;36m=== Entering Plain C REPL ===\e[0m"
+        clang-repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/c_init.h"
         valid=true
         ;;
       "${OPTIONS[Octave]}")
