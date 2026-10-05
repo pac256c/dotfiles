@@ -57,6 +57,9 @@ cd /tmp
 sudo apt update && sudo apt install zsh -y
 chsh -s $(which zsh)
 sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+source 
+cp $ZSH/themes/sorin.zsh-theme $ZSH_CUSTOM/themes/peter.zsh-theme
+sed -i 's/%c/%~/g' $ZSH_CUSTOM/themes/peter.zsh-theme
 
 # install nerd font - NOTE: still have to switch to this in gnome.
 fonts=~/.local/share/fonts
