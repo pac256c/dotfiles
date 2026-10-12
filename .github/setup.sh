@@ -162,13 +162,49 @@ make -j2
 sudo make install
 cd /tmp
 
-# install opencode - figure this out later with npm
-curl -LO https://github.com/opencode-ai/opencode/releases/download/v0.0.55/opencode-linux-x86_64.tar.gz
-tar -xzf opencode-linux-x86_64.tar.gz
-chmod +x opencodei
-sudo mv opencode /usr/local/bin/opencode
+# move .gnupg (privacy guard) to xdg if exists
+mkdir -p ~/.local/share/gnupg
+chmod 700 ~/.local/share/gnupg
+if [[ -d "~/.gnupg" ]]; then
+  cp -r ~/.gnupg/* ~/.local/share/gnupg
+  rm -r -f ~/.gnupg
+fi
 
+# install opencode - figure this out later with nvm
+curl -fsSL https://opencode.ai/install | bash
+if [[ -d "~/.opencode" ]]; then
+  mv ~/.opencode $XDG_CONFIG_HOME/opencode
+fi
 
+# install nvm & npm
+mkdir -p ~/.local/share/nvm
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash
+nvm install 22.14.0
+
+# still need to install bun for typescript repl
+
+# other stuff i want
+# some kind of file explorer i like to use. should include things like disk management
+# some kind of window manager - maybe xfce seems good?
+# some kind of unified task manager with visualizations and stuff
+# simple photo viewer, media player (maybe vlc?) 
+# something like snipping tool
+# some kind of anti virus that works
+# some kind of cleaner application?
+# better solitaire / games that kinda look nice
+# wine/proton
+# rar/7z/etc to open more advanced archives, allow opening in file explorer too (all archive types could be nice..)
+#   or maybe something like overloading cd to cd into them on the command line?
+
+# figure out how to make applications links for artcraft-launcher, zen browser
+
+# install artcraft launcher for tools:
+# word, excel, powerpoint, pdf, photoshop, premier pro, cad, sound
+git clone https://github.com/storytold/craft-launcher
+cd craft-launcher
+cargo run --release -p artcraft-launcher
+sudo mv craft-launcher/target/release /opt/artcraft-launcher
+sudo ln -s /opt/artcraft-launcher/artcraft-launcher /usr/local/bin/artcraft-launcher
 
 # later stuff - install zen browser
 wget https://github.com/zen-browser/desktop/releases/download/1.23b/zen.linux-x86_64.tar.xz

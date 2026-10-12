@@ -1,5 +1,5 @@
 #use for aliases
-echo "running z aliases"
+echo "running zaliases"
 
 alias home='cd "$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME")"'
 alias sl='ls'

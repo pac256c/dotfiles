@@ -16,7 +16,8 @@ sudo source $HOME/.config/dotfiles/setup.sh
 After this, there are a few more steps to complete:
 1. Open nvim by running "nvim", wait for lazy to install plugins, then run :MasonInstallAll and :TsInstallAll
 2. Start tmux server by running "tmux", install tpm plugins using ctrl + I, reload using ctrl + r. Note in my config the tmux leader is ctrl + s.
-3. Reboot linux
+3. Open ArtCraft launcher, install photo/film/pdf/word/deck/grid/sound/cad
+4. Reboot linux
 
 A few additional notes:
 * The setup.sh script is written for 64-bit ubuntu. Setup will currently not work for other distros / instruction lengths.

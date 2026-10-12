@@ -1,6 +1,6 @@
 return {
   -----------------------------------------------
-  --- Example
+  --- example
   -----------------------------------------------
   {
     "stevearc/conform.nvim",
@@ -17,7 +17,7 @@ return {
   },
 
   -------------------------
-  --- Language Grammar
+  --- language grammar
   -------------------------
   {
     "nvim-treesitter/nvim-treesitter",
@@ -36,8 +36,23 @@ return {
     },
   },
 
+  --------------------------------
+  --- set fzf to search dotfiles
+  --------------------------------
+  {
+    "nvim-telescope/telescope.nvim",
+    opts = {
+      pickers = {
+        find_files = {
+          hidden = true,
+          find_command = { "rg", "--files", "--hidden", "--glob", "!.git/*" },
+        },
+      },
+    },
+  },
+
   -------------------------
-  --- Markdown Rendering
+  --- markdown rendering
   -------------------------
   {
     "MeanderingProgrammer/render-markdown.nvim",
@@ -101,7 +116,9 @@ return {
   --   }
   -- },
 
-
+  -------------------------------------------------------
+  --- use "vi" in integrated terminal to open files above
+  -------------------------------------------------------
   {
     "willothy/flatten.nvim",
     lazy = false,
