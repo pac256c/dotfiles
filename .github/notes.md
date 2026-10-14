@@ -43,5 +43,13 @@
   * note: in tmux terminal, you can scroll up, highlight text and immediately copy. if you want, you can also hold shift to make this act like a normal terminal. to paste into the terminal, you can just use ctrl + v
   * tmux will continually save session. can restore on system restart just by calling "tmux"
 
-> [!WARNING] 
-> tmux continuum didn't work, not sure why.
+# VM Storage
+* to expand vm storage:
+  * in hyper-v, turn off VM
+  * in hyper-v, Actions->Edit Disk...
+    * expand to larger size, follow the wizard thing.
+  * restart VM
+  * df -h -> to find partition you need to extend (whatever / is mounted on)
+  * for me it was /dev/sda1
+  * sudo growpart /dev/sda 1 (2nd arg is the partition number..)
+  * sudo resize2fs /dev/sda1

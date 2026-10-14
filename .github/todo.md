@@ -5,6 +5,8 @@
 * tmux resurrect + continuum + nvim AutoSession (plugins + autocmds.lua) not working
 * autocmds.lua naming of unsaved files not really working..
 * install languages for repl function
+* add whitakers words
+* maybe make :e autopaste the path of the open file?
 * replace some of these installs with webinstall.dev versions (no package manager needed)
 * some kind of file explorer i like to use. should include things like disk management
 * some kind of window manager - maybe xfce seems good?
@@ -35,3 +37,4 @@
 * some kind of news feed, weather. maybe on the toolbar?
 * might be nice to have nvim use transparent background / match yazi & vscode themes?
 * write yazi lua extension to show "ground truth" git/p4 depos, hopefully could still view history/diffs/checkout.
+* will also want to update yazi toml after installing all of the knock-off programs for word,excel,...
