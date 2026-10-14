@@ -8,10 +8,18 @@ export XDG_CACHE_HOME=$HOME/.cache
 export XDG_CONFIG_HOME=$HOME/.config
 export XDG_STATE_HOME=$HOME/.local/state
 export XDG_BIN_DIR=$HOME/.local/bin
+export XDG_TEMPLATES_DIR=$HOME/templates
+export XDG_PUBLICSHARE_DIR=$HOME/public
+export XDG_DOCUMENTS_DIR=$HOME/documents
+export XDG_MUSIC_DIR=$HOME/music
+export XDG_PICTURES_DIR=$HOME/pictures
+export XDG_VIDEOS_DIR=$HOME/videos
+export XDG_DESKTOP_DIR=$HOME/desktop
+export XDG_DOWNLOAD_DIR=$HOME/downloads
 
 #reroute program paths
-export ZSH="$ZDOTDIR/ohmyzsh"
-export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+export ZDOTDIR=$XDG_CONFIG_HOME/zsh
+export ZSH=$ZDOTDIR/ohmyzsh
 export GVIMINIT="so $XDG_CONFIG_HOME/nvim/init.lua"
 export VIMINIT="so $XDG_CONFIG_HOME/nvim/init.lua"
 export WGETRC=$XDG_CONFIG_HOME/wget/wgetrc
@@ -39,3 +47,6 @@ export PATH=$PATH:/opt/nvim-linux-x86_64/bin
 export PATH=$PATH:$CARGO_HOME/bin
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$OPENCODE_CONFIG_DIR/bin
+export PATH=$PATH:/opt/homebrew/bin
+export PATH=$PATH:/opt/kitty/bin
+export PATH=$PATH:$XDG_CONFIG_HOME/go/bin

@@ -68,3 +68,128 @@ repl() {
     esac
   done
 }
+
+o() {
+    if [ -z "$1" ]; then
+        echo "Usage: o <filename>"
+        return 1
+    fi
+
+    local target_file="$1"
+    local config_file="$HOME/.config/yazi/yazi.toml"
+
+    if [ ! -f "$target_file" ]; then
+        echo "Error: File '$target_file' not found."
+        return 1
+    fi
+    if [ ! -f "$config_file" ]; then
+        echo "Error: yazi.toml not found at $config_file"
+        return 1
+    fi
+
+    # Determine file attributes for matching rules
+    local ext="${target_file##*.}"
+    [[ "$target_file" != *.* ]] && ext=""
+    local mime_type
+    mime_type=$(file --mime-type -b "$target_file" 2>/dev/null)
+
+    # Use Python to accurately parse rules, clear variables, and handle selection prompts safely via TTY
+    local selected_cmd
+    selected_cmd=$(python3 -c "
+import fnmatch, sys
+import tomli as tomllib
+
+ext = '''$ext'''
+mime = '''$mime_type'''
+config_path = '''$config_file'''
+
+try:
+    with open(config_path, 'rb') as f:
+        config = tomllib.load(f)
+except Exception as e:
+    sys.exit(1)
+
+openers = config.get('opener', {})
+rules = config.get('open', {}).get('prepend_rules', [])
+
+matched_uses = []
+
+# Find matching rules by extension or MIME type
+for rule in rules:
+    rule_url = rule.get('url', '')
+    rule_mime = rule.get('mime', '')
+    
+    if rule_url and ext and fnmatch.fnmatch('file.' + ext, rule_url):
+        use = rule.get('use', [])
+        matched_uses = use if isinstance(use, list) else [use]
+        break
+    elif rule_mime and mime and (fnmatch.fnmatch(mime, rule_mime) or mime == rule_mime):
+        use = rule.get('use', [])
+        matched_uses = use if isinstance(use, list) else [use]
+        break
+
+# Resolve rule keys to executable command objects
+final_commands = []
+for use_key in matched_uses:
+    opener_list = openers.get(use_key, [])
+    for op in opener_list:
+        run_str = op.get('run', '')
+        desc_str = op.get('desc', use_key)
+        is_orphan = op.get('orphan', False)
+        if run_str:
+            # Clean up the Yazi %s parameter tokens
+            clean_cmd = run_str.replace(' %s', '').replace(' %*', '').replace(' \"\\$@\"', '').replace(' \\$@', '')
+            final_commands.append({'cmd': clean_cmd, 'desc': desc_str, 'orphan': is_orphan})
+
+if not final_commands:
+    sys.exit(0)
+
+# If only one match exists, print it instantly
+if len(final_commands) == 1:
+    cmd_obj = final_commands[0]
+    suffix = ' &' if cmd_obj['orphan'] else ''
+    print(f\"{cmd_obj['cmd']}{suffix}\")
+else:
+    # Print menu lists safely to stderr so stdout handles variable capture cleanly
+    print('Multiple openers found for this file type. Select one:', file=sys.stderr)
+    for idx, item in enumerate(final_commands, 1):
+        print(f'  [{idx}] {item[\"desc\"]} ({item[\"cmd\"]})', file=sys.stderr)
+    
+    try:
+        print('Enter selection (1-{}): '.format(len(final_commands)), end='', file=sys.stderr, flush=True)
+        with open('/dev/tty', 'r') as tty:
+            choice = tty.readline().strip()
+        
+        choice_idx = int(choice) - 1
+        if 0 <= choice_idx < len(final_commands):
+            cmd_obj = final_commands[choice_idx]
+            suffix = ' &' if cmd_obj['orphan'] else ''
+            print(f\"{cmd_obj['cmd']},{suffix}\")
+        else:
+            print('Invalid selection. Aborting.', file=sys.stderr)
+            sys.exit(1)
+    except Exception:
+        sys.exit(1)
+")
+    selected_cmd_parts=("${(@s:,:)selected_cmd}")
+
+    # Exit out if Python returned an exit code error
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+
+    # Fallback to system text editor if no specific mappings were processed
+    if [ -z "$selected_cmd" ]; then
+        echo "No explicit rule found in yazi.toml. Defaulting to system \$EDITOR..."
+        eval "${EDITOR:-nvim} \"\$target_file\""
+        return
+    fi
+
+    # Run the matched program safely (handling background execution for orphan apps automatically)
+    if (( $#selected_cmd_parts > 1 )); then
+      eval "$selected_cmd_parts[1] \"\$target_file\" &"
+    else
+      eval "$selected_cmd \"\$target_file\""
+    fi
+
+}

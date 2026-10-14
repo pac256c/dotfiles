@@ -172,4 +172,56 @@ return {
     end
   },
 
+  {
+    "yaocccc/visual-multi.nvim",
+    lazy = false,
+    opts = {
+      -- Rebuild the multicursor bar with NvChad's onedark highlight groups so
+      -- it matches the native statusline (mode pill, powerline separators).
+      statusline = function(info)
+        local roles = {
+          NORMAL = "Normal",
+          INSERT = "Insert",
+          EXTEND = "Visual",
+        }
+        local role = roles[info.mode] or "Normal"
+        local label = info.mode .. "-MULTI"
+
+        local mode = ("%%#St_%sMode# \u{E7C5} %s %%#St_%sModeSep#\u{E0BC}")
+          :format(role, label, role)
+        local count = ("%%#St_file# %d/%d "):format(info.current, info.total)
+
+        local text = info.text or info.pattern or ""
+        text = vim.fn.strcharpart(text, 0, 24):gsub("%%", "%%%%"):gsub("\n", "\u{21B5}")
+        local extra = text ~= "" and ("%%#St_gitIcons# %s "):format(text) or ""
+
+        return mode .. count .. extra .. "%*"
+      end,
+      highlights = {
+        selection = "Visual",
+        selection_active = { bg = "#81A1C1", fg = "#1e222a" },
+        cursor = { bg = "#a3b8ef", fg = "#1e222a" },
+        cursor_active = { bg = "#81A1C1", fg = "#1e222a" },
+        insert = { bg = "#3e4451" },
+        insert_active = { bg = "#c882e7", fg = "#1e222a" },
+      },
+    },
+    config = function(_, opts)
+      local vm = require "visual-multi"
+      vm.setup(opts)
+
+      -- Make <C-x> toggle: remove the region under the selector if one exists,
+      -- otherwise add a cursor at the current position.
+      local Session = require "visual-multi.session"
+      local add_cursor = Session.add_cursor_at_current
+      Session.add_cursor_at_current = function(self)
+        if self:_region_index_at_cursor() then
+          self:remove_current()
+        else
+          add_cursor(self)
+        end
+      end
+    end,
+  },
+
 }

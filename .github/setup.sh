@@ -1,33 +1,5 @@
 #!/usr/bin/env bash
 
-# STEPS BEFORE:
-# sudo apt update && sudo apt install git
-# <clone git repo>
-# chmod +x setup.sh
-# sudo setup.sh
-
-# STEPS AFTER: 
-# use alacritty as terminal
-# open nvim and run :MasonInstallAll, :TSInstallAll
-# tmux and ctrl + I
-# log out and back in (ctrl + alt + delete) after this.
-
-# TODO:
-# this will work for 64-bit ubuntu. changes needed for archlinux/64/32 bit
-# create version for local install
-# test git cloning
-# make zshrc warn user about dotfiles?
-# tmux resurrect + continuum + nvim AutoSession (plugins + autocmds.lua) not working
-# autocmds.lua naming of unsaved files not really working..
-# instead of installing oh my zsh, just add theme im using to repo?
-# install npm - needed for lsps
-# install languages for repl function
-# make oh my zsh not need to install - choose theme & commit only files needed
-# make gitignore positive.
-# can probably delete code that substitutes into xdg dirs file
-# move todo list to notes.md so i can use a checklist?
-# replace some of these installs with webinstall.dev versions (no package manager needed)
-
 # clean up dotfiles in home directory.
 cd ~
 shopt -s nullglob
@@ -40,14 +12,10 @@ done
 
 # rename XDG directories to lowercase
 xdg_folders=("Desktop" "Downloads" "Templates" "Public" "Documents" "Music" "Pictures" "Videos")
-xdg_dirs_file=".config/user-dirs.dirs"
 for d in "${xdg_folders[@]}"; do
   lower="${d,,}"
-  
   [ -d "$d" ] && mv "$d" "${d}_TMP" && mv "${d}_TMP" "$lower"
-  [ -f "$xdg_dirs_file" ] && sed -i "s/\b$d\b/$lower/g" "$xdg_dirs_file"
 done
-cat 'XDG_DESKTOP_DIR="$HOME/desktop"' >> "$xdg_dirs_file"
 xdg-user-dirs-update --force
 
 # cd to tmp for installs
@@ -57,9 +25,9 @@ cd /tmp
 sudo apt update && sudo apt install zsh -y
 chsh -s $(which zsh)
 sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
-source 
 cp $ZSH/themes/sorin.zsh-theme $ZSH_CUSTOM/themes/peter.zsh-theme
 sed -i 's/%c/%~/g' $ZSH_CUSTOM/themes/peter.zsh-theme
+zsh
 
 # install nerd font - NOTE: still have to switch to this in gnome.
 fonts=~/.local/share/fonts
@@ -81,12 +49,6 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 sudo mv $RUSTUP_HOME /opt/rustup
 sudo mv $CARGO_HOME /opt/cargo
 export $PATH=$PATH:/opt/cargo/bin
-
-# install alacritty terminal
-sudo apt install cmake pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev libxkbcommon-dev python3
-cargo install alacritty
-sudo mv /opt/cargo/bin/alacritty /usr/local/bin/alacritty
-sudo update-alternatives --install /usr/local/bin/alacritty alacritty /usr/bin/zsh 1
 
 # install tree-sitter
 cargo install tree-sitter-cli
@@ -135,6 +97,8 @@ sudo apt update && sudo apt install python3
 sudo apt update && sudo apt install python3-pip
 python3 -m pip install pint
 python3 -m pip install numpy
+python3 -m pip install tomli
+python3 -m pip install tomllib
 
 # install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -181,22 +145,26 @@ mkdir -p ~/.local/share/nvm
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash
 nvm install 22.14.0
 
-# still need to install bun for typescript repl
+# install homebrew
+wget https://github.com/Homebrew/brew/archive/refs/tags/7.0.9.tar.gz
+tar zxf 7.0.9.tar.gz
+sudo mv brew-7.0.9 /opt/homebrew
 
-# other stuff i want
-# some kind of file explorer i like to use. should include things like disk management
-# some kind of window manager - maybe xfce seems good?
-# some kind of unified task manager with visualizations and stuff
-# simple photo viewer, media player (maybe vlc?) 
-# something like snipping tool
-# some kind of anti virus that works
-# some kind of cleaner application?
-# better solitaire / games that kinda look nice
-# wine/proton
-# rar/7z/etc to open more advanced archives, allow opening in file explorer too (all archive types could be nice..)
-#   or maybe something like overloading cd to cd into them on the command line?
+# install some command line tools - tldr and z
+brew install tlrc
+brew install zoxide
 
-# figure out how to make applications links for artcraft-launcher, zen browser
+# install kitty terminal emulator
+curl -L https://sw.kovidgyal.net/kitty/installer.sh | sh /dev/stdin dest=/tmp/kitty
+sudo mv kitty/kitty.app /opt/kitty
+
+# install yazi file manager
+brew install ffmpeg-full sevenzip jq poppler 
+
+# install yazi file manager & prereqs
+brew install yazi --HEAD
+brew install ffmpeg-full sevenzip jq poppler fd resvg imagemagick-full font-symbols-only-nerd-font
+brew link ffmpeg-full imagemagick-full -f --overwrite
 
 # install artcraft launcher for tools:
 # word, excel, powerpoint, pdf, photoshop, premier pro, cad, sound
@@ -211,6 +179,54 @@ wget https://github.com/zen-browser/desktop/releases/download/1.23b/zen.linux-x8
 tar -zxf zen.linux-x86_64.tar.xz
 sudo mv zen /opt/zen-browser
 sudo ln -s /opt/zen-browser/zen /usr/local/bin/zen
+ 
+# install lua
+sudo apt update && sudo apt install lua5.4
+
+# install leetcode cli
+npm install -g @night-slayer18/leetcode-cli
+
+# still need to install bun for typescript repl
+
+# TODO:
+# this will work for 64-bit ubuntu. changes needed for archlinux/64/32 bit
+# create version for local install
+# test git cloning
+# make zshrc warn user about dotfiles?
+# tmux resurrect + continuum + nvim AutoSession (plugins + autocmds.lua) not working
+# autocmds.lua naming of unsaved files not really working..
+# install languages for repl function
+# replace some of these installs with webinstall.dev versions (no package manager needed)
+# some kind of file explorer i like to use. should include things like disk management
+# some kind of window manager - maybe xfce seems good?
+# have rifle.conf now, can use "o" to open stuff. set rifle.conf for o to use desired tools
+# some kind of unified task manager with visualizations and stuff
+# simple photo viewer, media player (maybe vlc?) 
+# something like snipping tool
+# some kind of anti virus that works
+# some kind of cleaner application?
+# better solitaire / games that kinda look nice
+# wine/proton
+# also will need to install proton applications vpn / pass / drive?
+# rar/7z/etc to open more advanced archives, allow opening in file explorer too (all archive types could be nice..)
+#   or maybe something like overloading cd to cd into them on the command line?
+#   maybe use "o" alias to unzip/untar/etc. to /tmp/... and cd in, or use FUSE?
+#   already installed sevenzip actually in linuxbrew.
+# figure out how to make applications links for app menu for artcraft-launcher, zen browser, etc. in xfce
+# can just add .desktop shortcuts for these in .local/share/applications - but im not sure if this will work in xfce..
+# use arch for wsl. lets nuke wsl and re-install arch?
+# also, lets try to open my wsl for ssh from other computers?
+# maybe add update script that says how to update stuff
+# find out how to use yazi for archives, bulk rename, general usage.
+# will want to convert all of these downloads to use package managers s.t. they are upgradable
+#   linuxbrew can be installed to .local - thats at least helpful. cargo can too.
+# i think the next update for this script (after typescript repl) will be an option for
+#   local install or package installer for each of these (whatever works) + update script for other stuff
+#   like git pulls, cargo/wget/curl if i need those...
+# some kind of news feed, weather. maybe on the toolbar?
+# might be nice to have nvim use transparent background / match yazi & vscode themes?
+# write yazi lua extension to show "ground truth" git/p4 depos, hopefully could still view history/diffs/checkout.
+
 
 # cd back to ~ after installs
 cd ~
