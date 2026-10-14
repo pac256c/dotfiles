@@ -69,6 +69,8 @@ repl() {
   done
 }
 
+# general-purpose open function based on yazi.toml open file choices.
+# uses python inline to determine what to open the file with
 o() {
     if [ -z "$1" ]; then
         echo "Usage: o <filename>"

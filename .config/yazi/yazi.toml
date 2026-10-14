@@ -1,0 +1,52 @@
+[opener]
+# notes:
+#   block = true -> pauses yazi so the terminal app can take over the screen
+#   orphan = true -> lets these GUI apps run independently even if you close yazi
+nvim         = [ { run = "nvim %s"                   , block  = true, desc = "Neovim"              } ]
+browser      = [ { run = "zen %s"                    , orphan = true, desc = "Internet Browser"    } ]
+pdf_editor   = [ { run = "pdfcraft %s"               , orphan = true, desc = "PDF Editor"          } ]
+media_player = [ { run = "vlc %s"                    , orphan = true, desc = "Media Player"        } ]
+image_viewer = [ { run = "xdg-open %s"               , orphan = true, desc = "Image Viewer"        } ]
+word         = [ { run = "libreoffice --writer %s"   , orphan = true, desc = "Word Processor"      } ]
+excel        = [ { run = "libreoffice --calc %s"     , orphan = true, desc = "Spreadsheet"         } ]
+powerpoint   = [ { run = "libreoffice --impress %s"  , orphan = true, desc = "Presentation"        } ]
+python       = [ { run = "python %s"                 , block  = true, desc = "Execute Python"      } ]
+
+[open]
+# override openers for file formats (MIME or ext)
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types
+prepend_rules = [
+  # do nothing for directories instead of throwing error
+  { url = "*/", use = [] },
+
+  # text & source code
+  { mime = "text/*", use =   "nvim"             },
+  { url  = "*.py"  , use = [ "nvim", "python" ] },
+  { url  = "*.sv"  , use = [ "nvim",          ] },
+  { url  = "*.js"  , use = [ "nvim",          ] },
+  { url  = "*.ts"  , use = [ "nvim",          ] },
+  { url  = "*.o"   , use = [ "nvim",          ] },
+
+  # web pages
+  { mime = "text/html", use = "browser" },
+  { url  = "*.html"   , use = "browser" },
+
+  # pdf
+  { mime = "application/pdf", use = [ "browser", "pdf_editor" ] },
+  { url  = "*.pdf"          , use = [ "browser", "pdf_editor" ] },
+
+  # ms documents
+  { mime = "application/msword"                                                       , use = "word"       },
+  { mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"  , use = "word"       },
+  { mime = "application/vnd.ms-excel"                                                 , use = "excel"      },
+  { mime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"        , use = "excel"      },
+  { mime = "application/vnd.ms-powerpoint"                                            , use = "powerpoint" },
+  { mime = "application/vnd.openxmlformats-officedocument.presentationml.presentation", use = "powerpoint" },
+
+  # audio/video
+  { mime = "video/*", use = "media_player" },
+  { mime = "audio/*", use = "media_player" },
+
+  # images
+  { mime = "image/*", use = "image_viewer" },
+]
