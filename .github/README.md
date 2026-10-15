@@ -1,6 +1,11 @@
 # Setup:
 
-Make sure git and sudo are installed in your distro (arch, ubuntu, local, scratch), and follow these steps to overwrite dotfiles and install programs i use:
+To install programs and check out files with the following commands, keep these bullets in mind.
+* Git needs to be installed (to clone/checkout)
+* If calling sync.sh with distro=arch or ubuntu (to use the system package manager) sudo must be installed, unless you are running as root user and want to have your dotfiles in /root.
+* Calling sync.sh with distro=local will install programs locally (to ~/.local) with local package managers (homebrew, cargo, go, pip, npm, etc.) which will install automatically.
+* Calling sync.sh with distro=scratch will only install programs that can be built from scratch with no package manager
+* The expected terminal emulator for this setup is kitty - the sync.sh script sets kitty as default, and kitty is personalized in .config/kitty.
 
 ```bash
 mkdir -p $HOME/.local/state/dotfiles
@@ -13,13 +18,8 @@ chmod +x sync.sh registry.sh
 ./sync.sh -k <distro> 
 ```
 
-After this, there are a few more steps to complete:
+There are a few more steps to complete after executing these commands.
 1. Open nvim by running "nvim", wait for lazy to install plugins, then run :MasonInstallAll and :TsInstallAll
 2. Start tmux server by running "tmux", install tpm plugins using ctrl + I, reload using ctrl + r. Note in my config the tmux leader is ctrl + s.
-3. Open ArtCraft launcher, install photo,film,pdf,word,deck,grid,sound,cad
+3. Open ArtCraft launcher, install photo, film, pdf, word, deck, grid, sound, cad
 4. Reboot linux
-
-A few additional notes:
-* The setup.sh script is written for 64-bit ubuntu. Setup will currently not work for other distros / instruction lengths.
-* As per the commands above, this setup will require sudo privileges. I am planning on making a version for local install instead.
-* The setup script sets kitty as the default terminal emulator with nerd font 0xProto, so you should use kitty as your terminal emulator if using a GUI on your linux distro.
