@@ -1,16 +1,16 @@
 # Setup:
 
-Use the following steps to overwrite current dotfiles in ~, ignore dotfiles not in this repo, and install programs/dependencies that I use.
+Make sure git and sudo are installed in your distro (arch, ubuntu, local, scratch), and follow these steps to overwrite dotfiles and install programs i use:
 
 ```bash
-sudo apt update && sudo apt install git
-alias dotfiles='/usr/bin/git --git-dir=$HOME/documents/dotfiles/ --work-tree=$HOME'
-mkdir -p $HOME/documents 
-git clone --bare git@github.com:pac256c/dotfiles.git $HOME/documents/dotfiles
+mkdir -p $HOME/.local/state/dotfiles
+alias dotfiles='$(which git) --git-dir=$HOME/.local/state/dotfiles/ --work-tree=$HOME' 
+git clone --bare git@github.com:pac256c/dotfiles.git $HOME/.local/state/dotfiles
 dotfiles config --local status.showUntrackedFiles no
 dotfiles checkout -f
-chmod +x $HOME/.config/dotfiles/setup.sh
-sudo source $HOME/.config/dotfiles/setup.sh 
+cd $HOME/.github
+chmod +x sync.sh registry.sh
+./sync.sh -k <distro> 
 ```
 
 After this, there are a few more steps to complete:
