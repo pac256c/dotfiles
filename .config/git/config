@@ -7,3 +7,5 @@
 	cmd = nvim -d \"$LOCAL\" \"$REMOTE\"\n\n
 [difftool]
 	prompt = false
+[init]
+	defaultBranch = main
