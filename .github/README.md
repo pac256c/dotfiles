@@ -10,7 +10,7 @@ To install programs and check out files with the following commands, keep these 
 ```bash
 mkdir -p $HOME/.local/state/dotfiles
 alias dotfiles='$(which git) --git-dir=$HOME/.local/state/dotfiles/ --work-tree=$HOME' 
-git clone --bare git@github.com:pac256c/dotfiles.git $HOME/.local/state/dotfiles
+git clone --bare https://github.com/pac256c/dotfiles.git $HOME/.local/state/dotfiles
 dotfiles config --local status.showUntrackedFiles no
 dotfiles checkout -f
 cd $HOME/.github

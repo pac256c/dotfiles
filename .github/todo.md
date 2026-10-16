@@ -38,5 +38,6 @@
 * might be nice to have nvim use transparent background / match yazi & vscode themes?
 * write yazi lua extension to show "ground truth" git/p4 depos, hopefully could still view history/diffs/checkout.
 * will also want to update yazi toml after installing all of the knock-off programs for word,excel,...
-* install atuin?
-* lets maybe use a common theme like catpuccin across yazi, tmux, nvim, kitty? also would be nice if we could make nvim a little transparent? 
+* install atuin? 
+* for some reason, x to delete characters is really slow in arch. try to fix this?
+* figure out how to use tmux for floating windows/extra popups like tkdiff

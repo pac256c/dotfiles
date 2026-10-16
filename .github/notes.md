@@ -53,3 +53,17 @@
   * for me it was /dev/sda1
   * sudo growpart /dev/sda 1 (2nd arg is the partition number..)
   * sudo resize2fs /dev/sda1
+
+
+# Initial ARCH setup
+* update root password using "passwd"
+* create user with "useradd -m -s /bin/bash <username>"
+* edit passwrod for new user with "passwd <username>"
+* add user to wheel group with "usermod -aG wheel <username>"
+* temporarily install nano with "pacman -Sy nano"
+* install sudo with "pacman -Sy sudo"
+* uncomment the line "# %wheel ALL=(ALL:ALL) ALL" in editor command "EDITOR=nano visudo"
+* make user default in wsl by doing echo -e "[user]\ndefault=<username>" >> /etc/wsl.conf
+* now close and reopen wsl, and you'll be logged in as a non-root user with sudo privileges.
+* install git and which, with "sudo pacman -Sy git which"
+

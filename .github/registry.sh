@@ -344,6 +344,9 @@ add_update_method bun LOCAL script 'bun upgrade'
 
 
 add_program artcraft-launcher
+add_install_method artcraft-launcher ARCH yay << 'CMD'
+yay -S --noconfirm artcraft
+CMD
 add_install_method artcraft-launcher SCRATCH source <<'CMD'
 git clone https://github.com/storytold/craft-launcher
 cd craft-launcher
