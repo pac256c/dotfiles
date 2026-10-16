@@ -19,7 +19,6 @@ export XDG_DOWNLOAD_DIR=$HOME/downloads
 
 #reroute program paths
 export ZDOTDIR=$XDG_CONFIG_HOME/zsh
-export ZSH=$ZDOTDIR/ohmyzsh
 export GVIMINIT="so $XDG_CONFIG_HOME/nvim/init.lua"
 export VIMINIT="so $XDG_CONFIG_HOME/nvim/init.lua"
 export WGETRC=$XDG_CONFIG_HOME/wget/wgetrc

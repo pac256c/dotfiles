@@ -4,9 +4,7 @@ echo "running zshrc"
 source ~/.zshenv
 
 # zsh settings:
-ZSH_THEME="peter" # name of theme to load
-plugins=(git) # set zsh plugins to load, separate by space
-source $ZSH/oh-my-zsh.sh
+source $ZDOTDIR/peter.zsh-theme
 
 # make fzf search dotfiles/directories
 export FZF_DEFAULT_COMMAND="rg --files --hidden"
@@ -23,8 +21,32 @@ fi
 # initialize zoxide
 eval "$(zoxide init zsh --cmd cd)"
 
+# trigger bell on any task longer than 3 seconds, but turn sound off
+unsetopt beep
+beep() {
+  if [ -n "$NVIM" ]; then
+    nvim --server "$NVIM" --remote-expr "luaeval('(function() vim.loop.new_tty(1,false):write(\"\x07\"); return \"\" end)()')"
+  else
+    printf '\007'
+  fi
+}
+
+preexec() {
+  cmd_start_time=$SECONDS
+}
+
+precmd() {
+  if [[ -n "$cmd_start_time" ]]; then
+    local elapsed=$(( SECONDS - cmd_start_time ))
+    if (( elapsed >= 3 )); then
+      beep
+    fi
+    unset cmd_start_time
+  fi
+}
+
 # source my zsh functions & aliases - keep at bottom of file
 [ -f $XDG_CONFIG_HOME/zsh/functions ] && source $XDG_CONFIG_HOME/zsh/functions
 [ -f $XDG_CONFIG_HOME/zsh/aliases ] && source $XDG_CONFIG_HOME/zsh/aliases
-
+[ -f $XDG_CONFIG_HOME/zsh/extra ] && source $XDG_CONFIG_HOME/zsh/extra
 

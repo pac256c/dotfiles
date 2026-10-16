@@ -70,7 +70,7 @@ set -uo pipefail
 # ----------------------------------------------------------------------------
 declare -A M_KIND=()       # "name:method" -> kind
 declare -A M_INSTALL=()   # "name:method" -> install command
-declare -A M_UPDATE=()    # "name:method" -> update command (optional)
+declare -A M_UPDATE=()    # "name:kind:method" -> update command (optional)
 declare -a PROGRAMS=()    # registry order
 declare -a METHOD_KEYS=() # every "name:method" key, in definition order
 
@@ -97,11 +97,15 @@ add_install_method() {
   METHOD_KEYS+=("$key")
 }
 
-# add_update_method NAME METHOD [COMMAND]
-#   COMMAND is a single quoted string, or omit it and supply a heredoc.
+# add_update_method NAME KIND METHOD [COMMAND]
+#   The kind ties the update to the same-kind install method, so a program
+#   installed via a package manager (and covered by that manager's catch-all)
+#   never falls through to a different-kind update command. COMMAND is a single
+#   quoted string, or omit it and supply a heredoc.
 add_update_method() {
-  local key="$1:$2" cmd
-  if [[ $# -ge 3 ]]; then cmd="$3"; else cmd="$(cat)"; fi
+  local name="$1" kind="$2" method="$3"
+  local key="$name:$kind:$method" cmd
+  if [[ $# -ge 4 ]]; then cmd="$4"; else cmd="$(cat)"; fi
   M_UPDATE["$key"]="$cmd"
 }
 
@@ -335,15 +339,17 @@ managers_used() {
   done
 }
 
-# program_update NAME -> 0 and prints "name:method" when the recorded install
-# method has a per-program update command eligible for --kind
+# program_update NAME -> 0 and prints "name:kind:method" when the recorded
+# install (method+kind) has a per-program update command eligible for --kind
 program_update() {
-  local prog="$1" method key
+  local prog="$1" method kind key
   method="$(state_field "$INSTALL_STATE" "$prog" method)"
   [[ -n "$method" ]] || return 1
-  key="$prog:$method"
+  kind="$(installed_kind "$prog")"
+  [[ -n "$kind" ]] || return 1
+  key="$prog:$kind:$method"
   [[ -n "${M_UPDATE[$key]:-}" ]] || return 1
-  in_list "${M_KIND[$key]:-}" "$(eligible_kinds "$KIND")" || return 1
+  in_list "$kind" "$(eligible_kinds "$KIND")" || return 1
   printf '%s\n' "$key"
 }
 
@@ -370,23 +376,26 @@ state_dir_init() {
 
 # state_has FILE NAME -> 0 if NAME has any entry in FILE
 state_has() {
-  local file="$1" prog="$2" st p m ts
+  local file="$1" prog="$2" st p m f4 f5
   [[ -f "$file" ]] || return 1
-  while IFS=$'\t' read -r st p m ts; do
+  while IFS=$'\t' read -r st p m f4 f5; do
     [[ "$p" == "$prog" ]] && return 0
   done < "$file"
   return 1
 }
 
-# state_field FILE NAME FIELD(2=status,3=method) -> last matching value
+# state_field FILE NAME FIELD(status|method|kind) -> last matching value.
+# installed.state rows are "status name method kind ts"; older rows and
+# updated.state rows are "status name method ts" (kind is then empty).
 state_field() {
-  local file="$1" prog="$2" which="$3" st p m ts result=""
+  local file="$1" prog="$2" which="$3" st p m f4 f5 result=""
   [[ -f "$file" ]] || return 1
-  while IFS=$'\t' read -r st p m ts; do
+  while IFS=$'\t' read -r st p m f4 f5; do
     if [[ "$p" == "$prog" ]]; then
       case "$which" in
         status) result="$st" ;;
         method) result="$m" ;;
+        kind)   [[ -n "$f5" ]] && result="$f4" ;;
       esac
     fi
   done < "$file"
@@ -398,25 +407,48 @@ is_installed() {
   [[ "$(state_field "$INSTALL_STATE" "$1" status)" == "installed" ]]
 }
 
-# record_state FILE STATUS NAME METHOD -> replace NAME's line with a new one
+# installed_kind NAME -> the kind NAME was installed with, derived from the
+# install method when the recorded row predates kind tracking.
+installed_kind() {
+  local prog="$1" k m
+  k="$(state_field "$INSTALL_STATE" "$prog" kind)"
+  if [[ -z "$k" ]]; then
+    m="$(state_field "$INSTALL_STATE" "$prog" method)"
+    k="${M_KIND[$prog:$m]:-}"
+  fi
+  printf '%s' "$k"
+}
+
+# record_state FILE STATUS NAME METHOD [KIND] -> replace NAME's line with a new
+# one; KIND is only written when given (installed.state).
 record_state() {
-  local file="$1" status="$2" prog="$3" method="$4"
+  local file="$1" status="$2" prog="$3" method="$4" kind="${5:-}"
   state_dir_init
   local tmp; tmp="$(mktemp)"
   if [[ -f "$file" ]]; then
-    local st p m ts
-    while IFS=$'\t' read -r st p m ts; do
+    local st p m f4 f5 ek ets
+    while IFS=$'\t' read -r st p m f4 f5; do
       [[ "$p" == "$prog" ]] && continue
-      printf '%s\t%s\t%s\t%s\n' "$st" "$p" "$m" "$ts"
+      if [[ -n "$f5" ]]; then ek="$f4"; ets="$f5"; else ek=""; ets="$f4"; fi
+      if [[ -n "$ek" ]]; then
+        printf '%s\t%s\t%s\t%s\t%s\n' "$st" "$p" "$m" "$ek" "$ets"
+      else
+        printf '%s\t%s\t%s\t%s\n' "$st" "$p" "$m" "$ets"
+      fi
     done < "$file" > "$tmp"
   fi
-  printf '%s\t%s\t%s\t%s\n' \
-    "$status" "$prog" "$method" "$(date +%Y-%m-%dT%H:%M:%S)" >> "$tmp"
+  if [[ -n "$kind" ]]; then
+    printf '%s\t%s\t%s\t%s\t%s\n' \
+      "$status" "$prog" "$method" "$kind" "$(date +%Y-%m-%dT%H:%M:%S)" >> "$tmp"
+  else
+    printf '%s\t%s\t%s\t%s\n' \
+      "$status" "$prog" "$method" "$(date +%Y-%m-%dT%H:%M:%S)" >> "$tmp"
+  fi
   mv "$tmp" "$file"
 }
 
-record_installed() { record_state "$INSTALL_STATE" installed "$1" "$2"; }
-record_failed()    { record_state "$INSTALL_STATE" failed    "$1" "$2"; }
+record_installed() { record_state "$INSTALL_STATE" installed "$1" "$2" "$3"; }
+record_failed()    { record_state "$INSTALL_STATE" failed    "$1" "$2" "$3"; }
 record_updated()   { record_state "$UPDATE_STATE"  updated   "$1" "$2"; }
 
 # update_pending -> 0 if a used manager or updated program is still pending
@@ -475,13 +507,32 @@ run_cmd() {
   return $rc
 }
 
+# update_done NAME -> 0 if NAME was updated in the current run. A program with
+# its own (kind-matching) update method uses its own row; a manager-installed
+# program without one is covered by that manager's catch-all row.
+update_done() {
+  local prog="$1" method kind
+  is_installed "$prog" || return 1
+  method="$(state_field "$INSTALL_STATE" "$prog" method)"
+  kind="$(installed_kind "$prog")"
+  if [[ -n "$method" && -n "$kind" && -n "${M_UPDATE[$prog:$kind:$method]:-}" ]]; then
+    state_has "$UPDATE_STATE" "$prog"
+    return
+  fi
+  if [[ -n "$method" && -n "${MANAGER_UPDATE[$method]:-}" ]]; then
+    state_has "$UPDATE_STATE" "$(manager_key "$method")"
+    return
+  fi
+  state_has "$UPDATE_STATE" "$prog"
+}
+
 # status_cell NAME -> fixed 3-column marker cell: a green ✓ when installed, an
 # orange ↑ when updated in the current run, both, or a dim · when neither. The
 # glyphs are multibyte, so pad by counting marks rather than printf width.
 status_cell() {
   local out="" n=0 i
   if is_installed "$1"; then out+="$(c "$GREEN" '✓')"; n=$((n+1)); fi
-  if state_has "$UPDATE_STATE" "$1"; then out+="$(c "$ORANGE" '↑')"; n=$((n+1)); fi
+  if update_done "$1"; then out+="$(c "$ORANGE" '↑')"; n=$((n+1)); fi
   if [[ $n -eq 0 ]]; then out="$(c "$DIM" '·')"; n=1; fi
   printf '%s' "$out"
   for ((i = n; i < 3; i++)); do printf ' '; done
@@ -559,12 +610,12 @@ install_one() {
         rc=$?
         if [[ $RUN -eq 1 ]]; then
           if [[ $rc -ne 0 ]]; then
-            record_failed "$prog" "${chosen#*:}"
+            record_failed "$prog" "${chosen#*:}" "${M_KIND[$chosen]}"
             printf '  %s %s failed (exit %d); stopping.\n' \
               "$(c "$BRED" '!!')" "$prog" "$rc" >&2
             exit 1
           fi
-          record_installed "$prog" "${chosen#*:}"
+          record_installed "$prog" "${chosen#*:}" "${M_KIND[$chosen]}"
         fi
         INSTALLED=$((INSTALLED + 1))
         return 0
@@ -617,11 +668,13 @@ update_manager() {
 
 # update_one NAME -> 0 if a per-program update ran, 1 if none applies
 update_one() {
-  local prog="$1" key
+  local prog="$1" key kind method
   key="$(program_update "$prog")" || return 1
+  kind="${key#*:}"; kind="${kind%%:*}"
+  method="${key##*:}"
 
   prog_header "$prog"
-  printf '  update via %s:\n' "$(method_kind "$key")"
+  printf '  update via %s (%s):\n' "$(c "$CYAN" "$method")" "$(kind_label "$kind")"
   run_cmd "${M_UPDATE[$key]}"
   local rc=$?
   if [[ $RUN -eq 1 ]]; then
@@ -630,7 +683,7 @@ update_one() {
         "$(c "$BRED" '!!')" "$prog" "$rc" >&2
       exit 1
     fi
-    record_updated "$prog" "${key#*:}"
+    record_updated "$prog" "$method"
   fi
   return 0
 }

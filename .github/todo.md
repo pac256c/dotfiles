@@ -38,7 +38,5 @@
 * might be nice to have nvim use transparent background / match yazi & vscode themes?
 * write yazi lua extension to show "ground truth" git/p4 depos, hopefully could still view history/diffs/checkout.
 * will also want to update yazi toml after installing all of the knock-off programs for word,excel,...
-
-
-my current setup.sh script (after the initial pieces of code that delete dotfiles and update xdg directories) consists of a list of programs and commands to install them. i want to create a new, more interactive version of this script which contains a sort of list of all programs + methods to install them (plus maybe the zsh/bash code to install for that method). it should loop through the list, ask the user if they want to install, and depending on script priorities/inputs chooses a method, installs, and returns to the user. some extensions: maybe list ways of updating these programs too. the script hould be human-readable and easy to add new programs with tags, etc. can you draft a script that would work like this? for now, just echo the name of the program and install method instead of actually installing anything. 
-
+* install atuin?
+* lets maybe use a common theme like catpuccin across yazi, tmux, nvim, kitty? also would be nice if we could make nvim a little transparent? 

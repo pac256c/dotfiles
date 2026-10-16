@@ -1,7 +1,6 @@
 #use for aliases
 echo "running zaliases"
 
-alias home='cd "$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME")"'
 alias sl='ls'
 alias ll='ls -l -a'
 alias chat='opencode'

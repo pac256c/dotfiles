@@ -77,3 +77,18 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "TermClose" }, {
     end
   end,
 })
+
+--------------------------------------------------------------
+--- Forward bells out
+--------------------------------------------------------------
+vim.api.nvim_create_autocmd("TermClose", {
+  desc =  "pass terminal bell from embedded terminal out to tmux",
+  callback = function()
+    -- check if the request contains ascii bell (\x07)
+    vim.fn.system("printf '\007' > /dev/pts/1 2>&1 | tail -1")
+    -- if vim.env.TMUX then
+    --  vim.fn.system("tmux set-window-option alert-activity on 2>/dev/null || tmux refresh-client -S")
+    -- end
+  end,
+})
+

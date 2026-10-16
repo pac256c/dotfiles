@@ -22,4 +22,6 @@ There are a few more steps to complete after executing these commands.
 1. Open nvim by running "nvim", wait for lazy to install plugins, then run :MasonInstallAll and :TsInstallAll
 2. Start tmux server by running "tmux", install tpm plugins using ctrl + I, reload using ctrl + r. Note in my config the tmux leader is ctrl + s.
 3. Open ArtCraft launcher, install photo, film, pdf, word, deck, grid, sound, cad
-4. Reboot linux
+4. Create your ~/.config/zsh/extras with extra aliases/functions you want.
+5. Overwrite the "chat" alias with your ai cli agent. Ask it to call beep() in .zshrc when it completes a task or needs to ask the user for input. 
+6. Reboot linux
