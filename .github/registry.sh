@@ -55,20 +55,30 @@ cd ..
 CMD
 
 
+add_program add-apt-repo
+add_install_method apt-add-repo UBUNTU apt 'sudo apt update && sudo apt install -y software-properties-common'
+
+
 add_program libnotify
 add_install_method libnotify ARCH pacman '$SUDO pacman -S --noconfirm libnotify'
 
 
 add_program zsh
-add_install_method zsh UBUNTU apt '$SUDO apt update && $SUDO apt install -y zsh'
-add_install_method zsh ARCH pacman '$SUDO pacman -S --noconfirm zsh'
+add_install_method zsh UBUNTU apt << 'CMD'
+$SUDO apt update && $SUDO apt install -y zsh
+chsh -s $(which zsh)
+CMD
+add_install_method zsh ARCH pacman << 'CMD'
+$SUDO pacman -S --noconfirm zsh
+chsh -s $(which zsh)
+CMD
 
 
 add_program font-0xproto
 add_install_method font-0xproto LOCAL wget <<'CMD'
-mkdir -p ~/.local/share/fonts/0xProto
-wget -qO /tmp/0xProto.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/0xProto.zip
-unzip -o /tmp/0xProto.zip -d ~/.local/share/fonts/0xProto
+mkdir -p ~/.local/share/fonts
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/0xProto.zip
+unzip 0xProto.zip -d ~/.local/share/fonts/0xProto
 fc-cache -fv ~/.local/share/fonts
 CMD
 
@@ -84,106 +94,31 @@ add_install_method curl ARCH pacman '$SUDO pacman -S --noconfirm curl'
 
 
 add_program rust
-add_install_method rust ARCH pacman '$SUDO pacman -S --noconfirm rustup'
-add_install_method rust LOCAL script 'curl --proto =https --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y'
+add_install_method rust UBUNTU apt << 'CMD'
+export RUSTUP_HOME=/opt/rustup
+export CARGO_HOME=/opt/cargo
+$SUDO apt update && $SUDO apt install -y rustup
+export PATH=$PATH:/opt/cargo/bin
+CMD
+add_install_method rust ARCH pacman << 'CMD'
+export RUSTUP_HOME=/opt/rustup
+export CARGO_HOME=/opt/cargo
+$SUDO pacman -S --noconfirm rustup
+export PATH=$PATH:/opt/cargo/bin
+CMD
+add_install_method rust LOCAL script << 'CMD'
+export RUSTUP_HOME=~/.local/opt/rustup
+export CARGO_HOME=~/.local/opt/cargo
+curl --proto =https --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+CMD
 add_update_method rust LOCAL script 'rustup update'
 
 
-add_program go
-add_install_method go ARCH pacman '$SUDO pacman -S --noconfirm go'
-add_install_method go LOCAL wget <<'CMD'
-wget -qO /tmp/go.tar.gz https://go.dev/dl/go1.27.1.linux-amd64.tar.gz
-$SUDO rm -rf /usr/local/go
-$SUDO tar -C /usr/local -xzf /tmp/go.tar.gz
-CMD
-
-
-add_program python3
-add_install_method python3 UBUNTU apt '$SUDO apt update && $SUDO apt install -y python3 python3-pip'
-add_install_method python3 ARCH pacman '$SUDO pacman -S --noconfirm python python-pip'
-
-
-add_program python-pkgs
-add_install_method python-pkgs LOCAL pip 'python3 -m pip install --user pint numpy tomli'
-add_update_method python-pkgs LOCAL pip 'python3 -m pip install --user --upgrade pint numpy tomli'
-
-
-add_program uv
-add_install_method uv LOCAL script 'curl -LsSf https://astral.sh/uv/install.sh | sh'
-add_update_method uv LOCAL script 'uv self update'
-add_install_method uv ARCH pacman '$SUDO pacman -S --noconfirm uv'
-
-
-add_program lua
-add_install_method lua UBUNTU apt '$SUDO apt update && $SUDO apt install -y lua5.4'
-add_install_method lua ARCH pacman '$SUDO pacman -S --noconfirm lua'
-
-
-add_program octave
-add_install_method octave UBUNTU apt '$SUDO apt update && $SUDO apt install -y octave'
-add_install_method octave ARCH pacman '$SUDO pacman -S --noconfirm octave'
-
-
-add_program jdk
-add_install_method jdk UBUNTU apt '$SUDO apt update && $SUDO apt install -y default-jdk'
-add_install_method jdk ARCH pacman '$SUDO pacman -S --noconfirm jdk-openjdk'
-
-
-add_program cling
-add_install_method cling ARCH yay 'yay -S --noconfirm cling'
-add_install_method cling SCRATCH source <<'CMD'
-$SUDO apt update
-$SUDO apt install -y cmake ninja-build libz-dev libtinfo-dev
-git clone --depth 1 https://github.com/root-project/llvm-project.git /tmp/cling-src
-git clone --depth 1 https://github.com/root-project/cling.git /tmp/cling-src/clang-tools-extra/cling
-echo "add_subdirectory(cling)" >> /tmp/cling-src/clang-tools-extra/CMakeLists.txt
-cmake -S /tmp/cling-src/llvm -B /tmp/cling-build \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=/usr/local \
-  -DLLVM_ENABLE_PROJECTS=clang
-make -C /tmp/cling-build -j2
-$SUDO make -C /tmp/cling-build install
-CMD
-
-
-add_program bun
-add_install_method bun ARCH yay 'yay -S --noconfirm bun-bin'
-add_install_method bun LOCAL script 'curl -fsSL https://bun.sh/install | bash'
-add_update_method bun LOCAL script 'bun upgrade'
-
-
-add_program nvm
-add_install_method nvm LOCAL script <<'CMD'
-mkdir -p ~/.local/share/nvm
-wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash
-nvm install 22.14.0
-CMD
-add_install_method nvm ARCH yay 'yay -S --noconfirm nvm'
-
-
-add_program homebrew
-add_install_method homebrew LOCAL wget <<'CMD'
-wget -qO /tmp/brew.tar.gz https://github.com/Homebrew/brew/archive/refs/tags/7.0.9.tar.gz
-tar -C /tmp -zxf /tmp/brew.tar.gz
-$SUDO rm -rf /opt/homebrew
-$SUDO mv /tmp/brew-7.0.9 /opt/homebrew
-CMD
-
-
-add_program neovim
-add_install_method neovim UBUNTU apt '$SUDO apt update && $SUDO apt install -y neovim'
-add_install_method neovim ARCH pacman '$SUDO pacman -S --noconfirm neovim'
-add_install_method neovim LOCAL github <<'CMD'
-wget -qO /tmp/nvim.tar.gz https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-$SUDO rm -rf /opt/nvim-linux-x86_64
-$SUDO tar -C /opt -xzf /tmp/nvim.tar.gz
-CMD
-
-
 add_program tree-sitter
+add_install_method tree-sitter UBUNTU apt '$SUDO apt update && $SUDO apt install -y tree-sitter-cli'
+add_install_method tree-sitter ARCH pacman '$SUDO pacman -S --noconfirm tree-sitter tree-sitter-cli'
 add_install_method tree-sitter LOCAL cargo 'cargo install tree-sitter-cli'
 add_update_method tree-sitter LOCAL cargo 'cargo install --force tree-sitter-cli'
-add_install_method tree-sitter ARCH pacman '$SUDO pacman -S --noconfirm tree-sitter tree-sitter-cli'
 
 
 add_program ripgrep
@@ -191,6 +126,24 @@ add_install_method ripgrep UBUNTU apt '$SUDO apt update && $SUDO apt install -y 
 add_install_method ripgrep ARCH pacman '$SUDO pacman -S --noconfirm ripgrep'
 add_install_method ripgrep LOCAL cargo 'cargo install ripgrep'
 add_update_method ripgrep LOCAL cargo 'cargo install --force ripgrep'
+
+
+add_program win32yank
+add_install_method win32yank LOCAL wget <<'CMD'
+wget https://github.com/equalsraf/win32yank/releases/download/v0.0.4/win32yank-x64.zip
+unzip win32yank-x64.zip
+chmod +x win32yank.exe
+$SUDO mv win32yank.exe /usr/local/bin/win32yank.exe
+CMD
+
+
+add_program neovim
+add_install_method neovim UBUNTU apt '$SUDO apt update && $SUDO apt install -y neovim'
+add_install_method neovim ARCH pacman '$SUDO pacman -S --noconfirm neovim'
+add_install_method neovim LOCAL github <<'CMD'
+wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+$SUDO tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+CMD
 
 
 add_program tmux
@@ -203,41 +156,95 @@ add_install_method tpm LOCAL git 'git clone https://github.com/tmux-plugins/tpm 
 add_update_method tpm LOCAL git 'git -C ~/.config/tmux/plugins/tpm pull'
 
 
+add_program openssh-server
+add_install_method openssh-server UBUNTU apt <<'CMD'
+$SUDO apt update && $SUDO apt install openssh-server -y
+echo "$SUDO systemctrl start ssh" > ssh_start.sh
+chmod +x ssh_start.sh
+$SUDO mv ssh_start.sh /usr/local/bin/ssh_start.sh
+($SUDO crontab -l 2>/dev/null; echo "@reboot /usr/local/bin/ssh_start.sh") | $SUDO crontab -
+CMD
+add_install_method openssh-server ARCH pacman <<'CMD'
+$SUDO pacman -S --noconfirm openssh
+$SUDO systemctl enable --now sshd
+CMD
+
+
 add_program fzf
 add_install_method fzf UBUNTU apt '$SUDO apt update && $SUDO apt install -y fzf'
 add_install_method fzf ARCH pacman '$SUDO pacman -S --noconfirm fzf'
 
 
-add_program tlrc
-add_install_method tlrc LOCAL brew 'brew install tlrc'
-add_install_method tlrc ARCH yay 'yay -S --noconfirm tlrc'
-
-
-add_program zoxide
-add_install_method zoxide LOCAL brew 'brew install zoxide'
-add_install_method zoxide ARCH pacman '$SUDO pacman -S --noconfirm zoxide'
-
-
-add_program yazi
-add_install_method yazi LOCAL brew <<'CMD'
-brew install ffmpeg-full sevenzip jq poppler fd resvg imagemagick-full font-symbols-only-nerd-font
-brew install yazi --HEAD
-brew link ffmpeg-full imagemagick-full -f --overwrite
+add_program go
+add_install_method go UBUNTU apt '$SUDO apt update && $SUDO apt install golang go'
+add_install_method go ARCH pacman '$SUDO pacman -S --noconfirm go'
+add_install_method go LOCAL wget <<'CMD'
+wget https://go.dev/dl/go1.27.1.linux-amd64.tar.gz
+tar -zxf go1.27.1.linux-amd64.tar.gz
+$SUDO mv go /usr/local/go
 CMD
-add_install_method yazi ARCH pacman '$SUDO pacman -S --noconfirm yazi'
 
 
-add_program openssh-server
-add_install_method openssh-server UBUNTU apt <<'CMD'
-$SUDO apt update && $SUDO apt install -y openssh-server
-printf "@reboot /usr/local/bin/ssh_start.sh\n" > /tmp/ssh_start.sh
-($SUDO crontab -l 2>/dev/null; cat /tmp/ssh_start.sh) | $SUDO crontab -
-$SUDO mv /tmp/ssh_start.sh /usr/local/bin/ssh_start.sh
-$SUDO chmod +x /usr/local/bin/ssh_start.sh
+add_program bootdev
+add_install_method bootdev LOCAL go 'go install github.com/bootdotdev/bootdev@latest'
+add_update_method boootdev LOCAL go 'go install github.com/bootdotdev/bootdev@latest'
+
+
+add_program python3
+add_install_method python3 UBUNTU apt '$SUDO apt update && $SUDO apt install -y python3 python3-pip'
+add_install_method python3 ARCH pacman '$SUDO pacman -S --noconfirm python python-pip'
+
+
+add_program python-pkgs
+add_install_method python-pkgs LOCAL pip 'python -m pip install --user pint numpy tomli'
+add_update_method python-pkgs LOCAL pip 'python -m pip install --user --upgrade pint numpy tomli'
+
+
+add_program uv
+add_install_method uv ARCH pacman '$SUDO pacman -S --noconfirm uv'
+add_install_method uv LOCAL script 'curl -LsSf https://astral.sh/uv/install.sh | sh'
+add_update_method uv LOCAL script 'uv self update'
+
+
+add_program octave
+add_install_method octave UBUNTU apt '$SUDO apt update && $SUDO apt install -y octave'
+add_install_method octave ARCH pacman '$SUDO pacman -S --noconfirm octave'
+
+
+add_program jdk
+add_install_method jdk UBUNTU apt '$SUDO apt update && $SUDO apt install -y default-jdk'
+add_install_method jdk ARCH pacman '$SUDO pacman -S --noconfirm jdk-openjdk'
+
+
+add_program cmake_ninja
+add_install_method cmake_ninja UBUNTU apt '$SUDO apt update && $SUDO apt install -y cmake ninja-build libz-dev libtinfo-dev'
+add_install_method cmake_ninja ARCH pacman '$SUDO pacman -S --noconfirm cmake ninja zlib ncurses'
+
+
+add_program cling
+add_install_method cling UBUNTU apt << 'CMD'
+$SUDO add-apt-repository ppa:ppa-verse/cling
+sudo apt update && sudo apt install -y cling
+sudo apt install -y clang llvm
 CMD
-add_install_method openssh-server ARCH pacman <<'CMD'
-$SUDO pacman -S --noconfirm openssh
-$SUDO systemctl enable --now sshd
+add_install_method cling ARCH yay 'yay -S --noconfirm cling'
+add_install_method cling SCRATCH source <<'CMD'
+mkdir cling-build-src
+cd cling-build-src
+git clone https://github.com/root-project/llvm-project.git src
+cd src/clang-tools-extra
+git clone https://github.com/root-project/cling.git cling
+echo "add_subdirectory(cling)" >> CMakeLists.txt
+cd /tmp/cling-build-src
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/usr/local \
+      -DLLVM_ENABLE_PROJECTS="clang" \
+      ../src/llvm
+make -j2
+sudo make install
+cd /tmp
 CMD
 
 
@@ -257,43 +264,94 @@ CMD
 
 
 add_program opencode
-add_install_method opencode LOCAL script 'curl -fsSL https://opencode.ai/install | bash'
 add_install_method opencode ARCH yay 'yay -S --noconfirm opencode-bin'
+add_install_method opencode LOCAL script 'curl -fsSL https://opencode.ai/install | bash'
+
+
+add_program nvm
+add_install_method nvm LOCAL script <<'CMD'
+mkdir -p ~/.local/share/nvm
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash
+nvm install 22.14.0
+CMD
+add_install_method nvm ARCH yay 'yay -S --noconfirm nvm'
+
+
+add_program homebrew
+add_install_method homebrew LOCAL wget <<'CMD'
+wget https://github.com/Homebrew/brew/archive/refs/tags/7.0.9.tar.gz
+tar zxf 7.0.9.tar.gz
+sudo mv brew-7.0.9 /opt/homebrew
+CMD
+
+
+add_program tlrc
+add_install_method tlrc ARCH yay 'yay -S --noconfirm tlrc'
+add_install_method tlrc LOCAL brew 'brew install tlrc'
+
+
+add_program zoxide
+add_install_method zoxide UBUNTU apt '$SUDO apt update && sudo apt install -y zoxide'
+add_install_method zoxide ARCH pacman '$SUDO pacman -S --noconfirm zoxide'
+add_install_method zoxide LOCAL brew 'brew install zoxide'
 
 
 add_program kitty
-add_install_method kitty LOCAL script 'curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin dest=/opt/kitty'
+add_install_method kitty UBUNTU apt '$SUDO apt update && $SUDO apt install -y kitty'
 add_install_method kitty ARCH pacman '$SUDO pacman -S --noconfirm kitty'
+add_install_method kitty LOCAL script 'curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin dest=/opt/kitty'
+
+
+add_program yazi_deps
+add_install_method yazi_deps UBUNTU apt << 'CMD'
+$SUDO apt update
+$SUDO apt install -y jq fd-find poppler-utils imagemagick
+$SUDO cargo install resvg
+brew install font-symbols-only-nerd-font
+CMD
+add_install_method yazi_deps ARCH pacman << 'CMD'
+$SUDO pacman -Syu --noconfirm jq poppler poppler-utils fd imagemagick
+$SUDO yay -S ffmpeg-full sevenzip resvg-bin ttf-nerd-fonts-symbols-common
+CMD
+add_install_method yazi_deps LOCAL brew 'brew install ffmpeg-full sevenzip jq poppler fd resvg imagemagick-full font-symbols-only-nerd-font; brew link ffmpeg-full imagemagick-full -f --overwrite'
+
+
+add_program yazi
+add_install_method yazi LOCAL brew <<'CMD'
+brew install yazi --HEAD
+CMD
+add_install_method yazi ARCH pacman '$SUDO pacman -S --noconfirm yazi'
+
+
+add_program lua
+add_install_method lua UBUNTU apt '$SUDO apt update && $SUDO apt install -y lua5.4'
+add_install_method lua ARCH pacman '$SUDO pacman -S --noconfirm lua'
+
+
+add_program bun
+add_install_method bun ARCH yay 'yay -S --noconfirm bun-bin'
+add_install_method bun LOCAL script 'curl -fsSL https://bun.sh/install | bash'
+add_update_method bun LOCAL script 'bun upgrade'
 
 
 add_program artcraft-launcher
 add_install_method artcraft-launcher SCRATCH source <<'CMD'
-git clone https://github.com/storytold/craft-launcher /tmp/craft-launcher
-cargo run --release --manifest-path /tmp/craft-launcher/Cargo.toml -p artcraft-launcher
+git clone https://github.com/storytold/craft-launcher
+cd craft-launcher
+cargo run --release -p artcraft-launcher
+$SUDO mv craft-launcher/target/release /opt/artcraft-launcher
+$SUDO ln -s /opt/artcraft-launcher/artcraft-launcher /usr/local/bin/artcraft-launcher
 CMD
 
 
 add_program zen-browser
+add_install_method zen-browser ARCH yay 'yay -S --noconfirm zen-browser-bin'
 add_install_method zen-browser LOCAL wget <<'CMD'
 wget -qO /tmp/zen.tar.xz https://github.com/zen-browser/desktop/releases/download/1.23b/zen.linux-x86_64.tar.xz
 $SUDO rm -rf /opt/zen-browser
 $SUDO tar -C /opt -xJf /tmp/zen.tar.xz
 $SUDO ln -sf /opt/zen/zen /usr/local/bin/zen
 CMD
-add_install_method zen-browser ARCH yay 'yay -S --noconfirm zen-browser-bin'
-
-
-add_program win32yank
-add_install_method win32yank LOCAL wget <<'CMD'
-wget -qO /tmp/win32yank.zip https://github.com/equalsraf/win32yank/releases/download/v0.0.4/win32yank-x64.zip
-unzip -o /tmp/win32yank.zip -d /tmp/win32yank
-chmod +x /tmp/win32yank/win32yank.exe
-$SUDO mv /tmp/win32yank/win32yank.exe /usr/local/bin/win32yank.exe
-CMD
-
-
-add_program bootdev
-add_install_method bootdev LOCAL go 'go install github.com/bootdotdev/bootdev@latest'
 
 
 add_program leetcode-cli

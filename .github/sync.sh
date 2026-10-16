@@ -47,6 +47,10 @@
 # The program and method list lives in registry.sh next to this script; edit
 # that file to add or change programs.
 #
+# Commands run under bash until zsh is installed; from then on every command is
+# run under zsh, which sources your .zshenv and .zshrc, so the rest of the
+# install/update uses your zsh environment, aliases and functions.
+#
 # Usage:
 #   ./sync.sh -k ubuntu [options]          # install (default)
 #   ./sync.sh -u -k arch [options]         # update
@@ -145,6 +149,11 @@ ASSUME_YES=1
 RUN=1
 START_DIR=""
 
+# Interpreter for install/update commands. Starts as bash and switches to zsh
+# as soon as zsh is available (i.e. once it has been installed), so the rest of
+# the programs install under the user's zsh with their config sourced.
+RUN_SHELL="bash"
+
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/sync"
 INSTALL_STATE="$STATE_DIR/installed.state"
 UPDATE_STATE="$STATE_DIR/updated.state"
@@ -180,7 +189,7 @@ USE_COLOR=0
 
 # usage() prints the banner comment at the top of this file.
 usage() {
-  sed -n '2,64p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,68p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 # kind_code KIND -> SGR parameters for that kind's color
@@ -482,25 +491,56 @@ print_cmd() {
   done <<< "$cmd"
 }
 
+# use_zsh_if_available -> once zsh exists (it has just been installed, or was
+# already present), switch the command interpreter from bash to zsh. Announced
+# once. run_cmd sources the user's .zshenv and .zshrc by hand so environment,
+# aliases and functions are available to the install commands.
+use_zsh_if_available() {
+  [[ "$RUN_SHELL" == "zsh" ]] && return 0
+  command -v zsh >/dev/null 2>&1 || return 0
+  RUN_SHELL="zsh"
+  printf '  %s\n' "$(c "$DIM" 'zsh available: running the rest of the commands under zsh')"
+}
+
 # run_cmd "command" -> print it, then (unless in --echo mode) hand it to a
 # child shell on the terminal (set -e, stdin from /dev/tty) so installers can
-# prompt the user.
+# prompt the user. Runs under bash until zsh is available, then under zsh with
+# the user's .zshenv and .zshrc sourced.
 run_cmd() {
   local cmd="$1"
   [[ -n "$cmd" ]] || { printf '    (no command)\n'; return 0; }
   print_cmd "$cmd"
   [[ $RUN -eq 1 ]] || return 0
 
+  use_zsh_if_available
+
   local tmp rc
   tmp="$(mktemp)"
-  { printf 'set -e\n'; printf '%s\n' "$cmd"; } > "$tmp"
+  if [[ "$RUN_SHELL" == "zsh" ]]; then
+    {
+      # zsh normally sources .zshenv at startup, but this .zshenv exports
+      # ZDOTDIR, so the child looks for $ZDOTDIR/.zshenv (usually nonexistent)
+      # and skips it. Source .zshenv and .zshrc ourselves to be sure. set -e
+      # comes after, so a noisy rc file can't abort the command.
+      printf '%s\n' 'zdot="${ZDOTDIR:-$HOME}"'
+      printf '%s\n' 'zshenv="$zdot/.zshenv"'
+      printf '%s\n' '[[ -f "$zshenv" ]] || zshenv="$HOME/.zshenv"'
+      printf '%s\n' '[[ -f "$zshenv" ]] && source "$zshenv"'
+      printf '%s\n' 'zdot="${ZDOTDIR:-$HOME}"'
+      printf '%s\n' '[[ -f "$zdot/.zshrc" ]] && source "$zdot/.zshrc"'
+      printf 'set -e\n'
+      printf '%s\n' "$cmd"
+    } > "$tmp"
+  else
+    { printf 'set -e\n'; printf '%s\n' "$cmd"; } > "$tmp"
+  fi
   if [[ -t 0 ]]; then
-    bash "$tmp"
+    "$RUN_SHELL" "$tmp"
   elif { exec 3</dev/tty; } 2>/dev/null; then
-    bash "$tmp" <&3
+    "$RUN_SHELL" "$tmp" <&3
     exec 3<&-
   else
-    bash "$tmp"
+    "$RUN_SHELL" "$tmp"
   fi
   rc=$?
   rm -f "$tmp"
