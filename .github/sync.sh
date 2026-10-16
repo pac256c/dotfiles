@@ -777,9 +777,13 @@ check_stray_dotfiles() {
 }
 
 # normalize_xdg_dirs -> rename capitalized XDG user directories to lowercase,
-# then refresh them with xdg-user-dirs-update. In --echo mode, only report.
+# then refresh them with xdg-user-dirs-update, and finally make sure every XDG
+# user directory exists (creating any that are missing). In --echo mode, only
+# report.
 normalize_xdg_dirs() {
   local d lower
+  local -a xdg_dirs=(desktop documents downloads music pictures public templates videos games)
+
   for d in Desktop Downloads Templates Public Documents Music Pictures Videos; do
     lower="${d,,}"
     [[ -d "$HOME/$d" ]] || continue
@@ -793,13 +797,21 @@ normalize_xdg_dirs() {
 
   if [[ $RUN -eq 0 ]]; then
     printf '  %s would run: xdg-user-dirs-update --force\n' "$(c "$DIM" '->')"
-    return 0
-  fi
-  if command -v xdg-user-dirs-update >/dev/null 2>&1; then
+  elif command -v xdg-user-dirs-update >/dev/null 2>&1; then
     xdg-user-dirs-update --force
   else
     printf '  %s\n' "$(c "$DIM" 'xdg-user-dirs-update not found; skipping')"
   fi
+
+  for d in "${xdg_dirs[@]}"; do
+    [[ -d "$HOME/$d" ]] && continue
+    if [[ $RUN -eq 0 ]]; then
+      printf '  %s would create %s\n' "$(c "$DIM" '->')" "$(c "$CYAN" "$d")"
+    else
+      mkdir -p -- "$HOME/$d"
+      printf '  %s created %s\n' "$(c "$DIM" '->')" "$(c "$CYAN" "$d")"
+    fi
+  done
 }
 
 # cleanup / on_interrupt -> always return to the directory we were launched from.
