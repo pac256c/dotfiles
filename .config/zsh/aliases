@@ -1,5 +1,5 @@
 #use for aliases
-echo "running zaliases"
+#echo "running zaliases"
 
 alias sl='ls'
 alias ll='ls -l -a'

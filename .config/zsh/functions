@@ -1,5 +1,5 @@
 # put functions in here
-echo "running zfunctions"
+# echo "running zfunctions"
 
 #choose one language of read-eval-print loop (REPL)  
 repl() {

@@ -1,5 +1,6 @@
 [user]
 	email = peter8pie@gmail.com
+	name = Peter
 [diff]
 	tool = nvim
 [difftool "nvim"]

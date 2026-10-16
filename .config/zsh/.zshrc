@@ -1,4 +1,4 @@
-echo "running zshrc"
+# echo "running zshrc"
 
 # make sure .zshenv has been run
 source ~/.zshenv

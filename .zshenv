@@ -1,8 +1,8 @@
 # runs every time zsh is started, login or not
 # use this for env variables / XDG
-echo "running zenv vars"
+# echo "running zenv vars"
 
-#XDG home paths
+# XDG home paths
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_CACHE_HOME=$HOME/.cache
 export XDG_CONFIG_HOME=$HOME/.config
@@ -16,8 +16,9 @@ export XDG_PICTURES_DIR=$HOME/pictures
 export XDG_VIDEOS_DIR=$HOME/videos
 export XDG_DESKTOP_DIR=$HOME/desktop
 export XDG_DOWNLOAD_DIR=$HOME/downloads
+export XDG_GAMES_DIR=$HOME/games
 
-#reroute program paths
+# reroute program paths
 export ZDOTDIR=$XDG_CONFIG_HOME/zsh
 export GVIMINIT="so $XDG_CONFIG_HOME/nvim/init.lua"
 export VIMINIT="so $XDG_CONFIG_HOME/nvim/init.lua"
@@ -41,7 +42,7 @@ export GNUPGHOME=$XDG_DATA_HOME/gnupg
 export OPENCODE_CONFIG_DIR=$XDG_CONFIG_HOME/opencode
 export OPENCODE_CONFIG=$XDG_CONFIG_HOME/opencode/opencode.json
 
-#edit path variable
+# edit path variable
 export PATH=$PATH:/opt/nvim-linux-x86_64/bin
 export PATH=$PATH:$CARGO_HOME/bin
 export PATH=$PATH:/usr/local/go/bin
@@ -49,3 +50,7 @@ export PATH=$PATH:$OPENCODE_CONFIG_DIR/bin
 export PATH=$PATH:/opt/homebrew/bin
 export PATH=$PATH:/opt/kitty/bin
 export PATH=$PATH:$XDG_CONFIG_HOME/go/bin
+export PATH=$PATH:/opt/cuda/bin
+
+# remove duplicates from $PATH if they exist
+typeset -U path

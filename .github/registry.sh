@@ -63,6 +63,13 @@ add_program libnotify
 add_install_method libnotify ARCH pacman '$SUDO pacman -S --noconfirm libnotify'
 
 
+add_program xdg
+add_install_method xdg ARCH pacman << 'CMD'
+$SUDO pacman -S --noconfirm xdg-user-dirs
+xdg-user-dirs-update
+CMD
+
+
 add_program zsh
 add_install_method zsh UBUNTU apt << 'CMD'
 $SUDO apt update && $SUDO apt install -y zsh
@@ -73,6 +80,18 @@ $SUDO pacman -S --noconfirm zsh
 chsh -s $(which zsh)
 CMD
 
+
+add_program zoxide
+add_install_method zoxide UBUNTU apt '$SUDO apt update && sudo apt install -y zoxide'
+add_install_method zoxide ARCH pacman '$SUDO pacman -S --noconfirm zoxide'
+add_install_method zoxide LOCAL brew 'brew install zoxide'
+
+
+add_program wget
+add_install_method wget ARCH pacman '$SUDO pacman -S --noconfirm wget'
+
+add_program unzip
+add_install_method unzip ARCH pacman '$SUDO pacman -S --noconfirm unzip'
 
 add_program font-0xproto
 add_install_method font-0xproto LOCAL wget <<'CMD'
@@ -94,22 +113,15 @@ add_install_method curl ARCH pacman '$SUDO pacman -S --noconfirm curl'
 
 
 add_program rust
-add_install_method rust UBUNTU apt << 'CMD'
-export RUSTUP_HOME=/opt/rustup
-export CARGO_HOME=/opt/cargo
-$SUDO apt update && $SUDO apt install -y rustup
-export PATH=$PATH:/opt/cargo/bin
-CMD
-add_install_method rust ARCH pacman << 'CMD'
-export RUSTUP_HOME=/opt/rustup
-export CARGO_HOME=/opt/cargo
-$SUDO pacman -S --noconfirm rustup
-export PATH=$PATH:/opt/cargo/bin
-CMD
 add_install_method rust LOCAL script << 'CMD'
 export RUSTUP_HOME=~/.local/opt/rustup
 export CARGO_HOME=~/.local/opt/cargo
-curl --proto =https --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+sudo mv $RUSTUP_HOME /opt/rustup
+sudo mv $CARGO_HOME /opt/cargo
+export $PATH=$PATH:/opt/cargo/bin
+export RUSTUP_HOME=/opt/rustup
+export CARGO_HOME=/opt/cargo
 CMD
 add_update_method rust LOCAL script 'rustup update'
 
@@ -196,6 +208,7 @@ add_install_method python3 ARCH pacman '$SUDO pacman -S --noconfirm python pytho
 
 
 add_program python-pkgs
+add_install_method python-pkgs ARCH pacman '$SUDO pacman -S python-pint python-numpy python-tomli'
 add_install_method python-pkgs LOCAL pip 'python -m pip install --user pint numpy tomli'
 add_update_method python-pkgs LOCAL pip 'python -m pip install --user --upgrade pint numpy tomli'
 
@@ -290,12 +303,6 @@ add_install_method tlrc ARCH yay 'yay -S --noconfirm tlrc'
 add_install_method tlrc LOCAL brew 'brew install tlrc'
 
 
-add_program zoxide
-add_install_method zoxide UBUNTU apt '$SUDO apt update && sudo apt install -y zoxide'
-add_install_method zoxide ARCH pacman '$SUDO pacman -S --noconfirm zoxide'
-add_install_method zoxide LOCAL brew 'brew install zoxide'
-
-
 add_program kitty
 add_install_method kitty UBUNTU apt '$SUDO apt update && $SUDO apt install -y kitty'
 add_install_method kitty ARCH pacman '$SUDO pacman -S --noconfirm kitty'
@@ -310,8 +317,10 @@ $SUDO cargo install resvg
 brew install font-symbols-only-nerd-font
 CMD
 add_install_method yazi_deps ARCH pacman << 'CMD'
-$SUDO pacman -Syu --noconfirm jq poppler poppler-utils fd imagemagick
-$SUDO yay -S ffmpeg-full sevenzip resvg-bin ttf-nerd-fonts-symbols-common
+$SUDO pacman -Syu --noconfirm jq poppler fd imagemagick
+yay -S --noconfirm sevenzip resvg-bin ttf-nerd-fonts-symbols-common
+export $PATH=$PATH:/opt/cuda/bin
+yay -S ffmpeg-full
 CMD
 add_install_method yazi_deps LOCAL brew 'brew install ffmpeg-full sevenzip jq poppler fd resvg imagemagick-full font-symbols-only-nerd-font; brew link ffmpeg-full imagemagick-full -f --overwrite'
 
@@ -339,6 +348,7 @@ add_install_method artcraft-launcher SCRATCH source <<'CMD'
 git clone https://github.com/storytold/craft-launcher
 cd craft-launcher
 cargo run --release -p artcraft-launcher
+cd ..
 $SUDO mv craft-launcher/target/release /opt/artcraft-launcher
 $SUDO ln -s /opt/artcraft-launcher/artcraft-launcher /usr/local/bin/artcraft-launcher
 CMD
