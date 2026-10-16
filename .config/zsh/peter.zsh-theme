@@ -113,14 +113,15 @@ typeset -g _PETER_P4_NEEDS_CHECK=0   # set by preexec when a p4 command runs
 
 # preexec: flag that a p4 command is about to run, so the next precmd refreshes.
 function _peter_p4_preexec() {
-  _peter_p4_active || return
+  _peter_p4_active || return 0
   local word
   for word in ${(z)1}; do
     if [[ "$word" == p4 || "$word" == */p4 ]]; then
       _PETER_P4_NEEDS_CHECK=1
-      return
+      return 0
     fi
   done
+  return 0
 }
 
 function _peter_p4_precmd() {
@@ -128,7 +129,7 @@ function _peter_p4_precmd() {
     _PETER_P4_STATE=""
     _PETER_P4_CONTEXT=""
     _PETER_P4_NEEDS_CHECK=0
-    return
+    return 0
   fi
 
   local context="$STEM|$SCMROOT|$DJ_CONTEXT"
@@ -136,14 +137,14 @@ function _peter_p4_precmd() {
   # changed.
   if (( ! _PETER_P4_NEEDS_CHECK )) &&
      [[ -n "$_PETER_P4_STATE" && "$context" == "$_PETER_P4_CONTEXT" ]]; then
-    return
+    return 0
   fi
   _PETER_P4_NEEDS_CHECK=0
 
   _PETER_P4_CONTEXT="$context"          # don't retry until something changes
   local opened
   if ! opened="$(command p4 opened 2>/dev/null)"; then
-    return                              # p4 failed; keep the last known color
+    return 0                            # p4 failed; keep the last known color
   fi
   if [[ -z "${opened//[[:space:]]/}" || "$opened" == *"no files opened"* ]]; then
     _PETER_P4_STATE=clean
@@ -152,6 +153,7 @@ function _peter_p4_precmd() {
   else
     _PETER_P4_STATE=open-other
   fi
+  return 0
 }
 
 autoload -Uz add-zsh-hook

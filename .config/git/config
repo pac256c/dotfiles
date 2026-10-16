@@ -1,2 +1,8 @@
 [user]
 	email = peter8pie@gmail.com
+[diff]
+	tool = nvim
+[difftool "nvim"]
+	cmd = nvim -d \"$LOCAL\" \"$REMOTE\"\n\n
+[difftool]
+	prompt = false

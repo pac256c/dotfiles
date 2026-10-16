@@ -528,6 +528,13 @@ run_cmd() {
       printf '%s\n' '[[ -f "$zshenv" ]] && source "$zshenv"'
       printf '%s\n' 'zdot="${ZDOTDIR:-$HOME}"'
       printf '%s\n' '[[ -f "$zdot/.zshrc" ]] && source "$zdot/.zshrc"'
+      # Drop any prompt/state hooks the user's config registered. zsh runs
+      # preexec functions before each command even in a script, so a hook that
+      # returns non-zero (e.g. a git/p4 prompt hook when not in such a repo)
+      # would trip the set -e below and abort the install before it runs.
+      printf '%s\n' 'precmd_functions=(); preexec_functions=(); chpwd_functions=()'
+      printf '%s\n' 'periodic_functions=(); zshaddhistory_functions=()'
+      printf '%s\n' 'zshexit_functions=(); zsh_directory_name_functions=()'
       printf 'set -e\n'
       printf '%s\n' "$cmd"
     } > "$tmp"
