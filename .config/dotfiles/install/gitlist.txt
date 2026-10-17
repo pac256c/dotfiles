@@ -11,4 +11,11 @@
 #   depends=a,b,c      extra runtime depends for the PKGBUILD
 
 photocraft storytold/photocraft
+filmcraft storytold/filmcraft
+pdfcraft storytold/pdfcraft
+figcraft storytold/figcraft
+soundcraft storytold/soundcraft
+cadcraft storytold/cadcraft
 wordcraft storytold/wordcraft
+deckcraft storytold/deckcraft
+gridcraft storytold/gridcraft
