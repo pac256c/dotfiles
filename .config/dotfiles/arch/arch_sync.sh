@@ -4,10 +4,10 @@
 # Prerequisites: git and sudo exist. Run as normal user (not root).
 # Steps:
 # 1. Install yay if not present
-# 2. Install pacman packages from install/paclist.txt (pacman -Qqen)
-# 3. Install AUR packages from install/yaylist.txt (pacman -Qqem)
-# 4. Build and install local PKGBUILDs from install/builds (after updating via gitfind.sh)
-# 5. Call install/extra.sh for additional setup
+# 2. Install pacman packages from paclist.txt (pacman -Qqen)
+# 3. Install AUR packages from yaylist.txt (pacman -Qqem)
+# 4. Build and install local PKGBUILDs from builds/ (after updating via gitfind.sh)
+# 5. Call extra.sh for additional setup
 #
 # All operations are non-interactive.
 
