@@ -18,3 +18,8 @@ if vim.fn.has("wsl") == 1 then
     cache_enabled = 0,
   }
 end
+
+------------------------------------------------
+--- Line numbers on
+------------------------------------------------
+vim.opt.number = true

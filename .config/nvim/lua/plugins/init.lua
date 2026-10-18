@@ -89,33 +89,6 @@ return {
     },
   },
 
-  -- {
-  -- "willothy/flatten.nvim",
-  --   lazy = false,
-  --   priority = 1001,
-  --   opts = {
-  --     window = {
-  --       -- Forces flatten to look for your main editing window above/beside the terminal
-  --       open = "alternate"
-  --     },
-  --     hooks = {
-  --       -- Runs safely AFTER the file is cleanly routed to your main buffer window
-  --       post_open = function(context)
-  --         local status, nvterm = pcall(require, "nvterm.terminal")
-  --         if status then
-  --           nvterm.toggle("horizontal")
-  --         end
-  --
-  --         if context and context.winnr then
-  --           vim.schedule(function ()
-  --           pcall(vim.api.nvim_set_current_win, context.winnr)
-  --           end)
-  --         end
-  --       end,
-  --     }
-  --   }
-  -- },
-
   -------------------------------------------------------
   --- use "vi" in integrated terminal to open files above
   -------------------------------------------------------

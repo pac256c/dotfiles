@@ -1,0 +1,48 @@
+# Homebrew packages for local installs (no sudo/root needed)
+# Generated from install/registry.sh - packages that have a brew formula/cask
+# equivalent for LOCAL installs. Edit as needed.
+#
+# Format: one package per line. Lines starting with # are comments.
+
+# --- core CLI tools (from registry) ---
+zsh
+zoxide
+wget
+unzip
+curl
+ripgrep
+fzf
+tmux
+neovim
+tree-sitter
+tlrc
+yazi
+
+# --- runtimes / languages ---
+go
+python
+lua
+openjdk
+octave
+bun
+uv
+
+# --- build tools ---
+cmake
+ninja
+
+# --- crypto / security ---
+gnupg
+
+# --- yazi dependencies (from yazi_deps LOCAL brew method) ---
+fd
+jq
+poppler
+sevenzip
+resvg
+ffmpeg
+imagemagick
+
+# --- fonts (nerd fonts) ---
+font-symbols-only-nerd-font
+font-0xproto-nerd-font

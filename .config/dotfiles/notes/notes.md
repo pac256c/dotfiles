@@ -63,7 +63,8 @@
 * temporarily install nano with "pacman -Sy nano"
 * install sudo with "pacman -Sy sudo"
 * uncomment the line "# %wheel ALL=(ALL:ALL) ALL" in editor command "EDITOR=nano visudo"
-* make user default in wsl by doing echo -e "[user]\ndefault=<username>" >> /etc/wsl.conf
+* make user default in wsl by doing echo -e "\n[user]\ndefault=<username>" >> /etc/wsl.conf
+* also prevent wsl from appending windows path with by doing echo -e "\n[interop]\nappendWindowsPath=false"
 * now close and reopen wsl, and you'll be logged in as a non-root user with sudo privileges.
 * uninstall nano with pacman -R nano
 * install git and which, with "sudo pacman -Sy git which"

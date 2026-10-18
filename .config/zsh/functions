@@ -45,12 +45,12 @@ repl() {
         ;;
       "${OPTIONS[C++]}")
         echo -e "\e[1;32m=== Entering C++ REPL ===\e[0m"
-        clang-repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/cpp_init.h"
+        HOME=$XDG_CACHE_HOME clang-repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/cpp_init.h"
         valid=true
         ;;
       "${OPTIONS[C]}")
         echo -e "\e[1;36m=== Entering Plain C REPL ===\e[0m"
-        clang-repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/c_init.h"
+        HOME=$XDG_CACHE_HOME clang-repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/c_init.h"
         valid=true
         ;;
       "${OPTIONS[Octave]}")
@@ -194,4 +194,50 @@ else:
       eval "$selected_cmd \"\$target_file\""
     fi
 
+}
+
+# dotfiles - wrap git for the bare dotfiles repo at ~/.config/dotfiles
+# (work-tree = $HOME). On Arch: `push` regenerates + commits paclist/yaylist
+# before pushing; `pull` runs arch/sync.sh afterward to sync programs.
+# On local/homebrew machines: `push` regenerates + commits brewlist.txt from
+# `brew leaves`; `pull` runs local/sync.sh afterward to sync programs.
+dotfiles() {
+  local gitdir="$HOME/.config/dotfiles"
+  local worktree="$HOME"
+  local g=(git --git-dir="$gitdir" --work-tree="$worktree")
+
+  if [[ "$1" == "push" ]] && command -v pacman >/dev/null 2>&1; then
+    pacman -Qqen > "$gitdir/arch/paclist.txt"
+    pacman -Qqem > "$gitdir/arch/yaylist.txt"
+    if ! "${g[@]}" diff --quiet -- \
+        .config/dotfiles/arch/paclist.txt .config/dotfiles/arch/yaylist.txt; then
+      "${g[@]}" add -- \
+        .config/dotfiles/arch/paclist.txt .config/dotfiles/arch/yaylist.txt
+      "${g[@]}" commit -m "chore: update package lists"
+    fi
+  fi
+
+  if [[ "$1" == "push" ]] && ! command -v pacman >/dev/null 2>&1 \
+      && command -v brew >/dev/null 2>&1; then
+    brew leaves > "$gitdir/local/brewlist.txt"
+    if ! "${g[@]}" diff --quiet -- \
+        .config/dotfiles/local/brewlist.txt; then
+      "${g[@]}" add -- \
+        .config/dotfiles/local/brewlist.txt
+      "${g[@]}" commit -m "chore: update brew package list"
+    fi
+  fi
+
+  "${g[@]}" "$@"
+  local rc=$?
+
+  if [[ "$1" == "pull" && $rc -eq 0 ]] && command -v pacman >/dev/null 2>&1; then
+    "$gitdir/arch/sync.sh"
+  fi
+
+  if [[ "$1" == "pull" && $rc -eq 0 ]] && ! command -v pacman >/dev/null 2>&1 \
+      && command -v brew >/dev/null 2>&1; then
+    "$gitdir/local/sync.sh"
+  fi
+  return $rc
 }

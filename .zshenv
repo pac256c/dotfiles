@@ -31,6 +31,7 @@ export NPM_CONFIG_INIT_MODULE=$XDG_CONFIG_HOME/npm/config/npm-init.js
 export NPM_CONFIG_CACHE=$XDG_CACHE_HOME/npm
 export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
 export PYTHONSTARTUP=$XDG_CONFIG_HOME/python/pythonrc.py
+export PYTHON_HISTORY=$XDG_STATE_HOME/python/history
 export TS_NODE_HISTORY=$XDG_STATE_HOME/ts_node_repl_history
 export OCTAVE_HISTFILE=$XDG_STATE_HOME/octave_hist
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java
@@ -47,7 +48,7 @@ export PATH=$PATH:/opt/nvim-linux-x86_64/bin
 export PATH=$PATH:$CARGO_HOME/bin
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$OPENCODE_CONFIG_DIR/bin
-export PATH=$PATH:/opt/homebrew/bin
+export PATH=$PATH:$HOME/.local/opt/homebrew/bin
 export PATH=$PATH:/opt/kitty/bin
 export PATH=$PATH:$XDG_CONFIG_HOME/go/bin
 export PATH=$PATH:/opt/cuda/bin

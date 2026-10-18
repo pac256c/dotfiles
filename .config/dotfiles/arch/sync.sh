@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# arch_sync.sh - install everything for a fresh Arch Linux system
+# sync.sh - install/sync everything for an Arch Linux system
+# (run automatically by `dotfiles pull`, or manually)
 #
 # Prerequisites: git and sudo exist. Run as normal user (not root).
 # Steps:
@@ -9,7 +10,7 @@
 # 4. Build and install local PKGBUILDs from builds/ (after updating via gitfind.sh)
 # 5. Call extra.sh for additional setup
 #
-# All operations are non-interactive.
+# Prompts once before installing/updating; otherwise non-interactive.
 
 set -euo pipefail
 
@@ -17,6 +18,41 @@ DOTFILES_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_DIR="$DOTFILES_ROOT"
 
 log() { printf '%s\n' "$*"; }
+
+log "=== Running the Arch install/update script ==="
+
+# Warn about stray dotfiles in $HOME
+allowed_home_entries=".config .zshenv .local .cache"
+strays=()
+shopt -s nullglob
+for entry in "$HOME"/.*; do
+  name="${entry##*/}"
+  [[ $name == "." || $name == ".." ]] && continue
+  case " $allowed_home_entries " in
+    *" $name "*) continue ;;
+  esac
+  strays+=("$name")
+done
+shopt -u nullglob
+
+if ((${#strays[@]})); then
+  log ""
+  log "Warning: found stray dotfiles in $HOME:"
+  for name in "${strays[@]}"; do
+    log "  $name"
+  done
+  log "Consider moving them into ~/.config (or another managed location)."
+fi
+
+log ""
+read -r -p "Would you like to update/install programs? [y/N] " reply
+case "$reply" in
+  [Yy]*) ;;
+  *)
+    log "Exiting without making changes."
+    exit 0
+    ;;
+esac
 
 if [[ ${EUID:-$(id -u)} -eq 0 ]]; then
   echo "do not run as root" >&2
@@ -60,22 +96,24 @@ if [[ -x "$INSTALL_DIR/gitfind.sh" ]]; then
   "$INSTALL_DIR/gitfind.sh"
 fi
 
-if [[ -f "$INSTALL_DIR/gitlist.txt" ]]; then
-  log "=== Building and installing local PKGBUILDs ==="
-  while IFS=$' \t' read -r name repo extra _ || [[ -n ${name:-} ]]; do
-    [[ -z ${name:-} || $name == \#* ]] && continue
-    pkgbuild="$INSTALL_DIR/builds/${name}_PKGBUILD"
-    if [[ -f "$pkgbuild" ]]; then
-      builddir="/tmp/build-${name}"
-      rm -rf "$builddir"
-      mkdir -p "$builddir"
-      cp "$pkgbuild" "$builddir/PKGBUILD"
-      (cd "$builddir" && makepkg -Cfis --noconfirm --needed --clean)
-      rm -rf "$builddir"
-    else
-      log "  Warning: PKGBUILD not found for $name at $pkgbuild"
-    fi
-  done <"$INSTALL_DIR/gitlist.txt"
+log "=== Building and installing local PKGBUILDs ==="
+shopt -s nullglob
+pkgbuilds=("$INSTALL_DIR"/builds/*_PKGBUILD)
+shopt -u nullglob
+if ((${#pkgbuilds[@]})); then
+  for pkgbuild in "${pkgbuilds[@]}"; do
+    name="$(basename "$pkgbuild")"
+    name="${name%_PKGBUILD}"
+    builddir="/tmp/build-${name}"
+    rm -rf "$builddir"
+    mkdir -p "$builddir"
+    cp "$pkgbuild" "$builddir/PKGBUILD"
+    log "  building and installing $name ..."
+    (cd "$builddir" && makepkg -Cfis --noconfirm --needed --clean)
+    rm -rf "$builddir"
+  done
+else
+  log "  no PKGBUILDs found in $INSTALL_DIR/builds"
 fi
 
 # Step 5: Call extra.sh

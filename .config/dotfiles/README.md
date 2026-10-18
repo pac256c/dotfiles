@@ -8,12 +8,12 @@ To install programs and check out files with the following commands, keep these 
 * The expected terminal emulator for this setup is kitty - the sync.sh script sets kitty as default, and kitty is personalized in .config/kitty.
 
 ```bash
-mkdir -p $HOME/.config/.github
-alias dotfiles='$(which git) --git-dir=$HOME/.config/.github --work-tree=$HOME' 
-git clone --bare https://github.com/pac256c/dotfiles.git $HOME/.config/.github
+mkdir -p $HOME/.config/dotfiles
+alias dotfiles='$(which git) --git-dir=$HOME/.config/dotfiles --work-tree=$HOME' 
+git clone --bare https://github.com/pac256c/dotfiles.git $HOME/.config/dotfiles
 dotfiles config --local status.showUntrackedFiles no
 dotfiles checkout -f
-cd $HOME/.config/.github/install
+cd $HOME/.config/dotfiles/install
 chmod +x sync.sh registry.sh update.sh
 ./sync.sh -k <distro> 
 ```
