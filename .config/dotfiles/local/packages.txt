@@ -1,8 +1,9 @@
-# Homebrew packages for local installs (no sudo/root needed)
-# Generated from install/registry.sh - packages that have a brew formula/cask
-# equivalent for LOCAL installs. Edit as needed.
+# Conda packages for local installs (no sudo/root needed)
+# Installed from conda-forge into the base env via sync.sh.
+# Edit as needed.
 #
 # Format: one package per line. Lines starting with # are comments.
+# Packages also built locally from manlist.txt are skipped here.
 
 # --- core CLI tools (from registry) ---
 zsh
@@ -14,7 +15,7 @@ ripgrep
 fzf
 tmux
 neovim
-tree-sitter
+tree-sitter-cli
 tlrc
 yazi
 
@@ -38,11 +39,7 @@ gnupg
 fd
 jq
 poppler
-sevenzip
+7zip
 resvg
 ffmpeg
 imagemagick
-
-# --- fonts (nerd fonts) ---
-font-symbols-only-nerd-font
-font-0xproto-nerd-font

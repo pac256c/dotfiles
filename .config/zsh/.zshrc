@@ -50,3 +50,9 @@ precmd() {
 [ -f $XDG_CONFIG_HOME/zsh/aliases ] && source $XDG_CONFIG_HOME/zsh/aliases
 [ -f $XDG_CONFIG_HOME/zsh/extra ] && source $XDG_CONFIG_HOME/zsh/extra
 
+# Conda setup - only if conda is actually installed (e.g. a local-install machine)
+if [[ -f "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh" ]]; then
+  . "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh"
+  conda activate base >/dev/null 2>&1 || true
+  conda config --set changeps1 false >/dev/null 2>&1 || true
+fi

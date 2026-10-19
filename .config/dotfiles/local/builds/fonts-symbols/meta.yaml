@@ -1,0 +1,18 @@
+{% set name = "fonts-symbols" %}
+{% set version = "3.5.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/NerdFontsSymbolsOnly.zip
+  sha256: fdca3682534f6f65e1ccb2345b0362ccf67d9b8eca7c8025330946e93e2473bc
+
+build:
+  number: 1
+
+about:
+  home: https://github.com/ryanoasis/nerd-fonts
+  license: MIT
+  summary: "Iconic font aggregator, collection, & patcher. 3,600+ icons, 50+ patched fonts: Hack, Source Code Pro, more. Glyph collections: Font Awesome, Material Design Icons, Octicons, & more"

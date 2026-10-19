@@ -1,0 +1,18 @@
+{% set name = "figcraft" %}
+{% set version = "0.7.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/storytold/figcraft/releases/download/v0.7.0/figcraft-0.7.0-linux-x86_64.tar.gz
+  sha256: f3ddf6194d2bbd523cd3195df90fa2cd5782d3946fc7833b7f6bf88fda37908d
+
+build:
+  number: 1
+
+about:
+  home: https://github.com/storytold/figcraft
+  license: Apache-2.0
+  summary: "FigCraft: interface design and prototyping; an open-source, clean-room reimplementation of collaborative design workflows in pure Rust"

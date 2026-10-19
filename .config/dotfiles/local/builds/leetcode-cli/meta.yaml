@@ -1,0 +1,24 @@
+{% set name = "leetcode-cli" %}
+{% set version = "3.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://registry.npmjs.org/@night-slayer18/leetcode-cli/-/leetcode-cli-3.6.0.tgz
+  sha256: 229cbd279c901c049955977e5eb463126d56c9407276cefca61ff94df329ec90
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - nodejs
+  run:
+    - nodejs
+
+about:
+  home: https://github.com/night-slayer18/leetcode-cli
+  license: Apache-2.0
+  summary: "A powerful command-line interface (CLI) tool for LeetCode, enabling developers to fetch coding problems, submit solutions, manage accounts, and streamline competitive programming workflows directly from the terminal."

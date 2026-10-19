@@ -3,14 +3,20 @@
 #   block = true -> pauses yazi so the terminal app can take over the screen
 #   orphan = true -> lets these GUI apps run independently even if you close yazi
 nvim         = [ { run = "nvim %s"                   , block  = true, desc = "Neovim"              } ]
-browser      = [ { run = "zen %s"                    , orphan = true, desc = "Internet Browser"    } ]
-pdf_editor   = [ { run = "pdfcraft %s"               , orphan = true, desc = "PDF Editor"          } ]
+browser      = [ { run = "zen-browser %s"            , orphan = true, desc = "Zen Browser"         } ]
+pdf_editor   = [ { run = "pdfcraft %s"               , orphan = true, desc = "PDFCraft"            } ]
+word         = [ { run = "wordcraft %s"              , orphan = true, desc = "WordCraft"           } ]
+excel        = [ { run = "gridcraft %s"              , orphan = true, desc = "GridCraft"           } ]
+powerpoint   = [ { run = "deckcraft %s"              , orphan = true, desc = "DeckCraft"           } ]
+cad          = [ { run = "cadcraft %s"               , orphan = true, desc = "CADCraft"            } ]
+figeditor    = [ { run = "figcraft %s"               , orphan = true, desc = "FigCraft"            } ]
+filmcraft    = [ { run = "filmcraft %s"              , orphan = true, desc = "FilmCraft"           } ]
+photoshop    = [ { run = "photocraft %s"             , orphan = true, desc = "PhotoCraft"          } ]
+soundedit    = [ { run = "soundcraft %s"             , orphan = true, desc = "SoundCraft"          } ]
+python       = [ { run = "python %s"                 , block  = true, desc = "Execute Python"      } ]
+
 media_player = [ { run = "vlc %s"                    , orphan = true, desc = "Media Player"        } ]
 image_viewer = [ { run = "xdg-open %s"               , orphan = true, desc = "Image Viewer"        } ]
-word         = [ { run = "libreoffice --writer %s"   , orphan = true, desc = "Word Processor"      } ]
-excel        = [ { run = "libreoffice --calc %s"     , orphan = true, desc = "Spreadsheet"         } ]
-powerpoint   = [ { run = "libreoffice --impress %s"  , orphan = true, desc = "Presentation"        } ]
-python       = [ { run = "python %s"                 , block  = true, desc = "Execute Python"      } ]
 
 [open]
 # override openers for file formats (MIME or ext)
@@ -44,9 +50,47 @@ prepend_rules = [
   { mime = "application/vnd.openxmlformats-officedocument.presentationml.presentation", use = "powerpoint" },
 
   # audio/video
-  { mime = "video/*", use = "media_player" },
-  { mime = "audio/*", use = "media_player" },
+  { mime = "video/*", use = ["media_player", "filmcraft" ] },
+  { mime = "audio/*", use = ["media_player", "soundedit" ] },
 
   # images
-  { mime = "image/*", use = "image_viewer" },
+  { mime = "image/*", use = ["image_viewer", "photoshop" ] },
+
+  # cad
+  { mime = "image/vnd.dwg"   , use = "cadcraft" },
+  { mime = "image/x-dwg"     , use = "cadcraft" },
+  { mime = "application/acad", use = "cadcraft" },
+  { mime = "image/vnd.dxf"   , use = "cadcraft" },
+  { mime = "application/dnf" , use = "cadcraft" },
+  { mime = "model/step"      , use = "cadcraft" },
+  { mime = "model/iges"      , use = "cadcraft" },
+  { mime = "model/stl"       , use = "cadcraft" },
+
+  # figcraft
+  { mime = "application/x-figma", use = "figcraft" },
+  { mime = "application/x-xfig" , use = "figcraft" },
+  { mime = "image/x-xfig"       , use = "figcraft" },
+
+  # video editing
+  { mime = "application/x-filmcraft", use = "filmcraft" },
+  { mime = "application/x-subrip"   , use = "filmcraft" },
+  { mime = "application/ttml+xml"   , use = "filmcraft" },
+
+  # photocraft
+  { mime = "application/x-photocraft"      , use = "photoshop" },
+  { mime = "image/vnd.adobe.photoshop"     , use = "photoshop" },
+  { mime = "application/x-photoshop"       , use = "photoshop" },
+  { mime = "application/x-paintnet"        , use = "photoshop" },
+  { mime = "application/x-krita"           , use = "photoshop" },
+  { mime = "application/vnd.serif.affinity", use = "photoshop" },
+  { mime = "application/x-affinity"        , use = "photoshop" },
+
+  # soundcraft
+  { mime = "application/x-soundcraft", use = "soundedit" },
+  { mime = "application/x-protocols" , use = "soundedit" },
+  { mime = "application/x-aaf"       , use = "soundedit" },
+  { mime = "application/x-omf"       , use = "soundedit" },
+  { mime = "application/x-omfi"      , use = "soundedit" },
+
+
 ]

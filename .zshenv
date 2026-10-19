@@ -29,29 +29,31 @@ export HISTFILE=$XDG_STATE_HOME/bash/history
 export NVM_DIR=$XDG_DATA_HOME/nvm
 export NPM_CONFIG_INIT_MODULE=$XDG_CONFIG_HOME/npm/config/npm-init.js
 export NPM_CONFIG_CACHE=$XDG_CACHE_HOME/npm
-export NPM_CONFIG_TMP=$XDG_RUNTIME_DIR/npm
 export PYTHONSTARTUP=$XDG_CONFIG_HOME/python/pythonrc.py
 export PYTHON_HISTORY=$XDG_STATE_HOME/python/history
 export TS_NODE_HISTORY=$XDG_STATE_HOME/ts_node_repl_history
 export OCTAVE_HISTFILE=$XDG_STATE_HOME/octave_hist
+export CONDARC=$XDG_CONFIG_HOME/conda/condarc
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java
 export NODE_REPL_HISTORY=$XDG_STATE_HOME/node_repl_history
-export RUSTUP_HOME=/opt/rustup
-export CARGO_HOME=/opt/cargo
-export GOPATH=$XDG_CONFIG_HOME/go
+export RUSTUP_HOME=$HOME/.local/opt/rustup
+export CARGO_HOME=$HOME/.local/opt/cargo
+export GOPATH=$HOME/.local/opt/go
 export GNUPGHOME=$XDG_DATA_HOME/gnupg
 export OPENCODE_CONFIG_DIR=$XDG_CONFIG_HOME/opencode
 export OPENCODE_CONFIG=$XDG_CONFIG_HOME/opencode/opencode.json
 
-# edit path variable
-export PATH=$PATH:/opt/nvim-linux-x86_64/bin
-export PATH=$PATH:$CARGO_HOME/bin
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:$OPENCODE_CONFIG_DIR/bin
-export PATH=$PATH:$HOME/.local/opt/homebrew/bin
-export PATH=$PATH:/opt/kitty/bin
-export PATH=$PATH:$XDG_CONFIG_HOME/go/bin
-export PATH=$PATH:/opt/cuda/bin
+# edit path variable (only add directories that exist)
+for _dir in \
+  /opt/nvim-linux-x86_64/bin \
+  "$CARGO_HOME/bin" \
+  "$OPENCODE_CONFIG_DIR/bin" \
+  /opt/kitty/bin \
+  "$GOPATH/bin" \
+  /opt/cuda/bin; do
+  [ -d "$_dir" ] && export PATH=$PATH:$_dir
+done
+unset _dir
 
 # remove duplicates from $PATH if they exist
 typeset -U path

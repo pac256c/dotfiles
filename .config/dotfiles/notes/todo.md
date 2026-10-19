@@ -29,17 +29,17 @@
 * maybe i can have another g + <> shortcut for applications?
 * extension to show ground truth git/p4 depos, history/diffs/checkout
 
-# Cleaning up program installs to use package managers
-* make update script warn about dotfiles, optional exit
-* similar steps for local install
-* install brew to desired directory
-* make sure brew path is prepended so global tools will take priority if they already exist
-* use something similar for brew local AUR equivalent
-* dont call automatically for local, have to actually run the script manually
-* delete current ubuntu & homebrew.sh, just ask it to look at sync/registry. 
-* after this, could maybe make extra script global, maybe github fetch script should create both local AUR / local brew
-* also make sure i include instructions in readme to make all of these scripts executable.
-* maybe only update path if certain directories exist?
+# AI stuff
+* could i make claude use tui?
+* could i use gemini + notebooks/stuff in a tui, maybe combined with a free agent for other stuff?
+* organize / save conversations, handle multiple instances?
+* maybe integrate w/ notes or something
 
+# Cleaning up program installs to use package managers
+* DONE: use yay to install everything, removed extra pacman step, combined lists into one packages.txt (gitfind.sh->manfind.sh, gitlist.txt->manlist.txt)
+* DONE: dotfiles push/pull use conda-first-then-pacman; push regenerates packages.txt
+* DONE: removed conda from this Arch achine (now global yay/pacman only); local/ flow kept for other machines
+* DONE: .zshenv only adds PATH entries for directories that exist
+* DONE: sync.sh scripts warn about stray dotfiles (with optional exit)
 
 try to open my wsl for ssh from other computers?

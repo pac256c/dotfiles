@@ -1,0 +1,18 @@
+{% set name = "cadcraft" %}
+{% set version = "0.8.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/storytold/cadcraft/releases/download/v0.8.0/cadcraft-0.8.0-linux-x86_64.tar.gz
+  sha256: df3c2e668439f0410564b1fa9d21827bb663eb3d01703902c41f02b9c5276193
+
+build:
+  number: 1
+
+about:
+  home: https://github.com/storytold/cadcraft
+  license: Apache-2.0
+  summary: "CADCraft: computer-aided design and drafting — an open-source, clean-room AutoCAD-style app in pure Rust"
