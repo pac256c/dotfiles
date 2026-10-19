@@ -1,0 +1,27 @@
+# ~/.config/bash/rc - real bash config, sourced from ~/.bashrc
+# Purpose (local/no-sudo machines): make bash hand off to zsh, which is only
+# present inside the conda environment. The default login shell stays bash
+# (no chsh needed); we activate conda here so `zsh` is on PATH, then exec it.
+
+# Only hand off for interactive shells; never break non-interactive bash
+# (scripts, `bash -c`, scp, etc.).
+[[ $- == *i* ]] || return 0
+
+# Guard against re-entry (e.g. if zsh is missing and bash gets restarted).
+[[ -n ${DOTFILES_BASH_HANDOFF:-} ]] && return 0
+
+# zsh only exists in the conda env, so activate it if `zsh` isn't already found.
+if ! command -v zsh >/dev/null 2>&1; then
+  if [[ -f "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh" ]]; then
+    # shellcheck disable=SC1091
+    . "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh"
+    conda activate base >/dev/null 2>&1 || true
+  fi
+fi
+
+# If zsh is now available, exec it (zsh will source ~/.zshenv and ~/.zshrc,
+# which re-activate conda and set up the full environment).
+if command -v zsh >/dev/null 2>&1; then
+  export DOTFILES_BASH_HANDOFF=1
+  exec zsh
+fi

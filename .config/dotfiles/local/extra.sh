@@ -10,7 +10,11 @@ log "extra.sh: running additional setup..."
 
 
 xdg-user-dirs-update
-chsh -s $(which zsh)
+
+# NOTE: no chsh here. On the local (no-sudo) flow zsh lives only inside the
+# conda env, so chsh can't find it (and would need root anyway). Instead, the
+# default shell stays bash and ~/.bashrc -> ~/.config/bash/rc activates conda
+# and execs zsh, which then sources ~/.zshenv and ~/.zshrc.
 
 # Point fontconfig at the conda env's fonts (nerd fonts are installed there via conda recipes)
 CONDA_PREFIX="${CONDA_PREFIX:-$HOME/.local/opt/miniforge3}"
@@ -24,7 +28,6 @@ cat > ~/.config/fontconfig/fonts.conf <<EOF
 EOF
 fc-cache -fv "$CONDA_PREFIX/share/fonts"
 
-sudo systemctl enable --now sshd
 mkdir -p ~/.local/share/gnupg
 chmod 700 ~/.local/share/gnupg
 if [ -d ~/.gnupg ]; then cp -r ~/.gnupg/. ~/.local/share/gnupg/ && rm -rf ~/.gnupg; fi
