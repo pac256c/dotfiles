@@ -101,6 +101,17 @@ license_for() { # $1=repo -> SPDX id from the GitHub license endpoint (best effo
 write_release_recipe() { # $1=name $2=repo $3=ver $4=tag $5=asset $6=url $7=sha $8=desc $9=depends_csv
   local name=$1 repo=$2 ver=$3 tag=$4 asset=$5 url=$6 sha=$7 desc=$8 depends_csv=$9
 
+  # Emit a runtime requirements block only when the caller supplied depends.
+  local req_block=""
+  if [[ -n $depends_csv ]]; then
+    req_block=$'\n\nrequirements:\n  run:\n'
+    local dep
+    IFS=',' read -ra __deps <<<"$depends_csv"
+    for dep in "${__deps[@]}"; do
+      [[ -n $dep ]] && req_block+="    - $dep"$'\n'
+    done
+  fi
+
   mkdir -p "$RECIPE_DIR/$name"
   cat >"$RECIPE_DIR/$name/meta.yaml" <<PKEOF
 {% set name = "$name" %}
@@ -116,7 +127,7 @@ source:
 
 build:
   number: 1
-
+$req_block
 about:
   home: https://github.com/$repo
   license: Apache-2.0

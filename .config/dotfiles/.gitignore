@@ -1,0 +1,3 @@
+# Per-machine build state (maintained outside the repo, in $XDG_STATE_HOME/dotfiles)
+arch/builds/.built
+local/builds/.built

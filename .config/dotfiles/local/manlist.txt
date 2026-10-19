@@ -30,6 +30,7 @@ gridcraft storytold/gridcraft
 
 bootdev bootdotdev/bootdev type=go
 leetcode-cli night-slayer18/leetcode-cli type=npm;npm=@night-slayer18/leetcode-cli;scripts=keytar
+opencode anomalyco/opencode type=release;asset=opencode-linux-x64.tar.gz;depends=ripgrep
 
 # Nerd fonts (not on conda-forge; built from source into share/fonts)
 fonts-0xproto ryanoasis/nerd-fonts type=font;asset=0xProto.zip;dir=0xProto

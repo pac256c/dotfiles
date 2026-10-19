@@ -16,6 +16,11 @@ set -euo pipefail
 DOTFILES_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_DIR="$DOTFILES_ROOT"
 
+# Per-machine state (not part of the repo). Records which packages were built
+# locally so a later run can detect ones that became stale.
+XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+STATE_DIR="$XDG_STATE_HOME/dotfiles"
+
 log() { printf '%s\n' "$*"; }
 
 log "=== Running the local install/update script (conda-based) ==="
@@ -110,9 +115,10 @@ fi
 if [[ -f "$INSTALL_DIR/packages.txt" ]]; then
   log "=== Installing conda packages from packages.txt ==="
 
-  # Packages built locally by a previous run (recorded in builds/.built) that are
-  # no longer in manlist.txt are stale; remove them before installing replacements.
-  BUILT_STATE="$INSTALL_DIR/builds/.built"
+  # Packages built locally by a previous run (recorded in the per-machine state
+  # file) that are no longer in manlist.txt are stale; remove them before
+  # installing replacements.
+  BUILT_STATE="$STATE_DIR/built"
   if [[ -f "$BUILT_STATE" ]]; then
     stale=()
     while IFS= read -r bname; do
@@ -160,7 +166,8 @@ shopt -s nullglob
 recipes=("$INSTALL_DIR"/builds/*/meta.yaml)
 shopt -u nullglob
 # Record which packages are built locally so future runs can detect stale ones.
-BUILT_STATE="$INSTALL_DIR/builds/.built"
+BUILT_STATE="$STATE_DIR/built"
+mkdir -p "$STATE_DIR"
 if ((${#recipes[@]})); then
   built_names=()
   for recipe in "${recipes[@]}"; do
