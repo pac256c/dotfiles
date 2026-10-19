@@ -126,7 +126,9 @@ source:
   sha256: $sha
 
 build:
-  number: 1
+  number: 2
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
 $req_block
 about:
   home: https://github.com/$repo

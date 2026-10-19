@@ -54,5 +54,4 @@ precmd() {
 if [[ -f "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh" ]]; then
   . "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh"
   conda activate base >/dev/null 2>&1 || true
-  conda config --set changeps1 false >/dev/null 2>&1 || true
 fi
