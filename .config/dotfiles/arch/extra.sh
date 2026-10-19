@@ -10,6 +10,23 @@ log "extra.sh: running additional setup..."
 
 
 xdg-user-dirs-update
+
+# Make every zsh load the shared env (~/.config/zsh/env). /etc/zshenv is
+# read by ALL zsh shells (login or not) before ~/.zshenv, which also covers
+# nested shells that inherit ZDOTDIR and would otherwise skip ~/.zshenv.
+if [[ -z "${SUDO_SKIP:-}" ]]; then
+  if ! sudo grep -qF '.config/zsh/env' /etc/zsh/zshenv 2>/dev/null; then
+    printf '[ -f "$HOME/.config/zsh/env" ] && . "$HOME/.config/zsh/env"\n' | sudo tee -a /etc/zsh/zshenv >/dev/null
+    log "  added env source line to /etc/zsh/zshenv"
+  fi
+  if ! sudo grep -qF '.config/zsh/env' /etc/zsh/zprofile 2>/dev/null; then
+    printf '[ -f "$HOME/.config/zsh/env" ] && . "$HOME/.config/zsh/env"\n' | sudo tee -a /etc/zsh/zprofile >/dev/null
+    log "  added env source line to /etc/zsh/zprofile"
+  fi
+else
+  log "  SUDO_SKIP: would add env source line to /etc/zsh/zshenv and zprofile"
+fi
+
 # Only change shell if it is not already zsh (avoids a password prompt when unnecessary)
 current_shell="$(getent passwd "$USER" | cut -d: -f7 2>/dev/null || true)"
 if [[ -n "$current_shell" && "$(basename "$current_shell")" != "zsh" ]]; then

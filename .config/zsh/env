@@ -1,6 +1,14 @@
-# runs every time zsh is started, login or not
-# use this for env variables / XDG
-# echo "running zenv vars"
+# ~/.config/zsh/env - environment shared by all shells (zsh and bash).
+#
+# Sourced from:
+#   - /etc/zsh/zshenv           (zsh: every shell, added by arch/extra.sh;
+#                               covers nested shells that inherit ZDOTDIR)
+#   - ~/.zshenv                (zsh: fallback where /etc/zshenv has no line)
+#   - ~/.config/bash/rc        (bash: every mode via the .bash_profile/.bashrc
+#                               stubs; also $BASH_ENV for non-interactive)
+#
+# Keep this file POSIX: exports and tests that work in both bash and zsh.
+# Zsh-only bits (e.g. `typeset -U path`) belong in ~/.zshenv.
 
 # XDG home paths
 export XDG_DATA_HOME=$HOME/.local/share
@@ -17,6 +25,7 @@ export XDG_VIDEOS_DIR=$HOME/videos
 export XDG_DESKTOP_DIR=$HOME/desktop
 export XDG_DOWNLOAD_DIR=$HOME/downloads
 export XDG_GAMES_DIR=$HOME/games
+export XDG_RUNTIME_DIR=/run/user/$UID
 
 # reroute program paths
 export ZDOTDIR=$XDG_CONFIG_HOME/zsh
@@ -42,18 +51,14 @@ export GOPATH=$HOME/.local/opt/go
 export GNUPGHOME=$XDG_DATA_HOME/gnupg
 export OPENCODE_CONFIG_DIR=$XDG_CONFIG_HOME/opencode
 export OPENCODE_CONFIG=$XDG_CONFIG_HOME/opencode/opencode.json
+export BASH_ENV=$XDG_CONFIG_HOME/zsh/env
 
 # edit path variable (only add directories that exist)
-for _dir in \
-  /opt/nvim-linux-x86_64/bin \
-  "$CARGO_HOME/bin" \
-  "$OPENCODE_CONFIG_DIR/bin" \
-  /opt/kitty/bin \
-  "$GOPATH/bin" \
-  /opt/cuda/bin; do
-  [ -d "$_dir" ] && export PATH=$PATH:$_dir
-done
-unset _dir
+path_append() { [[ -d "$1" ]] && export PATH="${PATH:+$PATH:}$1"; }
+path_append $CARGO_HOME/bin
+path_append $OPENCODE_CONFIG_DIR/bin
+path_append $GOPATH/bin
+path_append /opt/cuda/bin
 
 # remove duplicates from $PATH if they exist
 typeset -U path

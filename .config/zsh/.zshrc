@@ -1,7 +1,7 @@
 # echo "running zshrc"
 
 # make sure .zshenv has been run
-source ~/.zshenv
+source $ZDOTDIR/env
 
 # zsh settings:
 source $ZDOTDIR/peter.zsh-theme

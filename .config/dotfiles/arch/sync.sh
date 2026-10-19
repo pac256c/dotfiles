@@ -26,7 +26,7 @@ log() { printf '%s\n' "$*"; }
 log "=== Running the Arch install/update script ==="
 
 # Warn about stray dotfiles in $HOME
-allowed_home_entries=".config .zshenv .local .cache"
+allowed_home_entries=".config .zshenv .bash_profile .bashrc .local .cache"
 strays=()
 shopt -s nullglob
 for entry in "$HOME"/.*; do

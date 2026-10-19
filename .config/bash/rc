@@ -1,7 +1,12 @@
-# ~/.config/bash/rc - real bash config, sourced from ~/.bashrc
-# Purpose (local/no-sudo machines): make bash hand off to zsh, which is only
+# ~/.config/bash/rc - real bash config, sourced from the ~/.bash_profile and
+# ~/.bashrc stubs. Purpose: load the shared env for EVERY bash shell, then
+# (local/no-sudo machines) hand interactive shells off to zsh, which is only
 # present inside the conda environment. The default login shell stays bash
 # (no chsh needed); we activate conda here so `zsh` is on PATH, then exec it.
+
+# Shared env first, so login/non-login/interactive/non-interactive bash all
+# get it (non-interactive non-login also arrives here via $BASH_ENV).
+[ -f "$HOME/.config/zsh/env" ] && . "$HOME/.config/zsh/env"
 
 # Only hand off for interactive shells; never break non-interactive bash
 # (scripts, `bash -c`, scp, etc.).
