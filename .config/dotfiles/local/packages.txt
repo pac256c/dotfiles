@@ -4,6 +4,7 @@
 #
 # Format: one package per line. Lines starting with # are comments.
 # Packages also built locally from manlist.txt are skipped here.
+# Version pins (e.g. ffmpeg>=7) are preserved across regenerations.
 
 7zip
 bun
