@@ -9,6 +9,7 @@
 bun
 cmake
 conda-build
+conda-forge
 curl
 fd
 ffmpeg
@@ -19,12 +20,10 @@ go
 imagemagick
 jq
 lua
-neovim
 ninja
 nodejs
 numpy
 nvim
-octave
 openjdk
 openssh
 pint
