@@ -4,9 +4,11 @@ set -euo pipefail
 # Keep npm's cache/tmp on the XDG path. The conda-build sandbox does not
 # inherit .zshenv's NPM_CONFIG_* vars, so npm would otherwise fall back to ~/.npm.
 # npm reads the uppercase form; tools like prebuild-install (keytar) read the
-# lowercase form, so set both.
+# lowercase form, so set both. Native deps may build with cargo; keep it on a
+# user-writable path (conda-build does not inherit .zshenv's CARGO_HOME).
 export NPM_CONFIG_CACHE="$HOME/.cache/npm"
 export npm_config_cache="$HOME/.cache/npm"
+export CARGO_HOME="$HOME/.local/opt/cargo"
 
 # Remove the root package's prepare script (e.g. husky) so npm pack/install don't run it
 node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync("package.json","utf8")); if(p.scripts){delete p.scripts.prepare; delete p.scripts.prepublish; delete p.scripts.prepublishOnly;} fs.writeFileSync("package.json", JSON.stringify(p, null, 2));'

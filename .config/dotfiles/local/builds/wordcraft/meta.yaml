@@ -10,7 +10,9 @@ source:
   sha256: 0ece07cf3d91b923dfd80f90310e04983bde66f0279c6b60ddce89596dde0ddf
 
 build:
-  number: 1
+  number: 2
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
 
 about:
   home: https://github.com/storytold/wordcraft

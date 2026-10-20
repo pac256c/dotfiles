@@ -1,6 +1,51 @@
 # put functions in here
 # echo "running zfunctions"
 
+# Run a command from a specific conda env, activating it first and restoring
+# the previously active env afterward. Used by repl() for languages whose tools
+# live in their own env (clang-repl in "clang", octave in "octave") because
+# installing them into base would downgrade/conflict with the base toolchain.
+# Leaves PATH ordering (conda_defer_path) intact. If the env is unavailable,
+# falls back to running the command as-is (works if it's already on PATH).
+_conda_env_run() {
+  local env="$1" cmd="$2"; shift 2
+  local prev_env="${CONDA_DEFAULT_ENV:-}"
+  local have_env=false
+  if command -v conda >/dev/null 2>&1 \
+     && conda env list 2>/dev/null | awk '{print $1}' | grep -qx "$env"; then
+    have_env=true
+  fi
+
+  if $have_env; then
+    conda activate "$env" >/dev/null 2>&1 || {
+      echo "$cmd: failed to activate '$env' env" >&2
+      return 1
+    }
+    hash -r 2>/dev/null
+    "$cmd" "$@"
+    local rc=$?
+    if [ -n "$prev_env" ]; then
+      conda activate "$prev_env" >/dev/null 2>&1
+    else
+      conda deactivate >/dev/null 2>&1
+    fi
+    hash -r 2>/dev/null
+    type conda_defer_path >/dev/null 2>&1 && conda_defer_path
+    return $rc
+  fi
+
+  if command -v "$cmd" >/dev/null 2>&1; then
+    "$cmd" "$@"
+  else
+    echo "$cmd not found. Run 'dotfiles pull' to create the '$env' conda env." >&2
+    return 127
+  fi
+}
+
+# convenience wrapper preserved for the C/C++ cases.
+_clang_repl() { _conda_env_run clang clang-repl "$@"; }
+
+
 #choose one language of read-eval-print loop (REPL)  
 repl() {
   local input
@@ -30,7 +75,14 @@ repl() {
 
     case "$input" in
       "${OPTIONS[Python]}")
-        python3
+        # conda's python is the one with the PYTHONSTARTUP imports (pint/numpy),
+        # but conda's bin is deferred to the end of PATH, so bare `python3` would
+        # pick the system interpreter. Use conda's explicitly.
+        if [ -x "${CONDA_PREFIX:-$HOME/.local/opt/miniforge3}/bin/python3" ]; then
+          "${CONDA_PREFIX:-$HOME/.local/opt/miniforge3}/bin/python3"
+        else
+          python3
+        fi
         valid=true
         ;;
       "${OPTIONS[TS]}")
@@ -45,16 +97,20 @@ repl() {
         ;;
       "${OPTIONS[C++]}")
         echo -e "\e[1;32m=== Entering C++ REPL ===\e[0m"
-        HOME=$XDG_CACHE_HOME clang-repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/cpp_init.h"
+        HOME=$XDG_CACHE_HOME _clang_repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/cpp_init.h"
         valid=true
         ;;
       "${OPTIONS[C]}")
         echo -e "\e[1;36m=== Entering Plain C REPL ===\e[0m"
-        HOME=$XDG_CACHE_HOME clang-repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/c_init.h"
+        HOME=$XDG_CACHE_HOME _clang_repl --Xcc=-x --Xcc=c -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/c_init.h"
         valid=true
         ;;
       "${OPTIONS[Octave]}")
-        octave
+        # --no-line-editing: octave's bundled readline line editor doesn't
+        # accept input in this environment (WSL2 + conda pty) -- it shows the
+        # prompt but swallows keystrokes, leaving ctrl-z as the only way out.
+        # Disabling it makes octave read the terminal directly.
+        _conda_env_run octave octave --no-line-editing
         valid=true
         ;;
       "${OPTIONS[Java]}")
@@ -217,9 +273,10 @@ PY
 # dotfiles - wrap git for the bare dotfiles repo at ~/.config/dotfiles
 # (work-tree = $HOME). Precedence: if conda is present use the local (conda)
 # flow; otherwise if pacman is present use the arch (yay) flow.
-# `push` regenerates + commits the corresponding packages.txt from installed
-# packages (minus locally-built manlist.txt packages); `pull` runs the matching
-# sync.sh afterward.
+# `push` regenerates + commits the corresponding packages.txt (and, for the
+# local flow, one envs/<name>.txt per extra conda env) from each env's
+# explicitly-requested packages (minus locally-built manlist.txt packages);
+# `pull` runs the matching sync.sh afterward.
 dotfiles() {
   local gitdir="$HOME/.config/dotfiles"
   local worktree="$HOME"
@@ -239,41 +296,99 @@ dotfiles() {
   if [[ "$1" == "push" && "$flow" == "local" ]]; then
     local pkgfile="$gitdir/local/packages.txt"
     local manlist="$gitdir/local/manlist.txt"
-    local hist="$HOME/.local/opt/miniforge3/conda-meta/history"
-    # Extract the user-requested packages from the conda env history
-    # ("# update specs:" lines), dropping version pins/suffixes, base internals
-    # (conda/mamba/pip/python), and locally-built manlist.txt packages.
-    if [[ -f "$hist" ]]; then
+    # Extract the explicitly-requested packages of a conda env, using
+    # `conda env export --from-history` (installed-state based, so removed
+    # packages like a previously-tried `root` don't linger). Strips version
+    # pins/build suffixes and internal bootstrap packages (conda/mamba/pip/
+    # python), and drops locally-built manlist.txt packages.
+    # $1 = env name. Prints sorted names to stdout.
+    _dotfiles_env_specs() {
+      local ename="$1" ml="$manlist"
+      [[ -n "$ename" ]] || return 0
       {
-        grep '^# update specs:' "$hist" \
-          | sed -E "s/^# update specs: \[//; s/\]$//" \
-          | tr ',' '\n' \
-          | sed -E "s/^ *['\"]?//" | sed -E "s/['\"].*$//" \
+        "$conda" env export -n "$ename" --from-history 2>/dev/null \
+          | awk '
+              /^dependencies:/ { deps=1; next }
+              /^[A-Za-z_]+:/   { deps=0 }
+              deps && /^[[:space:]]*-[[:space:]]/ { sub(/^[[:space:]]*-[[:space:]]*/, ""); print }
+            ' \
           | sed -E 's/^([A-Za-z0-9_.-]+).*/\1/' \
-          | grep -vE '^(conda|mamba|pip)$' \
-          | grep -vE '^/'
+          | grep -vE '^(conda|mamba|pip|python)$'
       } | sort -u > /tmp/dotfiles-packages.txt
-      if [[ -f "$manlist" ]]; then
-        grep -vE '^[[:space:]]*#' "$manlist" | awk '{print $1}' | sort -u > /tmp/dotfiles-manlist.txt
+      if [[ -f "$ml" ]]; then
+        grep -vE '^[[:space:]]*#' "$ml" | awk '{print $1}' | sort -u > /tmp/dotfiles-manlist.txt
         grep -vxFf /tmp/dotfiles-manlist.txt /tmp/dotfiles-packages.txt > /tmp/dotfiles-packages.filtered
         mv /tmp/dotfiles-packages.filtered /tmp/dotfiles-packages.txt
       fi
+      cat /tmp/dotfiles-packages.txt
+    }
+
+    # Re-apply version pins/directives (e.g. "ffmpeg>=7") that the user added to
+    # an existing list file, so `push` regenerating bare names from the installed
+    # env doesn't drop them. $1 = existing file (may be absent). Reads plain
+    # package names on stdin, prints name-or-pinned-spec lines.
+    _dotfiles_keep_pins() {
+      local existing="$1"
+      if [[ ! -f "$existing" ]]; then
+        cat
+        return
+      fi
+      grep -vE '^[[:space:]]*#' "$existing" \
+        | grep -E '^[A-Za-z0-9_.-]+[<>=!]' \
+        | sort -u > /tmp/dotfiles-pins.txt
+      while IFS= read -r name; do
+        spec=$(awk -v n="$name" 'index($0, n)==1 { split($0,a,/[<>=!]/); if (a[1]==n) { print; exit } }' /tmp/dotfiles-pins.txt)
+        printf '%s\n' "${spec:-$name}"
+      done
+    }
+
+    if [[ -d "$HOME/.local/opt/miniforge3/conda-meta" ]]; then
+      # Snapshot before writing: the group's `> "$pkgfile"` truncates the file,
+      # so the pin-preserving filter must read a copy taken beforehand.
+      cp -f "$pkgfile" /tmp/dotfiles-prev.txt 2>/dev/null || : > /tmp/dotfiles-prev.txt
       { printf '%s\n' "# Conda packages for local installs (no sudo/root needed)"
         printf '%s\n' "# Installed from conda-forge into the base env via sync.sh."
         printf '%s\n' "# Edit as needed."
         printf '%s\n' "#"
         printf '%s\n' "# Format: one package per line. Lines starting with # are comments."
         printf '%s\n' "# Packages also built locally from manlist.txt are skipped here."
+        printf '%s\n' "# Version pins (e.g. ffmpeg>=7) are preserved across regenerations."
         printf '\n'
-        cat /tmp/dotfiles-packages.txt
+        _dotfiles_env_specs base | _dotfiles_keep_pins /tmp/dotfiles-prev.txt
       } > "$pkgfile"
-      if ! "${g[@]}" diff --quiet -- \
+      "${g[@]}" add -- .config/dotfiles/local/packages.txt
+      if ! "${g[@]}" diff --cached --quiet -- \
           .config/dotfiles/local/packages.txt; then
-        "${g[@]}" add -- \
-          .config/dotfiles/local/packages.txt
         "${g[@]}" commit -m "chore: update package list"
       fi
     fi
+
+    # Extra conda environments: one file per env under local/envs/<name>.txt,
+    # regenerated from that env's explicit package list. Existing envs that
+    # have no file yet get one created.
+    local envsdir="$gitdir/local/envs"
+    mkdir -p "$envsdir"
+    local envdir envname envfile
+    for envdir in "$HOME/.local/opt/miniforge3"/envs/*/; do
+      [[ -d "$envdir" ]] || continue
+      envname="$(basename "$envdir")"
+      [[ -f "$envdir/conda-meta/history" ]] || continue
+      envfile="$envsdir/$envname.txt"
+      cp -f "$envfile" /tmp/dotfiles-prev.txt 2>/dev/null || : > /tmp/dotfiles-prev.txt
+      { printf '%s\n' "# Extra conda environment '$envname' (no sudo/root needed)."
+        printf '%s\n' "# Created via \`mamba create -n $envname -c conda-forge <packages>\`."
+        printf '%s\n' "# Regenerated from this env's explicit package list by \`dotfiles push\`."
+        printf '%s\n' "#"
+        printf '%s\n' "# Format: one package per line. Lines starting with # are comments."
+        printf '\n'
+        _dotfiles_env_specs "$envname" | _dotfiles_keep_pins /tmp/dotfiles-prev.txt
+      } > "$envfile"
+      "${g[@]}" add -- ".config/dotfiles/local/envs/$envname.txt"
+      if ! "${g[@]}" diff --cached --quiet -- \
+          ".config/dotfiles/local/envs/$envname.txt"; then
+        "${g[@]}" commit -m "chore: update env '$envname' package list"
+      fi
+    done
   fi
 
   if [[ "$1" == "push" && "$flow" == "arch" ]]; then
@@ -307,7 +422,7 @@ dotfiles() {
 
   "${g[@]}" "$@"
   local rc=$?
-  rm -f /tmp/dotfiles-packages.txt /tmp/dotfiles-manlist.txt
+  rm -f /tmp/dotfiles-packages.txt /tmp/dotfiles-manlist.txt /tmp/dotfiles-pins.txt /tmp/dotfiles-prev.txt
 
   if [[ "$1" == "pull" && $rc -eq 0 && "$flow" == "local" ]]; then
     "$gitdir/local/sync.sh"

@@ -10,7 +10,9 @@ source:
   sha256: f3ddf6194d2bbd523cd3195df90fa2cd5782d3946fc7833b7f6bf88fda37908d
 
 build:
-  number: 1
+  number: 2
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
 
 about:
   home: https://github.com/storytold/figcraft

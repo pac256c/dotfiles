@@ -10,7 +10,9 @@ source:
   sha256: 227b8c9cdd2c06b7866807f995fe5d2d0675523a61208f9bc26cf2760fddcb8f
 
 build:
-  number: 1
+  number: 2
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
 
 about:
   home: https://github.com/storytold/deckcraft

@@ -10,7 +10,9 @@ source:
   sha256: ff5f7da36a1089340e3fdba696b286cc317ac8f0705cc8c44c1c49d9ca4c54e0
 
 build:
-  number: 1
+  number: 2
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
 
 about:
   home: https://github.com/storytold/pdfcraft

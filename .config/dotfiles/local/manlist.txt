@@ -10,13 +10,13 @@
 #   fonts-0xproto ryanoasis/nerd-fonts type=font;asset=0xProto.zip;dir=0xProto
 #
 # Recognized overrides (semicolon-separated, no spaces):
-#   type=release|go|npm|font   source type (default: release)
+#   type=release|go|npm|font|source  source type (default: release)
 #   asset=<filename>           (release/font) exact asset to use (instead of <name>-<ver>-linux-x86_64.tar.gz)
 #   dir=<subdir>               (font) subdirectory under share/fonts to install into
 #   depends=a,b,c              extra runtime depends for the recipe
 #   npm=<package>              (npm) npm package name (default: <name>)
 #   scripts=a,b                (npm) packages whose install scripts are allowed (e.g. native deps)
-#   license=<SPDX>             (go/npm) license id override
+#   license=<SPDX>             (go/npm/source) license id override
 
 photocraft storytold/photocraft
 filmcraft storytold/filmcraft
@@ -31,7 +31,23 @@ gridcraft storytold/gridcraft
 bootdev bootdotdev/bootdev type=go
 leetcode-cli night-slayer18/leetcode-cli type=npm;npm=@night-slayer18/leetcode-cli;scripts=keytar
 opencode anomalyco/opencode type=release;asset=opencode-linux-x64.tar.gz;depends=ripgrep
+# win32yank ships a non-executable .exe, so builds/win32yank is hand-written
+# (.manual marker) and manfind.sh leaves it alone; the entry keeps sync.sh's
+# stale-package check from removing it.
+win32yank equalsraf/win32yank type=release;asset=win32yank-x64.zip
+
+# Not on conda-forge and has no release assets, only tags -> type=source
+# (installed as share/tmux-plugin-manager/, mirroring the Arch package path
+# checked by tmux.conf).
+tmux-plugin-manager tmux-plugins/tpm type=source
 
 # Nerd fonts (not on conda-forge; built from source into share/fonts)
 fonts-0xproto ryanoasis/nerd-fonts type=font;asset=0xProto.zip;dir=0xProto
 fonts-symbols ryanoasis/nerd-fonts type=font;asset=NerdFontsSymbolsOnly.zip;dir=Symbols
+
+# Hand-written recipes (.manual marker; manfind.sh leaves them alone). The
+# entries keep sync.sh's stale-package check from removing them. Sources are
+# not GitHub-release-shaped enough for the generic generators.
+libnotify GNOME/libnotify
+xdg-user-dirs freedesktop/xdg-user-dirs
+zen-browser zen-browser/desktop

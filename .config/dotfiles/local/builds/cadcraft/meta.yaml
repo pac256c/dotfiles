@@ -10,7 +10,9 @@ source:
   sha256: df3c2e668439f0410564b1fa9d21827bb663eb3d01703902c41f02b9c5276193
 
 build:
-  number: 1
+  number: 2
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
 
 about:
   home: https://github.com/storytold/cadcraft

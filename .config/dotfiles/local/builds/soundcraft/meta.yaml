@@ -10,7 +10,9 @@ source:
   sha256: 57a2b8776d51880cee69118568a396c09faca6949dcbf50f19879d71d596f5cc
 
 build:
-  number: 1
+  number: 2
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
 
 about:
   home: https://github.com/storytold/soundcraft

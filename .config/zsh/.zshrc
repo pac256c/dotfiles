@@ -54,4 +54,6 @@ precmd() {
 if [[ -f "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh" ]]; then
   . "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh"
   conda activate base >/dev/null 2>&1 || true
+  # Let global binaries shadow conda's where they exist (kitty, git, ...).
+  conda_defer_path
 fi

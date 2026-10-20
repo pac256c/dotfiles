@@ -16,9 +16,13 @@
 
 # Popup/nvim stuff - if we are in an nvim session
 * nvim scrollbar - maybe petertriho/nvim-scrollbar
+* images in nvim? maybe good for markdown stuff..
+* can just drag panes dummy..
 * tkdiff as a popup
 * notes as a popup & maybe integrated with onenote if i can backwards engineer that
 * make :e autopaste the path of the open file? 
+* maybe some kind of repl/debugger thing that can execute files & output in a new pane below
+  * would require dependencies...
 
 # Yazi/kitty stuff
 * update open shortcuts to use new programs
@@ -43,3 +47,5 @@
 * DONE: sync.sh scripts warn about stray dotfiles (with optional exit)
 
 try to open my wsl for ssh from other computers?
+could try to use tailnet-cli (instead of hamachi) 
+ * winget install Tailscale.Tailscale

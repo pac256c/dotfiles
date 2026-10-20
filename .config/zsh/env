@@ -60,5 +60,28 @@ path_append $OPENCODE_CONFIG_DIR/bin
 path_append $GOPATH/bin
 path_append /opt/cuda/bin
 
+# Conda's activation prepends its bin/, so conda-installed programs shadow
+# system/global ones. For tools that exist outside conda too (kitty, git, ...)
+# we want the global build to win; keep conda as a fallback instead. Call this
+# after `conda activate` to move conda's dirs to the end of $PATH and drop
+# duplicate entries (repeated activations re-prepend without removing).
+# (POSIX-only: this file is shared by bash and zsh, so avoid array/read -a.)
+conda_defer_path() {
+  [ -n "$CONDA_PREFIX" ] || return 0
+  # Drop the active env's dirs and any duplicates (keep first occurrence),
+  # then append the active env's real dirs at the very end. Entries are
+  # whitespace-trimmed first (a stray newline can sneak in on activation).
+  PATH=$(printf '%s' "$PATH" | awk -v RS=: \
+    -v cb="$CONDA_PREFIX/bin" -v cc="$CONDA_PREFIX/condabin" '
+    { gsub(/^[ \t\r\n]+|[ \t\r\n]+$/, "", $0) }
+    $0 == cb || $0 == cc { next }
+    seen[$0]++ { next }
+    { printf "%s%s", sep, $0; sep = ":" }')
+  [ -d "$CONDA_PREFIX/bin" ] && PATH="${PATH:+$PATH:}$CONDA_PREFIX/bin"
+  [ -d "$CONDA_PREFIX/condabin" ] && PATH="${PATH:+$PATH:}$CONDA_PREFIX/condabin"
+  export PATH
+  hash -r 2>/dev/null || true
+}
+
 # remove duplicates from $PATH if they exist
-typeset -U path
+export PATH=$(echo "$PATH" | awk -v RS=: -v ORS=: '!a[$0]++' | sed 's/:$//')

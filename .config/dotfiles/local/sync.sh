@@ -132,20 +132,59 @@ if [[ -f "$INSTALL_DIR/packages.txt" ]]; then
     fi
   fi
 
-  # Everything in packages.txt (local recipes are built in Step 3)
-  failed=()
-  while IFS= read -r pkg; do
-    [[ -z "$pkg" ]] && continue
-    if ! $CONDA_BIN install -y -c conda-forge "$pkg"; then
-      log "  WARNING: failed to install $pkg (continuing)"
-      failed+=("$pkg")
+  # Everything in packages.txt (local recipes are built in Step 3). Install in
+  # one transaction: a single solve is much faster than one per package, and it
+  # upgrades stale-but-matching packages (e.g. an old ffmpeg whose name still
+  # satisfies the unversioned spec) rather than treating them as "already
+  # installed".
+  mapfile -t base_pkgs < <(grep -v '^#' "$INSTALL_DIR/packages.txt" | grep -v '^$')
+  if ((${#base_pkgs[@]})); then
+    if ! $CONDA_BIN install -y -c conda-forge "${base_pkgs[@]}"; then
+      log "  WARNING: batch install failed; falling back to per-package install"
+      failed=()
+      for pkg in "${base_pkgs[@]}"; do
+        if ! $CONDA_BIN install -y -c conda-forge "$pkg"; then
+          log "  WARNING: failed to install $pkg (continuing)"
+          failed+=("$pkg")
+        fi
+      done
+      if ((${#failed[@]})); then
+        log "  failed packages: ${failed[*]}"
+      fi
     fi
-  done < <(grep -v '^#' "$INSTALL_DIR/packages.txt" | grep -v '^$')
-  if ((${#failed[@]})); then
-    log "  failed packages: ${failed[*]}"
   fi
 else
   log "Warning: $INSTALL_DIR/packages.txt not found, skipping conda packages"
+fi
+
+# Step 2b: Extra conda environments (local/envs/<name>.txt). Each file's
+# basename is the env name; packages are installed into that env. Kept
+# separate from base to avoid dependency conflicts (e.g. clang's LLVM stack).
+if [[ -d "$INSTALL_DIR/envs" ]]; then
+  shopt -s nullglob
+  env_files=("$INSTALL_DIR"/envs/*.txt)
+  shopt -u nullglob
+  if ((${#env_files[@]})); then
+    log "=== Installing extra conda environments from envs/ ==="
+    for env_file in "${env_files[@]}"; do
+      env_name=$(basename "$env_file" .txt)
+      env_pkgs=()
+      while IFS= read -r pkg; do
+        [[ -z "$pkg" ]] && continue
+        env_pkgs+=("$pkg")
+      done < <(grep -v '^#' "$env_file" | grep -v '^$')
+      ((${#env_pkgs[@]})) || continue
+      if [[ -d "$CONDA_PREFIX/envs/$env_name" ]]; then
+        log "  updating env '$env_name': ${env_pkgs[*]}"
+        $CONDA_BIN install -y -n "$env_name" -c conda-forge "${env_pkgs[@]}" \
+          || log "  WARNING: failed to update env '$env_name'"
+      else
+        log "  creating env '$env_name': ${env_pkgs[*]}"
+        $CONDA_BIN create -y -n "$env_name" -c conda-forge "${env_pkgs[@]}" \
+          || log "  WARNING: failed to create env '$env_name'"
+      fi
+    done
+  fi
 fi
 
 # Step 3: Update local recipes from manlist.txt and build/install builds/

@@ -8,6 +8,16 @@ log() { printf '%s\n' "$*"; }
 
 log "extra.sh: running additional setup..."
 
+for dir in desktop documents downloads games music pictures public templates videos; do
+  if [ ! -d "$HOME/$dir" ]; then
+    mkdir -p "$HOME/$dir"
+    log "  created ~/$dir"
+  fi
+done
+
+# State dirs for REPL history files (see ~/.config/zsh/env). Python's _pyrepl
+# opens $PYTHON_HISTORY directly at startup and warns if its dir is missing.
+mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/python"
 
 xdg-user-dirs-update
 

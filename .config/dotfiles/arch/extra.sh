@@ -8,6 +8,12 @@ log() { printf '%s\n' "$*"; }
 
 log "extra.sh: running additional setup..."
 
+for dir in desktop documents downloads games music pictures public templates videos; do
+  if [ ! -d "$HOME/$dir" ]; then
+    mkdir -p "$HOME/$dir"
+    log "  created ~/$dir"
+  fi
+done
 
 xdg-user-dirs-update
 

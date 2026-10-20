@@ -10,7 +10,9 @@ source:
   sha256: 4a029e20da86bad46706339ce4516a20445c131c0d82f6a114772208c5d831b3
 
 build:
-  number: 1
+  number: 2
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
 
 about:
   home: https://github.com/storytold/gridcraft

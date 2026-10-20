@@ -8,13 +8,16 @@
 #   <name> <github-owner/repo> [overrides]
 #
 # Overrides (semicolon-separated, no spaces):
-#   type=release|go|npm|font   where the version/source comes from (default: release)
+#   type=release|go|npm|font|source  where the version/source comes from (default: release)
 #   depends=a,b,c              extra runtime dependencies for the recipe
 #   asset=<filename>           (release/font) exact asset to use
 #   dir=<subdir>               (font) subdirectory under share/fonts to install into
 #   npm=<package>              (npm) npm package name (default: <name>)
 #   scripts=a,b                (npm) packages whose install scripts are allowed
-#   license=<SPDX>             license id override (go/npm only)
+#   license=<SPDX>             license id override (go/npm/source only)
+#
+# source type: installs the whole tag tarball tree into share/<name>/ (for
+# script collections without a release asset, e.g. tmux plugin manager).
 #
 # Usage:
 #   ./manfind.sh                 # process every app in manlist.txt
@@ -36,7 +39,7 @@ SELECTED=()
 while (($#)); do
   case $1 in
   -h|--help)
-    sed -n '1,22p' "$0"
+    sed -n '1,26p' "$0"
     exit 0
     ;;
   -*)
@@ -200,6 +203,56 @@ about:
   license: $license
   summary: "$desc"
 PKEOF
+}
+
+# Install a tag tarball's tree as-is under share/<name>/ (for repos that are
+# runnable scripts rather than binaries, e.g. tmux plugin manager).
+write_source_recipe() { # $1=name $2=repo $3=ver $4=tag $5=url $6=sha $7=desc $8=license $9=depends_csv
+  local name=$1 repo=$2 ver=$3 tag=$4 url=$5 sha=$6 desc=$7 license=$8 depends_csv=$9
+
+  local req_block=""
+  if [[ -n $depends_csv ]]; then
+    req_block=$'\n\nrequirements:\n  run:\n'
+    local dep
+    IFS=',' read -ra __deps <<<"$depends_csv"
+    for dep in "${__deps[@]}"; do
+      [[ -n $dep ]] && req_block+="    - $dep"$'\n'
+    done
+  fi
+
+  mkdir -p "$RECIPE_DIR/$name"
+  cat >"$RECIPE_DIR/$name/meta.yaml" <<PKEOF
+{% set name = "$name" %}
+{% set version = "$ver" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: $url
+  sha256: $sha
+
+build:
+  number: 1
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
+$req_block
+about:
+  home: https://github.com/$repo
+  license: $license
+  summary: "$desc"
+PKEOF
+
+  cat >"$RECIPE_DIR/$name/build.sh" <<BSHEOF
+#!/usr/bin/env bash
+set -euo pipefail
+
+# The source tarball keeps git's file modes, so scripts stay executable.
+mkdir -p "\$PREFIX/share/$name"
+cp -a ./ "\$PREFIX/share/$name/"
+BSHEOF
+  chmod +x "$RECIPE_DIR/$name/build.sh"
 }
 
 write_npm_recipe() { # $1=name $2=repo $3=ver $4=tarball $5=sha $6=desc $7=license $8=scripts_csv $9=depends_csv
@@ -406,6 +459,46 @@ process_go() { # $1=name $2=repo $3=depends_csv $4=license_ov
   R_OK+=("$name -> $ver")
 }
 
+process_source() { # $1=name $2=repo $3=depends_csv $4=license_ov
+  local name=$1 repo=$2 depends_csv=$3 license_ov=$4
+
+  local tags tag
+  if ! tags=$(gh "$GITHUB_API/repos/$repo/tags?per_page=100"); then
+    log "  ERROR: could not fetch tags"
+    R_FAIL+=("$name"); FAILED=1; return 0
+  fi
+  tag=$(jq -r '.[].name' <<<"$tags" | grep -E '^v?[0-9]+(\.[0-9]+)*$' | sort -V | tail -n1)
+  if [[ -z $tag ]]; then
+    log "  ERROR: no semver tags found"
+    R_FAIL+=("$name"); FAILED=1; return 0
+  fi
+  local ver
+  ver=$(strip_version "$tag" "$name")
+  log "  latest tag: $tag (version $ver)"
+
+  local desc license
+  desc=$(clean_desc "$(desc_for "$repo")")
+  [[ -n $desc ]] || desc="$name"
+  license=${license_ov:-$(license_for "$repo")}
+  [[ -n $license ]] || license="unknown"
+
+  local url="https://github.com/$repo/archive/refs/tags/$tag.tar.gz"
+  local builddir="$RECIPE_DIR/.build-$name"
+  mkdir -p "$builddir"
+  if ! curl --compressed -fsSL -o "$builddir/$name-$ver.tar.gz" "$url"; then
+    log "  ERROR: download failed"
+    rm -rf "$builddir"
+    R_FAIL+=("$name"); FAILED=1; return 0
+  fi
+  local sha
+  sha=$(sha256sum "$builddir/$name-$ver.tar.gz" | awk '{print $1}')
+  rm -rf "$builddir"
+
+  write_source_recipe "$name" "$repo" "$ver" "$tag" "$url" "$sha" "$desc" "$license" "$depends_csv"
+  log "  builds/$name/meta.yaml and build.sh updated (pkgver=$ver)"
+  R_OK+=("$name -> $ver")
+}
+
 process_npm() { # $1=name $2=repo $3=npm_pkg $4=scripts_csv $5=depends_csv $6=license_ov
   local name=$1 repo=$2 npm_pkg=$3 scripts_csv=$4 depends_csv=$5 license_ov=$6
   local builddir="$RECIPE_DIR/.build-$name"
@@ -514,6 +607,15 @@ process_app() { # $1=name $2=repo $3=extra
   log ""
   log "=== $name ($repo) ==="
 
+  # Recipes maintained by hand (marker file in the recipe dir) are never
+  # regenerated -- they exist precisely because the generic generators don't
+  # fit (e.g. win32yank's .exe has no exec bit).
+  if [[ -f "$RECIPE_DIR/$name/.manual" ]]; then
+    log "  manual recipe (builds/$name/.manual), not regenerating"
+    R_SKIP+=("$name (manual)")
+    return 0
+  fi
+
   local type=release asset_ov="" depends_csv="" npm_pkg="" scripts_csv="" license_ov="" fontdir=""
   if [[ -n $extra ]]; then
     local pair pairs=()
@@ -536,6 +638,7 @@ process_app() { # $1=name $2=repo $3=extra
   case $type in
   release) process_release "$name" "$repo" "$asset_ov" "$depends_csv" ;;
   go) process_go "$name" "$repo" "$depends_csv" "$license_ov" ;;
+  source) process_source "$name" "$repo" "$depends_csv" "$license_ov" ;;
   npm) process_npm "$name" "$repo" "$npm_pkg" "$scripts_csv" "$depends_csv" "$license_ov" ;;
   font) process_font "$name" "$repo" "$asset_ov" "$fontdir" ;;
   *)
