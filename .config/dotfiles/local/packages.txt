@@ -5,41 +5,42 @@
 # Format: one package per line. Lines starting with # are comments.
 # Packages also built locally from manlist.txt are skipped here.
 
-# --- core CLI tools (from registry) ---
-zsh
-zoxide
-wget
-unzip
-curl
-ripgrep
-fzf
-tmux
-neovim
-tree-sitter-cli
-tlrc
-yazi
-
-# --- runtimes / languages ---
-go
-python
-lua
-openjdk
-octave
-bun
-uv
-
-# --- build tools ---
-cmake
-ninja
-
-# --- crypto / security ---
-gnupg
-
-# --- yazi dependencies (from yazi_deps LOCAL brew method) ---
-fd
-jq
-poppler
 7zip
-resvg
+bun
+cmake
+conda-build
+curl
+fd
 ffmpeg
+fzf
+git
+gnupg
+go
 imagemagick
+jq
+lua
+neovim
+ninja
+nodejs
+numpy
+nvim
+octave
+openjdk
+openssh
+pint
+poppler
+resvg
+ripgrep
+root
+tlrc
+tmux
+tomli
+tree-sitter-cli
+unzip
+uv
+vim
+wget
+which
+yazi
+zoxide
+zsh
