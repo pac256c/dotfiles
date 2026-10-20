@@ -31,7 +31,6 @@ pint
 poppler
 resvg
 ripgrep
-root
 tlrc
 tmux
 tomli
