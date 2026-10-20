@@ -18,8 +18,8 @@ curl
 spec=''
 fd
 spec=''
-ffmpeg
-spec=''
+ffmpeg>=7
+spec='ffmpeg>=7'
 fzf
 spec=''
 git
