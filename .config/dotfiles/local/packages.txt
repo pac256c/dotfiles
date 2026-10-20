@@ -9,7 +9,6 @@
 bun
 cmake
 conda-build
-conda-forge
 curl
 fd
 ffmpeg
