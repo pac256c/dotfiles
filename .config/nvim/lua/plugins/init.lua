@@ -32,6 +32,8 @@ return {
         "markdown_inline",
         "latex",
         "yaml",
+        "verilog",
+        "systemverilog",
       },
     },
   },

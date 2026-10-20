@@ -356,9 +356,9 @@ dotfiles() {
         printf '\n'
         _dotfiles_env_specs base | _dotfiles_keep_pins /tmp/dotfiles-prev.txt
       } > "$pkgfile"
-      "${g[@]}" add -- .config/dotfiles/local/packages.txt
+      "${g[@]}" add -- ":/.config/dotfiles/local/packages.txt"
       if ! "${g[@]}" diff --cached --quiet -- \
-          .config/dotfiles/local/packages.txt; then
+          ":/.config/dotfiles/local/packages.txt"; then
         "${g[@]}" commit -m "chore: update package list"
       fi
     fi
@@ -383,9 +383,9 @@ dotfiles() {
         printf '\n'
         _dotfiles_env_specs "$envname" | _dotfiles_keep_pins /tmp/dotfiles-prev.txt
       } > "$envfile"
-      "${g[@]}" add -- ".config/dotfiles/local/envs/$envname.txt"
+      "${g[@]}" add -- ":/.config/dotfiles/local/envs/$envname.txt"
       if ! "${g[@]}" diff --cached --quiet -- \
-          ".config/dotfiles/local/envs/$envname.txt"; then
+          ":/.config/dotfiles/local/envs/$envname.txt"; then
         "${g[@]}" commit -m "chore: update env '$envname' package list"
       fi
     done
@@ -413,9 +413,9 @@ dotfiles() {
       cat /tmp/dotfiles-packages.txt
     } > "$pkgfile"
     if ! "${g[@]}" diff --quiet -- \
-        .config/dotfiles/arch/packages.txt; then
+        ":/.config/dotfiles/arch/packages.txt"; then
       "${g[@]}" add -- \
-        .config/dotfiles/arch/packages.txt
+        ":/.config/dotfiles/arch/packages.txt"
       "${g[@]}" commit -m "chore: update package list"
     fi
   fi
