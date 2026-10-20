@@ -1,7 +1,8 @@
 # Extra conda environment 'clang' (no sudo/root needed).
 # Created via `mamba create -n clang -c conda-forge <packages>`.
-# Regenerated from this env's conda history by `dotfiles push`.
+# Regenerated from this env's explicit package list by `dotfiles push`.
 #
 # Format: one package per line. Lines starting with # are comments.
 
 clangdev
+conda-forge
