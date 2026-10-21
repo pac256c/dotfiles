@@ -63,7 +63,7 @@ cat > ~/.local/share/applications/kitty.desktop <<EOF
 Encoding=UTF-8
 Type=Application
 NoDisplay=false
-Exec=$CONDA_PREFIX/bin/kitty --config $XDG_CONFIG_HOME/kitty/VSCode_Dark.conf
+Exec=$CONDA_PREFIX/bin/kitty
 TryExec=$CONDA_PREFIX/bin/kitty
 Name=Kitty
 Comment=Custom definition for Kitty

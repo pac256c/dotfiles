@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Application
 NoDisplay=false
-Exec=/home/peter8pie/.local/opt/miniforge3/bin/kitty --config /home/peter8pie/.config/kitty/VSCode_Dark.conf
+Exec=/home/peter8pie/.local/opt/miniforge3/bin/kitty
 TryExec=/home/peter8pie/.local/opt/miniforge3/bin/kitty
 Name=Kitty
 Comment=Custom definition for Kitty
