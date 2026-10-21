@@ -53,6 +53,11 @@ export OPENCODE_CONFIG_DIR=$XDG_CONFIG_HOME/opencode
 export OPENCODE_CONFIG=$XDG_CONFIG_HOME/opencode/opencode.json
 export BASH_ENV=$XDG_CONFIG_HOME/zsh/env
 
+# Windows Terminal (WSL) does not answer neovim's background-color DSR probe,
+# so ttyfast startup waits for a timeout and prints E1568. The color scheme is
+# fixed by the config anyway, so disable the probe.
+export NVIM_NOTTYFAST=1
+
 # edit path variable (only add directories that exist)
 path_append() { [[ -d "$1" ]] && export PATH="${PATH:+$PATH:}$1"; }
 path_append $CARGO_HOME/bin

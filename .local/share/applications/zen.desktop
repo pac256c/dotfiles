@@ -3,6 +3,6 @@ Encoding=UTF-8
 Version=1.0
 Type=Application
 NoDisplay=false
-Exec=/opt/zen-browser/zen
+Exec=/home/peter8pie/.local/opt/miniforge3/bin/zen
 Name=Zen
 Comment=Custom definition for Zen

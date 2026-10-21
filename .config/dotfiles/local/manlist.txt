@@ -51,3 +51,6 @@ fonts-symbols ryanoasis/nerd-fonts type=font;asset=NerdFontsSymbolsOnly.zip;dir=
 libnotify GNOME/libnotify
 xdg-user-dirs freedesktop/xdg-user-dirs
 zen-browser zen-browser/desktop
+# kitty: conda-forge's package is abandoned (0.23.1, 2022); builds/kitty is
+# hand-written (.manual) around kitty's official prebuilt Linux tarball.
+kitty kovidgoyal/kitty

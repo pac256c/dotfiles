@@ -19,6 +19,21 @@ done
 # opens $PYTHON_HISTORY directly at startup and warns if its dir is missing.
 mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/python"
 
+CONDA_PREFIX="${CONDA_PREFIX:-$HOME/.local/opt/miniforge3}"
+
+# conda-forge's gcc/gxx metapackages install the compiler only under the
+# target-triple name (x86_64-conda-linux-gnu-cc), but tree-sitter (used by
+# nvim-treesitter) and other tools invoke a bare `cc`/`c++`. Symlink the
+# generic names to the conda compilers so those builds work.
+for pair in "cc:x86_64-conda-linux-gnu-cc" "c++:x86_64-conda-linux-gnu-c++"; do
+  generic="${pair%%:*}"
+  target="${pair##*:}"
+  if [[ -x "$CONDA_PREFIX/bin/$target" && ! -e "$CONDA_PREFIX/bin/$generic" ]]; then
+    ln -s "$target" "$CONDA_PREFIX/bin/$generic"
+    log "  linked $CONDA_PREFIX/bin/$generic -> $target"
+  fi
+done
+
 xdg-user-dirs-update
 
 # NOTE: no chsh here. On the local (no-sudo) flow zsh lives only inside the
@@ -27,7 +42,6 @@ xdg-user-dirs-update
 # and execs zsh, which then sources ~/.zshenv and ~/.zshrc.
 
 # Point fontconfig at the conda env's fonts (nerd fonts are installed there via conda recipes)
-CONDA_PREFIX="${CONDA_PREFIX:-$HOME/.local/opt/miniforge3}"
 mkdir -p ~/.config/fontconfig
 cat > ~/.config/fontconfig/fonts.conf <<EOF
 <?xml version="1.0"?>
@@ -37,6 +51,43 @@ cat > ~/.config/fontconfig/fonts.conf <<EOF
 </fontconfig>
 EOF
 fc-cache -fv "$CONDA_PREFIX/share/fonts"
+
+# Desktop integration for conda-installed apps. The prebuilt kitty/zen recipes
+# install their .desktop files under the conda prefix, but those hardcode
+# `Exec=kitty`/`Exec=zen`, which desktop launchers (with the system PATH) can't
+# resolve. Write machine-local entries that point at the conda prefix and
+# register kitty as the xdg-terminal-exec handler.
+mkdir -p ~/.local/share/applications
+cat > ~/.local/share/applications/kitty.desktop <<EOF
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+NoDisplay=false
+Exec=$CONDA_PREFIX/bin/kitty --config $XDG_CONFIG_HOME/kitty/VSCode_Dark.conf
+TryExec=$CONDA_PREFIX/bin/kitty
+Name=Kitty
+Comment=Custom definition for Kitty
+Icon=utilities-terminal
+Categories=System;TerminalEmulator;
+X-TerminalArgExec=--
+X-TerminalArgTitle=--title
+X-TerminalArgAppId=--class
+X-TerminalArgDir=--working-directory
+X-TerminalArgHold=--hold
+EOF
+if [[ -x "$CONDA_PREFIX/bin/zen" ]]; then
+  cat > ~/.local/share/applications/zen.desktop <<EOF
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+NoDisplay=false
+Exec=$CONDA_PREFIX/bin/zen
+Name=Zen
+Comment=Custom definition for Zen
+EOF
+fi
+echo 'kitty.desktop' > ~/.config/xdg-terminals.list
 
 mkdir -p ~/.local/share/gnupg
 chmod 700 ~/.local/share/gnupg

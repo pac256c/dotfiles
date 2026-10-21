@@ -16,6 +16,8 @@ ffmpeg
 fzf
 git
 gnupg
+gcc_linux-64
+gxx_linux-64
 go
 imagemagick
 jq
