@@ -61,6 +61,10 @@
 * edit passwrod for new user with "passwd <username>"
 * add user to wheel group with "usermod -aG wheel <username>"
 * temporarily install nano with "pacman -Sy nano"
+  * if that doesnt work, might have to add certs
+  * openssl s_client -showcerts -connect pkgbuild.com:443 </dev/null 2>/dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ready_cert.crt
+  * mv ready-cert.crt /etc/ca-certificates/trust-source/anchors/
+  * update-ca-trust
 * install sudo with "pacman -Sy sudo"
 * uncomment the line "# %wheel ALL=(ALL:ALL) ALL" in editor command "EDITOR=nano visudo"
 * make user default in wsl by doing echo -e "\n[user]\ndefault=<username>" >> /etc/wsl.conf
