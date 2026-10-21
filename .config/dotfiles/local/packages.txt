@@ -14,11 +14,11 @@ curl
 fd
 ffmpeg
 fzf
+gcc_linux-64
 git
 gnupg
-gcc_linux-64
-gxx_linux-64
 go
+gxx_linux-64
 imagemagick
 jq
 lua
