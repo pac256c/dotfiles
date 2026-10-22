@@ -58,6 +58,14 @@ case "$reply" in
     ;;
 esac
 
+log ""
+read -r -p "Would you like to install programs one by one? [y/N] " per_pkg_reply
+PER_PKG_INSTALL=false
+case "$per_pkg_reply" in
+  [Yy]*) PER_PKG_INSTALL=true ;;
+  *) PER_PKG_INSTALL=false ;;
+esac
+
 if [[ ${EUID:-$(id -u)} -eq 0 ]]; then
   echo "do not run as root" >&2
   exit 1
@@ -153,6 +161,16 @@ if [[ -f "$INSTALL_DIR/packages.txt" ]]; then
       # Install one at a time so a single bad/missing package does not abort the batch.
       failed=()
       for pkg in "${filtered[@]}"; do
+        if [[ "$PER_PKG_INSTALL" == "true" ]]; then
+          read -r -p "  Install $pkg? [y/N] " p_reply
+          case "$p_reply" in
+            [Yy]*) ;;
+            *)
+              log "  skipping $pkg"
+              continue
+              ;;
+          esac
+        fi
         log "  installing $pkg ..."
         if ! yay -S --noconfirm --needed --removemake "$pkg"; then
           log "  WARNING: failed to install $pkg (continuing)"
@@ -164,7 +182,13 @@ if [[ -f "$INSTALL_DIR/packages.txt" ]]; then
       fi
     else
       log "  SUDO_SKIP: would install packages:"
-      for pkg in "${filtered[@]}"; do log "    $pkg"; done
+      for pkg in "${filtered[@]}"; do
+        if [[ "$PER_PKG_INSTALL" == "true" ]]; then
+          log "    (would prompt) $pkg"
+        else
+          log "    $pkg"
+        fi
+      done
     fi
   else
     log "  no packages to install after filtering"

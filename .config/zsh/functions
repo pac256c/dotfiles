@@ -293,6 +293,21 @@ dotfiles() {
     flow="arch"
   fi
 
+  if [[ "$1" == "push" ]]; then
+    local reply
+    read -r -p "Would you like to update the package lists? [y/N] " reply
+    case "$reply" in
+      [Yy]*) ;;
+      *)
+        echo "Skipping package list updates."
+        "${g[@]}" "$@"
+        local rc=$?
+        rm -f /tmp/dotfiles-packages.txt /tmp/dotfiles-manlist.txt /tmp/dotfiles-pins.txt /tmp/dotfiles-prev.txt
+        return $rc
+        ;;
+    esac
+  fi
+
   if [[ "$1" == "push" && "$flow" == "local" ]]; then
     local pkgfile="$gitdir/local/packages.txt"
     local manlist="$gitdir/local/manlist.txt"

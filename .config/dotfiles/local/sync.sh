@@ -58,6 +58,14 @@ case "$reply" in
     ;;
 esac
 
+log ""
+read -r -p "Would you like to install programs one by one? [y/N] " per_pkg_reply
+PER_PKG_INSTALL=false
+case "$per_pkg_reply" in
+  [Yy]*) PER_PKG_INSTALL=true ;;
+  *) PER_PKG_INSTALL=false ;;
+esac
+
 if [[ ${EUID:-$(id -u)} -eq 0 ]]; then
   echo "do not run as root" >&2
   exit 1
@@ -139,7 +147,26 @@ if [[ -f "$INSTALL_DIR/packages.txt" ]]; then
   # installed".
   mapfile -t base_pkgs < <(grep -v '^#' "$INSTALL_DIR/packages.txt" | grep -v '^$')
   if ((${#base_pkgs[@]})); then
-    if ! $CONDA_BIN install -y -c conda-forge "${base_pkgs[@]}"; then
+    if [[ "$PER_PKG_INSTALL" == "true" ]]; then
+      failed=()
+      for pkg in "${base_pkgs[@]}"; do
+        read -r -p "  Install $pkg? [y/N] " p_reply
+        case "$p_reply" in
+          [Yy]*) ;;
+          *)
+            log "  skipping $pkg"
+            continue
+            ;;
+        esac
+        if ! $CONDA_BIN install -y -c conda-forge "$pkg"; then
+          log "  WARNING: failed to install $pkg (continuing)"
+          failed+=("$pkg")
+        fi
+      done
+      if ((${#failed[@]})); then
+        log "  failed packages: ${failed[*]}"
+      fi
+    elif ! $CONDA_BIN install -y -c conda-forge "${base_pkgs[@]}"; then
       log "  WARNING: batch install failed; falling back to per-package install"
       failed=()
       for pkg in "${base_pkgs[@]}"; do
@@ -168,12 +195,34 @@ if [[ -d "$INSTALL_DIR/envs" ]]; then
     log "=== Installing extra conda environments from envs/ ==="
     for env_file in "${env_files[@]}"; do
       env_name=$(basename "$env_file" .txt)
+      if [[ "$PER_PKG_INSTALL" == "true" ]]; then
+        read -r -p "  Handle env '$env_name'? [y/N] " env_reply
+        case "$env_reply" in
+          [Yy]*) ;;
+          *)
+            log "  skipping env '$env_name'"
+            continue
+            ;;
+        esac
+      fi
       env_pkgs=()
       while IFS= read -r pkg; do
         [[ -z "$pkg" ]] && continue
         env_pkgs+=("$pkg")
       done < <(grep -v '^#' "$env_file" | grep -v '^$')
       ((${#env_pkgs[@]})) || continue
+      if [[ "$PER_PKG_INSTALL" == "true" ]]; then
+        filtered_env_pkgs=()
+        for pkg in "${env_pkgs[@]}"; do
+          read -r -p "    Install $pkg in env '$env_name'? [y/N] " ep_reply
+          case "$ep_reply" in
+            [Yy]*) filtered_env_pkgs+=("$pkg") ;;
+            *) log "    skipping $pkg" ;;
+          esac
+        done
+        env_pkgs=("${filtered_env_pkgs[@]}")
+        ((${#env_pkgs[@]})) || continue
+      fi
       if [[ -d "$CONDA_PREFIX/envs/$env_name" ]]; then
         log "  updating env '$env_name': ${env_pkgs[*]}"
         $CONDA_BIN install -y -n "$env_name" -c conda-forge "${env_pkgs[@]}" \

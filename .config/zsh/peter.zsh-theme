@@ -81,11 +81,30 @@ function _peter_git_state() {
   fi
 }
 
+# --- Path helpers ---------------------------------------------------------
+
+function _peter_realpath() {
+  local p="$1"
+  if (( $+commands[realpath] )); then
+    realpath -e "$p" 2>/dev/null && return
+  fi
+  if (( $+commands[readlink] )); then
+    readlink -f "$p" 2>/dev/null && return
+  fi
+  echo "$p"
+}
+
 # --- Perforce -------------------------------------------------------------
 
 # True when the cwd is inside the codeline directory ($STEM, trailing / ignored).
 function _peter_p4_in_stem() {
   local stem="${STEM%/}"
+  local stem_r p_r
+  if (( $+commands[realpath] )); then
+    stem_r="$(_peter_realpath "$stem")"
+    p_r="$(_peter_realpath "$PWD")"
+    [[ "$p_r" == "$stem_r" || "$p_r" == "$stem_r"/* ]] && return 0
+  fi
   [[ "$PWD" == "$stem" || "$PWD" == "$stem"/* ]]
 }
 
@@ -188,8 +207,18 @@ function _peter_prompt_segment() {
   # name, DJ_CONTEXT the branch, and STEM's basename takes the place of the
   # status parens.
   if _peter_p4_active; then
-    local p4_rel="${PWD#${STEM%/}}"
-    local p4_path="./${p4_rel#/}"
+    local stem_r p4_r
+    local p4_rel p4_path
+    if (( $+commands[realpath] )); then
+      stem_r="$(_peter_realpath "${STEM%/}")"
+      p4_r="$(_peter_realpath "$PWD")"
+      p4_rel="${p4_r#${stem_r%/}}"
+      p4_path="./${p4_rel#/}"
+      [[ "$p4_path" == "./" ]] && p4_path="./"
+    else
+      p4_rel="${PWD#${STEM%/}}"
+      p4_path="./${p4_rel#/}"
+    fi
     local p4_dot=$dot_clean
     case "$_PETER_P4_STATE" in
       open-default) p4_dot=$dot_unstaged ;;
