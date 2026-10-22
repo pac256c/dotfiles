@@ -280,6 +280,7 @@ PY
 dotfiles() {
   local gitdir="$HOME/.config/dotfiles"
   local worktree="$HOME"
+  [ -d "/proj/geip_users01/petecook" ] && worktree="/proj/geip_users01/petecook"
   local g=(git --git-dir="$gitdir" --work-tree="$worktree")
   local flow=""  # "local" or "arch"
   local conda=""

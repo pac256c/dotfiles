@@ -52,10 +52,16 @@ export GNUPGHOME=$XDG_DATA_HOME/gnupg
 export OPENCODE_CONFIG_DIR=$XDG_CONFIG_HOME/opencode
 export OPENCODE_CONFIG=$XDG_CONFIG_HOME/opencode/opencode.json
 export BASH_ENV=$XDG_CONFIG_HOME/zsh/env
-
-# Windows Terminal (WSL) does not answer neovim's background-color DSR probe,
-# so ttyfast startup waits for a timeout and prints E1568. The color scheme is
-# fixed by the config anyway, so disable the probe.
+export NOVAS_GUICONF=$XDG_CONFIG_HOME/synopsys/novas.conf
+export NOVAS_RC=$XDG_CONFIG_HOME/synopsys/novas.rc
+export TMUX_TMPDIR=$XDG_STATE_HOME/tmux
+export DOTNET_CLI_HOME=$XDG_STATE_HOME/dotnet
+export NUGET_PACKAGES=$XDG_DATA_HOME/nuget
+export DOTNET_NUGET_CACHE=$XDG_CACHE_HOME/nuget
+export ESD_AUTH=$XDG_CONFIG_HOME/esd_auth
+export JFROG_CLI_HOME_DIR=$XDG_CONFIG_HOME/jfrog
+export QT_CONF_PATH=$XDG_CONFIG_HOME/qt/qt.conf
+export SVN_CONFIG_DIR=$XDG_CONFIG_HOME/subversion
 export NVIM_NOTTYFAST=1
 
 # edit path variable (only add directories that exist)
@@ -64,6 +70,9 @@ path_append $CARGO_HOME/bin
 path_append $OPENCODE_CONFIG_DIR/bin
 path_append $GOPATH/bin
 path_append /opt/cuda/bin
+path_append $HOME/.local/bin
+path_append $HOME/.local/lib/binutils-2.39/bin
+path_append $HOME/.local/lib/nvim/bin
 
 # Conda's activation prepends its bin/, so conda-installed programs shadow
 # system/global ones. For tools that exist outside conda too (kitty, git, ...)
