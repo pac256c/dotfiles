@@ -23,3 +23,12 @@ end
 --- Line numbers on
 ------------------------------------------------
 vim.opt.number = true
+
+------------------------------------------------
+--- Map additional file types
+------------------------------------------------
+vim.filetype.add({
+  extension = {
+    tdl = "ruby",
+  },
+})

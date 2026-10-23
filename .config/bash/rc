@@ -4,9 +4,18 @@
 # present inside the conda environment. The default login shell stays bash
 # (no chsh needed); we activate conda here so `zsh` is on PATH, then exec it.
 
+
+function _realpath() {
+  local p="$1"
+  if command -v realpath >/dev/null 2>&1; then
+    realpath -e "$p" 2>/dev/null && return;
+  fi
+  echo "$p"
+}
+
 # Shared env first, so login/non-login/interactive/non-interactive bash all
 # get it (non-interactive non-login also arrives here via $BASH_ENV).
-[ -f "$HOME/.config/zsh/env" ] && . "$HOME/.config/zsh/env"
+[ -f $(_realpath "$HOME/.config/zsh/env") ] && . $(_realpath "$HOME/.config/zsh/env")
 
 # Only hand off for interactive shells; never break non-interactive bash
 # (scripts, `bash -c`, scp, etc.).
@@ -15,14 +24,12 @@
 # Guard against re-entry (e.g. if zsh is missing and bash gets restarted).
 # [[ -n ${DOTFILES_BASH_HANDOFF:-} ]] && return 0
 
-echo "here now"
-
 # zsh only exists in the conda env, so activate it if `zsh` isn't already found.
 if ! command -v zsh >/dev/null 2>&1; then
-  if [[ -f "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh" ]]; then
+  if [[ -f $(_realpath "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh") ]]; then
     # shellcheck disable=SC1091
     echo "starting conda"
-    . "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh"
+    . $(_realpath "$HOME/.local/opt/miniforge3/etc/profile.d/conda.sh")
     conda activate base >/dev/null 2>&1 || true
   fi
 fi
@@ -30,7 +37,6 @@ fi
 # If zsh is now available, exec it (zsh will source ~/.zshenv and ~/.zshrc,
 # which re-activate conda and set up the full environment).
 if command -v zsh >/dev/null 2>&1; then
-  echo "switching to zsh"
   export DOTFILES_BASH_HANDOFF=1
   exec zsh
 fi

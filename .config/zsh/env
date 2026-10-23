@@ -25,7 +25,12 @@ export XDG_VIDEOS_DIR=$HOME/videos
 export XDG_DESKTOP_DIR=$HOME/desktop
 export XDG_DOWNLOAD_DIR=$HOME/downloads
 export XDG_GAMES_DIR=$HOME/games
-export XDG_RUNTIME_DIR=/run/user/$UID
+if [ -d /run/user/$UID ]; then
+  export XDG_RUNTIME_DIR=/run/user/$UID
+else
+  # dangling value (inherited from login/tmux) breaks nvim's RPC server
+  unset XDG_RUNTIME_DIR
+fi
 
 # reroute program paths
 export ZDOTDIR=$XDG_CONFIG_HOME/zsh
@@ -43,6 +48,7 @@ export PYTHON_HISTORY=$XDG_STATE_HOME/python/history
 export TS_NODE_HISTORY=$XDG_STATE_HOME/ts_node_repl_history
 export OCTAVE_HISTFILE=$XDG_STATE_HOME/octave_hist
 export CONDARC=$XDG_CONFIG_HOME/conda/condarc
+export CONDA_PREFIX=$HOME/.local/opt/miniforge3
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java
 export NODE_REPL_HISTORY=$XDG_STATE_HOME/node_repl_history
 export RUSTUP_HOME=$HOME/.local/opt/rustup
@@ -73,6 +79,8 @@ path_append /opt/cuda/bin
 path_append $HOME/.local/bin
 path_append $HOME/.local/lib/binutils-2.39/bin
 path_append $HOME/.local/lib/nvim/bin
+path_append $HOME/.local/opt/cargo/bin
+path_append $HOME/.local/opt/musl/bin
 
 # Conda's activation prepends its bin/, so conda-installed programs shadow
 # system/global ones. For tools that exist outside conda too (kitty, git, ...)

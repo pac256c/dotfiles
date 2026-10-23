@@ -34,6 +34,7 @@ return {
         "yaml",
         "verilog",
         "systemverilog",
+        "ruby",
       },
     },
   },
@@ -99,43 +100,12 @@ return {
     lazy = false,
     priority = 1001,
     opts = function()
-      -- Create a persistent variable within the plugin scope to track terminal type
-      local active_term_type = "horizontal"
-
       return {
         window = {
           open = "alternate"
         },
         hooks = {
-          pre_open = function()
-            -- Grab the terminal window you are currently typing inside of
-            local current_win = vim.api.nvim_get_current_win()
-            local win_config = vim.api.nvim_win_get_config(current_win)
-
-            if win_config.relative ~= "" then
-              -- The window is relative to the editor grid, meaning it's a float
-              active_term_type = "float"
-            else
-              -- If it's a standard tile split, check its dimension bounds
-              local win_width = vim.api.nvim_win_get_width(current_win)
-              local total_width = vim.o.columns
-
-              -- If it spans most of the screen width, it's a horizontal split
-              if win_width >= (total_width - 2) then
-                active_term_type = "horizontal"
-              else
-                active_term_type = "vertical"
-              end
-            end
-          end,
-
           post_open = function(context)
-            local status, nvterm = pcall(require, "nvterm.terminal")
-            if status then
-              -- Dynamically toggle the exact terminal variant that triggered the file open
-              nvterm.toggle(active_term_type)
-            end
-
             if context and context.winnr then
               vim.schedule(function()
                 pcall(vim.api.nvim_set_current_win, context.winnr)
