@@ -295,8 +295,18 @@ dotfiles() {
   fi
 
   if [[ "$1" == "push" ]]; then
-    local reply
-    read -r -p "Would you like to update the package lists? [y/N] " reply
+    local reply=""
+    if [[ -t 0 ]]; then
+      if ! IFS= read -r -p "Would you like to update the package lists? [y/N] " reply; then
+        reply=""
+      fi
+    elif [[ -e /dev/tty ]] && { : </dev/tty; } 2>/dev/null; then
+      if ! IFS= read -r -p "Would you like to update the package lists? [y/N] " reply </dev/tty 2>/dev/null; then
+        reply=""
+      fi
+    else
+      reply=""
+    fi
     case "$reply" in
       [Yy]*) ;;
       *)
