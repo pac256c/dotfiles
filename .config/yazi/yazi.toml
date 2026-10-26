@@ -26,12 +26,14 @@ prepend_rules = [
   { url = "*/", use = [] },
 
   # text & source code
-  { mime = "text/*", use =   "nvim"             },
-  { url  = "*.py"  , use = [ "nvim", "python" ] },
-  { url  = "*.sv"  , use = [ "nvim",          ] },
-  { url  = "*.js"  , use = [ "nvim",          ] },
-  { url  = "*.ts"  , use = [ "nvim",          ] },
-  { url  = "*.o"   , use = [ "nvim",          ] },
+  { mime = "text/*"            , use =   "nvim"             },
+  { url  = "*.py"              , use = [ "nvim", "python" ] },
+  { url  = "*.sv"              , use = [ "nvim",          ] },
+  { url  = "*.js"              , use = [ "nvim",          ] },
+  { url  = "*.ts"              , use = [ "nvim",          ] },
+  { url  = "*.o"               , use = [ "nvim",          ] },
+  { mime = "application/json"  , use =   "nvim"             },
+  { mime = "application/ndjson", use =   "nvim"             },
 
   # web pages
   { mime = "text/html", use = "browser" },

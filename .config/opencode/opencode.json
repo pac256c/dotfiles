@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "build": { "color": "secondary" },
+    "plan": { "color": "warning" },
+    "ask": { "color": "info" }
+  }
+}

@@ -16,3 +16,6 @@
 
 bootdev bootdotdev/bootdev type=go
 leetcode-cli night-slayer18/leetcode-cli type=npm;npm=@night-slayer18/leetcode-cli;scripts=keytar
+
+# Nerd fonts (not packaged in the AUR), built from the upstream release zip.
+fonts-ubuntu ryanoasis/nerd-fonts type=font;asset=Ubuntu.zip;dir=Ubuntu

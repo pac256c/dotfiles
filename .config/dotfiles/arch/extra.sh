@@ -52,5 +52,18 @@ mkdir -p ~/.local/share/gnupg
 chmod 700 ~/.local/share/gnupg
 if [ -d ~/.gnupg ]; then cp -r ~/.gnupg/. ~/.local/share/gnupg/ && rm -rf ~/.gnupg; fi
 
+# Apply XFCE themes (xfwm, GTK, icons)
+if command -v xfconf-query >/dev/null 2>&1; then
+  log "  applying XFCE themes..."
+  xfconf-query -c xfwm4 -p /general/theme -s Qogir-Dark 2>/dev/null || true
+  xfconf-query -c xsettings -p /Net/ThemeName -s Orchis-Dark-Compact 2>/dev/null || true
+  xfconf-query -c xsettings -p /Net/IconThemeName -s Tela-dark 2>/dev/null || true
+  # Reload settings
+  if command -v xfsettingsd >/dev/null 2>&1; then
+    killall xfsettingsd 2>/dev/null || true
+    xfsettingsd --daemon 2>/dev/null || true
+  fi
+fi
+
 
 log "extra.sh: done."

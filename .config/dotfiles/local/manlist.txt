@@ -44,6 +44,7 @@ tmux-plugin-manager tmux-plugins/tpm type=source
 # Nerd fonts (not on conda-forge; built from source into share/fonts)
 fonts-0xproto ryanoasis/nerd-fonts type=font;asset=0xProto.zip;dir=0xProto
 fonts-symbols ryanoasis/nerd-fonts type=font;asset=NerdFontsSymbolsOnly.zip;dir=Symbols
+fonts-ubuntu ryanoasis/nerd-fonts type=font;asset=Ubuntu.zip;dir=Ubuntu
 
 # Hand-written recipes (.manual marker; manfind.sh leaves them alone). The
 # entries keep sync.sh's stale-package check from removing them. Sources are

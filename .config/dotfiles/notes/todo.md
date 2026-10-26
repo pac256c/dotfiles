@@ -3,6 +3,9 @@
 * notetaking app
 * whitakers words
 * xfce
+* try to integrate yazi openers with xfce openers
+* try to use symbols in windows terminal alongside ubuntu font.
+* try to install leetcode-cli again?
 * unified task manager with visualizations disk management and stuff
 * smth for internet, bluetooth, device management too?
 * simple photo viewer & media player, or if yazi works thn tht
@@ -25,6 +28,7 @@
   * would require dependencies...
 
 # Yazi/kitty stuff
+* previews are blurry when i open yazi in tmux
 * update open shortcuts to use new programs
 * already works as a simple photo viewer, but maybe make right arrow maximize it?
 * maybe i can use as a simple video/media player?
@@ -38,13 +42,6 @@
 * could i use gemini + notebooks/stuff in a tui, maybe combined with a free agent for other stuff?
 * organize / save conversations, handle multiple instances?
 * maybe integrate w/ notes or something
-
-# Cleaning up program installs to use package managers
-* DONE: use yay to install everything, removed extra pacman step, combined lists into one packages.txt (gitfind.sh->manfind.sh, gitlist.txt->manlist.txt)
-* DONE: dotfiles push/pull use conda-first-then-pacman; push regenerates packages.txt
-* DONE: removed conda from this Arch achine (now global yay/pacman only); local/ flow kept for other machines
-* DONE: .zshenv only adds PATH entries for directories that exist
-* DONE: sync.sh scripts warn about stray dotfiles (with optional exit)
 
 try to open my wsl for ssh from other computers?
 could try to use tailnet-cli (instead of hamachi) 
