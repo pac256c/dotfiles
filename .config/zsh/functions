@@ -294,168 +294,33 @@ dotfiles() {
     flow="arch"
   fi
 
-  if [[ "$1" == "push" ]]; then
+  "${g[@]}" "$@"
+  local rc=$?
+
+  if [[ "$1" == "pull" && $rc -eq 0 ]]; then
     local reply=""
     if [[ -t 0 ]]; then
-      if ! IFS= read -r -p "Would you like to update the package lists? [y/N] " reply; then
+      if ! IFS= read -r -p "Would you like to sync/update now? [y/N] " reply; then
         reply=""
       fi
     elif [[ -e /dev/tty ]] && { : </dev/tty; } 2>/dev/null; then
-      if ! IFS= read -r -p "Would you like to update the package lists? [y/N] " reply </dev/tty 2>/dev/null; then
+      if ! IFS= read -r -p "Would you like to sync/update now? [y/N] " reply </dev/tty 2>/dev/null; then
         reply=""
       fi
     else
       reply=""
     fi
     case "$reply" in
-      [Yy]*) ;;
-      *)
-        echo "Skipping package list updates."
-        "${g[@]}" "$@"
-        local rc=$?
-        rm -f /tmp/dotfiles-packages.txt /tmp/dotfiles-manlist.txt /tmp/dotfiles-pins.txt /tmp/dotfiles-prev.txt
-        return $rc
+      [Yy]*)
+        if [[ "$flow" == "local" && -x "$gitdir/local/sync.sh" ]]; then
+          "$gitdir/local/sync.sh"
+        elif [[ "$flow" == "arch" && -x "$gitdir/arch/sync.sh" ]]; then
+          "$gitdir/arch/sync.sh"
+        fi
         ;;
+      *) ;;
     esac
   fi
 
-  if [[ "$1" == "push" && "$flow" == "local" ]]; then
-    local pkgfile="$gitdir/local/packages.txt"
-    local manlist="$gitdir/local/manlist.txt"
-    # Extract the explicitly-requested packages of a conda env, using
-    # `conda env export --from-history` (installed-state based, so removed
-    # packages like a previously-tried `root` don't linger). Strips version
-    # pins/build suffixes and internal bootstrap packages (conda/mamba/pip/
-    # python), and drops locally-built manlist.txt packages.
-    # $1 = env name. Prints sorted names to stdout.
-    _dotfiles_env_specs() {
-      local ename="$1" ml="$manlist"
-      [[ -n "$ename" ]] || return 0
-      {
-        "$conda" env export -n "$ename" --from-history 2>/dev/null \
-          | awk '
-              /^dependencies:/ { deps=1; next }
-              /^[A-Za-z_]+:/   { deps=0 }
-              deps && /^[[:space:]]*-[[:space:]]/ { sub(/^[[:space:]]*-[[:space:]]*/, ""); print }
-            ' \
-          | sed -E 's/^([A-Za-z0-9_.-]+).*/\1/' \
-          | grep -vE '^(conda|mamba|pip|python)$'
-      } | sort -u > /tmp/dotfiles-packages.txt
-      if [[ -f "$ml" ]]; then
-        grep -vE '^[[:space:]]*#' "$ml" | awk '{print $1}' | sort -u > /tmp/dotfiles-manlist.txt
-        grep -vxFf /tmp/dotfiles-manlist.txt /tmp/dotfiles-packages.txt > /tmp/dotfiles-packages.filtered
-        mv /tmp/dotfiles-packages.filtered /tmp/dotfiles-packages.txt
-      fi
-      cat /tmp/dotfiles-packages.txt
-    }
-
-    # Re-apply version pins/directives (e.g. "ffmpeg>=7") that the user added to
-    # an existing list file, so `push` regenerating bare names from the installed
-    # env doesn't drop them. $1 = existing file (may be absent). Reads plain
-    # package names on stdin, prints name-or-pinned-spec lines.
-    _dotfiles_keep_pins() {
-      local existing="$1"
-      if [[ ! -f "$existing" ]]; then
-        cat
-        return
-      fi
-      grep -vE '^[[:space:]]*#' "$existing" \
-        | grep -E '^[A-Za-z0-9_.-]+[<>=!]' \
-        | sort -u > /tmp/dotfiles-pins.txt
-      while IFS= read -r name; do
-        spec=$(awk -v n="$name" 'index($0, n)==1 { split($0,a,/[<>=!]/); if (a[1]==n) { print; exit } }' /tmp/dotfiles-pins.txt)
-        printf '%s\n' "${spec:-$name}"
-      done
-    }
-
-    if [[ -d "$HOME/.local/opt/miniforge3/conda-meta" ]]; then
-      # Snapshot before writing: the group's `> "$pkgfile"` truncates the file,
-      # so the pin-preserving filter must read a copy taken beforehand.
-      cp -f "$pkgfile" /tmp/dotfiles-prev.txt 2>/dev/null || : > /tmp/dotfiles-prev.txt
-      { printf '%s\n' "# Conda packages for local installs (no sudo/root needed)"
-        printf '%s\n' "# Installed from conda-forge into the base env via sync.sh."
-        printf '%s\n' "# Edit as needed."
-        printf '%s\n' "#"
-        printf '%s\n' "# Format: one package per line. Lines starting with # are comments."
-        printf '%s\n' "# Packages also built locally from manlist.txt are skipped here."
-        printf '%s\n' "# Version pins (e.g. ffmpeg>=7) are preserved across regenerations."
-        printf '\n'
-        _dotfiles_env_specs base | _dotfiles_keep_pins /tmp/dotfiles-prev.txt
-      } > "$pkgfile"
-      "${g[@]}" add -- ":/.config/dotfiles/local/packages.txt"
-      if ! "${g[@]}" diff --cached --quiet -- \
-          ":/.config/dotfiles/local/packages.txt"; then
-        "${g[@]}" commit -m "chore: update package list"
-      fi
-    fi
-
-    # Extra conda environments: one file per env under local/envs/<name>.txt,
-    # regenerated from that env's explicit package list. Existing envs that
-    # have no file yet get one created.
-    local envsdir="$gitdir/local/envs"
-    mkdir -p "$envsdir"
-    local envdir envname envfile
-    for envdir in "$HOME/.local/opt/miniforge3"/envs/*/; do
-      [[ -d "$envdir" ]] || continue
-      envname="$(basename "$envdir")"
-      [[ -f "$envdir/conda-meta/history" ]] || continue
-      envfile="$envsdir/$envname.txt"
-      cp -f "$envfile" /tmp/dotfiles-prev.txt 2>/dev/null || : > /tmp/dotfiles-prev.txt
-      { printf '%s\n' "# Extra conda environment '$envname' (no sudo/root needed)."
-        printf '%s\n' "# Created via \`mamba create -n $envname -c conda-forge <packages>\`."
-        printf '%s\n' "# Regenerated from this env's explicit package list by \`dotfiles push\`."
-        printf '%s\n' "#"
-        printf '%s\n' "# Format: one package per line. Lines starting with # are comments."
-        printf '\n'
-        _dotfiles_env_specs "$envname" | _dotfiles_keep_pins /tmp/dotfiles-prev.txt
-      } > "$envfile"
-      "${g[@]}" add -- ":/.config/dotfiles/local/envs/$envname.txt"
-      if ! "${g[@]}" diff --cached --quiet -- \
-          ":/.config/dotfiles/local/envs/$envname.txt"; then
-        "${g[@]}" commit -m "chore: update env '$envname' package list"
-      fi
-    done
-  fi
-
-  if [[ "$1" == "push" && "$flow" == "arch" ]]; then
-    local pkgfile="$gitdir/arch/packages.txt"
-    local manlist="$gitdir/arch/manlist.txt"
-    # Official repo packages + AUR/foreign packages, excluding packages that
-    # sync.sh builds locally from manlist.txt (those are not installed via yay)
-    # and makepkg *-debug artifacts.
-    {
-      pacman -Qqen
-      pacman -Qqem
-    } | grep -v -- '-debug$' | sort -u > /tmp/dotfiles-packages.txt
-    if [[ -f "$manlist" ]]; then
-      grep -vE '^[[:space:]]*#' "$manlist" | awk '{print $1}' | sort -u > /tmp/dotfiles-manlist.txt
-      grep -vxFf /tmp/dotfiles-manlist.txt /tmp/dotfiles-packages.txt > /tmp/dotfiles-packages.filtered
-      mv /tmp/dotfiles-packages.filtered /tmp/dotfiles-packages.txt
-    fi
-    { printf '%s\n' "# Arch packages (official repos + AUR), one per line."
-      printf '%s\n' "# Installed with \`yay -S --needed\` (yay handles both). Edit as needed."
-      printf '%s\n' "# Lines starting with # are comments."
-      printf '\n'
-      cat /tmp/dotfiles-packages.txt
-    } > "$pkgfile"
-    if ! "${g[@]}" diff --quiet -- \
-        ":/.config/dotfiles/arch/packages.txt"; then
-      "${g[@]}" add -- \
-        ":/.config/dotfiles/arch/packages.txt"
-      "${g[@]}" commit -m "chore: update package list"
-    fi
-  fi
-
-  "${g[@]}" "$@"
-  local rc=$?
-  rm -f /tmp/dotfiles-packages.txt /tmp/dotfiles-manlist.txt /tmp/dotfiles-pins.txt /tmp/dotfiles-prev.txt
-
-  if [[ "$1" == "pull" && $rc -eq 0 && "$flow" == "local" ]]; then
-    "$gitdir/local/sync.sh"
-  fi
-
-  if [[ "$1" == "pull" && $rc -eq 0 && "$flow" == "arch" ]]; then
-    "$gitdir/arch/sync.sh"
-  fi
   return $rc
 }

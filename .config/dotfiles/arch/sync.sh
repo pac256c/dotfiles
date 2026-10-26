@@ -198,6 +198,11 @@ else
 fi
 
 # Step 3: Update PKGBUILDs from manlist.txt and build/install local packages
+# Avoid conda/python from interfering with native builds (pyo3 etc.)
+unset CONDA_PREFIX CONDA_DEFAULT_ENV CONDA_SHLVL CONDA_PYTHON_EXE 2>/dev/null || true
+export PYO3_PYTHON=/usr/bin/python3
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
 if [[ -x "$INSTALL_DIR/manfind.sh" ]]; then
   log "=== Updating local PKGBUILDs from manlist.txt ==="
   manfind_rc=0
@@ -229,7 +234,7 @@ if ((${#pkgbuilds[@]})); then
     cp "$pkgbuild" "$builddir/PKGBUILD"
     if [[ -z "${SUDO_SKIP:-}" ]]; then
       log "  building and installing $name ..."
-      if ! (cd "$builddir" && makepkg -Cfis --noconfirm --needed --clean); then
+      if ! (env -u CONDA_PREFIX -u CONDA_DEFAULT_ENV -u CONDA_SHLVL -u CONDA_PYTHON_EXE PYO3_PYTHON=/usr/bin/python3 PATH=/usr/bin:/bin:/usr/sbin:/sbin:$PATH cd "$builddir" && makepkg -Cfis --noconfirm --needed --clean); then
         log "  WARNING: build failed for $name (continuing)"
         failed_builds+=("$name")
       fi
