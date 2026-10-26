@@ -1,7 +1,7 @@
+
 # Arch packages (official repos + AUR), one per line.
 # Installed with `yay -S --needed` (yay handles both). Edit as needed.
 # Lines starting with # are comments.
-
 7zip
 amf-headers
 aribb24
@@ -84,6 +84,13 @@ which
 win32yank-bin
 wordcraft-bin
 xdg-user-dirs
+xfce4-appfinder
+xfce4-panel
+xfce4-power-manager
+xfce4-session
+xfce4-settings
+xfdesktop
+xfwm4
 yay
 yazi
 zen-browser-bin
