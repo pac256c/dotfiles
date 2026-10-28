@@ -5,6 +5,10 @@
 * submit pkgbuild s to the AUR so i can install them w/ yay
 
 # Things to add
+* maybe make the ask mode in opencode just search google ai search
+  * github.com/KevCui/google-ai-search-cli
+  * and maybe ask opencode how to connect this as a model - or just run it?
+  * maybe add some other free models recommended in toad (mistral, )
 * atuin
 * notetaking app
 * whitakers words
@@ -38,6 +42,7 @@
 * make :e autopaste the path of the open file? 
 * maybe some kind of repl/debugger thing that can execute files & output in a new pane below
   * would require dependencies...
+  * would maybe require installing some DAPs (debug adapter protocols) in nvim?
 
 # Yazi/kitty stuff
 * previews are blurry when i open yazi in tmux
