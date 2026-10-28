@@ -1,0 +1,30 @@
+# Maintainer: peter8pie
+pkgname=willow-theme-aurorae
+pkgver=r0
+pkgrel=1
+pkgdesc="Willow Aurorae window decoration themes"
+arch=('any')
+url="https://github.com/doncsugar/willow-theme"
+license=('GPL3')
+depends=('kwin')
+makedepends=('git' 'bash')
+source=("$pkgname::git+https://github.com/doncsugar/willow-theme.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/$pkgname"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "$srcdir/$pkgname/aurorae-themes"
+  bash genThemes.sh
+}
+
+package() {
+  cd "$srcdir/$pkgname/aurorae-themes"
+  install -dm755 "$pkgdir/usr/share/aurorae/themes"
+  if [ -d output ]; then
+    cp -r output/* "$pkgdir/usr/share/aurorae/themes/"
+  fi
+}

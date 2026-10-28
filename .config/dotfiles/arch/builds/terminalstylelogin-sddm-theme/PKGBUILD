@@ -1,0 +1,27 @@
+# Maintainer: peter8pie
+pkgname=terminalstylelogin-sddm-theme
+pkgver=r45.c70b99c
+pkgrel=1
+pkgdesc="SDDM theme that looks like a terminal"
+arch=('any')
+url="https://github.com/GistOfSpirit/TerminalStyleLogin"
+license=('GPL3')
+depends=('sddm' 'qt5-base' 'qt5-declarative' 'qt5-quickcontrols2')
+makedepends=('git')
+source=("$pkgname::git+https://github.com/GistOfSpirit/TerminalStyleLogin.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/$pkgname"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "$srcdir/$pkgname"
+  bash scripts/build.sh
+}
+
+package() {
+  install -dm755 "$pkgdir/usr/share/sddm/themes/TerminalStyleLogin"
+  cp -r "$srcdir/$pkgname/build/"* "$pkgdir/usr/share/sddm/themes/TerminalStyleLogin/"
+}

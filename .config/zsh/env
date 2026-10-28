@@ -69,6 +69,8 @@ export JFROG_CLI_HOME_DIR=$XDG_CONFIG_HOME/jfrog
 export QT_CONF_PATH=$XDG_CONFIG_HOME/qt/qt.conf
 export SVN_CONFIG_DIR=$XDG_CONFIG_HOME/subversion
 export NVIM_NOTTYFAST=1
+export XINITRC=$XDG_CONFIG_HOME/X11/xinitrc
+export GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0/gtkrc
 
 # edit path variable (only add directories that exist)
 path_append() { [[ -d "$1" ]] && export PATH="${PATH:+$PATH:}$1"; }

@@ -1,10 +1,14 @@
+# AUR packages
+* make sure everything i installed in kde is installed w/ yay.
+  * delete from local, use the global version..
+  * not  letting me enter sudo password in these. not sure why.
+* submit pkgbuild s to the AUR so i can install them w/ yay
+
 # Things to add
 * atuin
 * notetaking app
 * whitakers words
-* xfce
-* try to integrate yazi openers with xfce openers
-* try to use symbols in windows terminal alongside ubuntu font.
+* try to integrate yazi openers with kde openers
 * try to install leetcode-cli again?
 * unified task manager with visualizations disk management and stuff
 * smth for internet, bluetooth, device management too?
@@ -16,6 +20,14 @@
 * proton vpn / pass / drive
 * application shortcuts - .desktop in .local/share/applications or yazi
 * news feed & weather, maybe on toolbar
+
+# KDE Widget things - maybe on desktop screen
+* weather
+* calendar?
+* maybe some kind of scrolling photos thing
+* figure out how to export all KDE settings to dotfiles
+* also figure out how to export zen-browser settings?
+* also figure out how to fix photocraft window buttons
 
 # Popup/nvim stuff - if we are in an nvim session
 * nvim scrollbar - maybe petertriho/nvim-scrollbar

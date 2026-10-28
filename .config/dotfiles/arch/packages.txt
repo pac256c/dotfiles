@@ -9,12 +9,11 @@ bun-bin
 cadcraft-bin
 catppuccin-cursors-mocha
 catppuccin-icons
-cling
 cmake
 deckcraft-bin
 exo
 fd
-ffmpeg-full
+ffmpeg
 figcraft-bin
 filmcraft-bin
 fonts-ubuntumono

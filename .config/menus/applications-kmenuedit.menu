@@ -1,0 +1,44 @@
+<!DOCTYPE Menu PUBLIC '-//freedesktop//DTD Menu 1.0//EN' 'http://www.freedesktop.org/standards/menu-spec/menu-1.0.dtd'>
+<Menu>
+ <Layout>
+  <Merge type="menus"/>
+  <Menuname>Development</Menuname>
+  <Menuname>Education</Menuname>
+  <Menuname>Games</Menuname>
+  <Menuname>Graphics</Menuname>
+  <Menuname>Help</Menuname>
+  <Menuname>Internet</Menuname>
+  <Menuname>Multimedia</Menuname>
+  <Menuname>Office</Menuname>
+  <Menuname>Science</Menuname>
+  <Menuname>System</Menuname>
+  <Menuname>Utilities</Menuname>
+  <Menuname>Applications</Menuname>
+ </Layout>
+ <Menu>
+  <Name>Internet</Name>
+  <Layout>
+   <Merge type="menus"/>
+   <Menuname>More</Menuname>
+   <Menuname>Terminal</Menuname>
+   <Merge type="files"/>
+   <Filename>org.kde.kdeconnect.app.desktop</Filename>
+   <Filename>org.kde.kdeconnect.sms.desktop</Filename>
+   <Filename>zen.desktop</Filename>
+  </Layout>
+  <Include>
+   <Filename>zen.desktop</Filename>
+  </Include>
+ </Menu>
+ <Menu>
+  <Name>Applications</Name>
+  <Layout/>
+  <Exclude>
+   <Filename>zen.desktop</Filename>
+  </Exclude>
+ </Menu>
+ <Include/>
+ <Exclude>
+  <Filename>zen.desktop</Filename>
+ </Exclude>
+</Menu>

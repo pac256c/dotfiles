@@ -237,3 +237,20 @@ treeview {
 #docklike-plugin .window_count { color: #2679db; }
 #docklike-plugin .open_group .window_count { color: #494c59; }
 #docklike-plugin .active_group .window_count { color : #494c59; }
+
+/* Right-click context menus (80% opacity) */
+menu,
+.menu,
+.context-menu,
+popover.background {
+  background-color: rgba(50, 52, 61, 0.8);
+  background-image: none;
+}
+
+menu menuitem,
+.menu menuitem,
+.context-menu menuitem,
+popover.background menuitem {
+  background-color: transparent;
+}
+@import 'colors.css';
