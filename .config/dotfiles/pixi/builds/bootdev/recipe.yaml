@@ -1,0 +1,29 @@
+context:
+  name: "bootdev"
+  version: "1.32.6"
+
+package:
+  name: ${{ name | lower }}
+  version: ${{ version }}
+
+source:
+  url: https://github.com/bootdotdev/bootdev/archive/refs/tags/v1.32.6.tar.gz
+  sha256: 2b07c675e54c8c4ec7dab249ea890c5618ff93520d4821570cc5f32b983350fe
+
+build:
+  number: 1
+  script:
+    - export CGO_ENABLED=0
+    - export GOPATH=$HOME/.local/opt/go
+    - mkdir -p $HOME/.local/opt/go
+    - mkdir -p $PREFIX/bin
+    - go build -trimpath -ldflags "-s -w" -o $PREFIX/bin/${{ name }} .
+
+requirements:
+  build:
+    - go
+
+about:
+  homepage: https://github.com/bootdotdev/bootdev
+  license: MIT
+  summary: "CLI used to complete coding challenges and lessons on Boot.dev"

@@ -1,0 +1,54 @@
+# pixi global packages for local installs (no sudo/root needed)
+# Installed from conda-forge via `pixi global install` by sync.sh; each line
+# gets its own isolated environment under $PIXI_HOME/envs, and its executables
+# are exposed in $PIXI_HOME/bin. Edit as needed.
+#
+# Format: one package per line. Lines starting with # are comments.
+# Packages also built locally from manlist.txt are skipped here.
+# Version pins (e.g. ffmpeg>=7) are preserved across regenerations.
+#
+# A line with spaces is passed through to `pixi global install` as arguments,
+# so extra libraries (--with) and renamed executables (--expose NAME=EXE) can
+# be given inline. Plain one-word lines are installed together in one command.
+
+# compilers: conda-forge installs them only under the target-triple name, but
+# tree-sitter (nvim-treesitter) and others invoke a bare cc/c++, so expose those
+gcc_linux-64 --with gxx_linux-64 --expose cc=x86_64-conda-linux-gnu-cc --expose gcc=x86_64-conda-linux-gnu-gcc --expose c++=x86_64-conda-linux-gnu-c++ --expose g++=x86_64-conda-linux-gnu-g++
+# python with the libraries that used to live in the conda base env
+python --with numpy --with tomli --with pint --expose python=python --expose python3=python3 --expose pip=pip
+
+7zip
+bun
+clangdev
+cmake
+curl
+fd
+ffmpeg
+fzf
+git
+gnupg
+go
+imagemagick
+jq
+lua
+ninja
+nodejs
+nvim
+octave
+openjdk
+openssh
+poppler
+rattler-build
+resvg
+ripgrep
+tlrc
+tmux
+tree-sitter-cli
+unzip
+uv
+vim
+wget
+which
+yazi
+zoxide
+zsh

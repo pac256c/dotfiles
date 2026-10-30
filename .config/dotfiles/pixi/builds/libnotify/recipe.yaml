@@ -1,0 +1,34 @@
+context:
+  name: "libnotify"
+  version: "0.8.9"
+
+package:
+  name: ${{ name | lower }}
+  version: ${{ version }}
+
+source:
+  url: https://download.gnome.org/sources/libnotify/0.8/libnotify-${{ version }}.tar.xz
+  sha256: c906bb084027ea512f94a60fbfc0cc8d4f17e4b4d525bed370d07a6d8714c923
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - ${{ compiler('c') }}
+    - meson
+    - ninja
+    - pkg-config
+  host:
+    - glib
+    - gdk-pixbuf
+    - zlib
+    - libpng
+  run:
+    - glib
+    - gdk-pixbuf
+
+about:
+  homepage: https://gitlab.gnome.org/GNOME/libnotify
+  license: LGPL-2.1-or-later
+  summary: "Desktop notifications library"

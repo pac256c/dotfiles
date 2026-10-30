@@ -1,0 +1,23 @@
+context:
+  name: "wordcraft"
+  version: "0.8.0"
+
+package:
+  name: ${{ name | lower }}
+  version: ${{ version }}
+
+source:
+  url: https://github.com/storytold/wordcraft/releases/download/v0.8.0/wordcraft-0.8.0-linux-x86_64.tar.gz
+  sha256: 0ece07cf3d91b923dfd80f90310e04983bde66f0279c6b60ddce89596dde0ddf
+
+build:
+  number: 2
+  dynamic_linking:
+    binary_relocation: false
+  prefix_detection:
+    ignore_binary_files: true
+
+about:
+  homepage: https://github.com/storytold/wordcraft
+  license: Apache-2.0
+  summary: "An open-source, clean-room reimplementation of Microsoft Word in pure Rust"

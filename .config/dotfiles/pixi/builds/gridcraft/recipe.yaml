@@ -1,0 +1,23 @@
+context:
+  name: "gridcraft"
+  version: "0.8.0"
+
+package:
+  name: ${{ name | lower }}
+  version: ${{ version }}
+
+source:
+  url: https://github.com/storytold/gridcraft/releases/download/v0.8.0/gridcraft-0.8.0-linux-x86_64.tar.gz
+  sha256: 4a029e20da86bad46706339ce4516a20445c131c0d82f6a114772208c5d831b3
+
+build:
+  number: 2
+  dynamic_linking:
+    binary_relocation: false
+  prefix_detection:
+    ignore_binary_files: true
+
+about:
+  homepage: https://github.com/storytold/gridcraft
+  license: Apache-2.0
+  summary: "GridCraft: an open-source, clean-room spreadsheet (Microsoft Excel-style) in pure Rust. By ArtCraft."

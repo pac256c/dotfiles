@@ -1,0 +1,25 @@
+context:
+  name: "leetcode-cli"
+  version: "3.6.2"
+
+package:
+  name: ${{ name | lower }}
+  version: ${{ version }}
+
+source:
+  url: https://registry.npmjs.org/@night-slayer18/leetcode-cli/-/leetcode-cli-3.6.2.tgz
+  sha256: 62290e65cb77a0129c234ad509398d35f3680e59be1f8fa79c95a122c2c81dc4
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - nodejs
+  run:
+    - nodejs
+
+about:
+  homepage: https://github.com/night-slayer18/leetcode-cli
+  license: Apache-2.0
+  summary: "A modern LeetCode CLI built with TypeScript"

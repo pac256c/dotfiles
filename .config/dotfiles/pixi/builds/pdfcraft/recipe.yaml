@@ -1,0 +1,23 @@
+context:
+  name: "pdfcraft"
+  version: "0.9.0"
+
+package:
+  name: ${{ name | lower }}
+  version: ${{ version }}
+
+source:
+  url: https://github.com/storytold/pdfcraft/releases/download/v0.9.0/pdfcraft-0.9.0-linux-x86_64.tar.gz
+  sha256: ff5f7da36a1089340e3fdba696b286cc317ac8f0705cc8c44c1c49d9ca4c54e0
+
+build:
+  number: 2
+  dynamic_linking:
+    binary_relocation: false
+  prefix_detection:
+    ignore_binary_files: true
+
+about:
+  homepage: https://github.com/storytold/pdfcraft
+  license: Apache-2.0
+  summary: "PdfCraft: An open-source PDF reader and editor written by scratch in pure Rust"

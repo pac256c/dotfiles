@@ -1,0 +1,27 @@
+context:
+  name: "opencode"
+  version: "1.19.3"
+
+package:
+  name: ${{ name | lower }}
+  version: ${{ version }}
+
+source:
+  url: https://github.com/anomalyco/opencode/releases/download/v1.19.3/opencode-linux-x64.tar.gz
+  sha256: 13a8fb2978302071b86f9d7e00da9c8895f9cd846978379c3bdc6a5333536c9b
+
+build:
+  number: 2
+  dynamic_linking:
+    binary_relocation: false
+  prefix_detection:
+    ignore_binary_files: true
+
+requirements:
+  run:
+    - ripgrep
+
+about:
+  homepage: https://github.com/anomalyco/opencode
+  license: Apache-2.0
+  summary: "The open source coding agent."
