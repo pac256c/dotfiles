@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yazi cheat sheet (with gitp4v)</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --fg: #1d2330; --muted: #5b6577; --line: #dfe3ea;
+    --key-bg: #eef1f6; --key-line: #c8cfdb; --accent: #2f6fdd; --git: #d9442a; --p4: #1d7fb8;
+    --new: #1f8a4c; --warn: #b36b00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171d; --card: #1c212b; --fg: #e3e7ee; --muted: #9aa5b8; --line: #2e3545;
+      --key-bg: #262d3a; --key-line: #3a4357; --accent: #6ea2ff; --git: #ff7a5c; --p4: #5cb8ee;
+      --new: #5fd18a; --warn: #f0b04c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 15px/1.45 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  header { padding: 28px 32px 8px; max-width: 1400px; margin: 0 auto; }
+  header h1 { margin: 0 0 4px; font-size: 28px; }
+  header p { margin: 4px 0; color: var(--muted); }
+  nav { max-width: 1400px; margin: 8px auto 0; padding: 0 32px; display: flex; flex-wrap: wrap; gap: 8px; }
+  nav a { color: var(--accent); text-decoration: none; font-size: 13px; border: 1px solid var(--line);
+          background: var(--card); padding: 3px 10px; border-radius: 999px; }
+  nav a.new { border-color: var(--new); color: var(--new); }
+  main { max-width: 1400px; margin: 0 auto; padding: 16px 32px 48px; }
+  h2.part { margin: 28px 0 10px; font-size: 20px; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+  h2.part.new { border-color: var(--new); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .card h3 { margin: 0 0 8px; font-size: 15px; letter-spacing: .02em; }
+  .card.git h3 { color: var(--git); } .card.p4 h3 { color: var(--p4); } .card.new h3 { color: var(--new); }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 3px 0; vertical-align: top; border-top: 1px dashed var(--line); }
+  tr:first-child td { border-top: 0; }
+  td.k { width: 42%; padding-right: 10px; white-space: nowrap; }
+  td.d { color: var(--fg); }
+  kbd, code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+  kbd { background: var(--key-bg); border: 1px solid var(--key-line); border-bottom-width: 2px;
+        border-radius: 5px; padding: 0 6px; margin-right: 2px; }
+  code { background: var(--key-bg); padding: 1px 5px; border-radius: 4px; }
+  .note { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+  .tag { display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 4px; margin-left: 4px;
+         border: 1px solid var(--line); color: var(--muted); }
+  .tag.git { color: var(--git); border-color: var(--git); } .tag.p4 { color: var(--p4); border-color: var(--p4); }
+  .tag.both { color: var(--new); border-color: var(--new); }
+  .legend { margin: 10px 0; display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+  .tri-y { color: #e0a800; } .tri-g { color: #2fa84f; }
+  footer { max-width: 1400px; margin: 0 auto; padding: 0 32px 40px; color: var(--muted); font-size: 13px; }
+  @media print { nav { display: none; } body { background: #fff; color: #000; } .card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Yazi cheat sheet</h1>
+  <p>Stock yazi keys, plus the <b>gitp4v</b> plugin: browse GitHub repos and Perforce depots like p4v, edit them, and pin files.</p>
+  <p>Green section headings are the plugin additions. Outside the depot view every overloaded key (<kbd>o</kbd> <kbd>O</kbd> <kbd>Enter</kbd> <kbd>l</kbd> <kbd>h</kbd> <kbd>a</kbd> <kbd>d</kbd> <kbd>r</kbd>) does exactly what stock yazi does, and <kbd>e</kbd> does nothing.</p>
+</header>
+<nav>
+  <a class="new" href="#depot">Depot view</a>
+  <a class="new" href="#history">History &amp; diff</a>
+  <a class="new" href="#pins">Pinned files</a>
+  <a class="new" href="#edit">Editing</a>
+  <a class="new" href="#emenu-git">e menu: git</a>
+  <a class="new" href="#emenu-p4">e menu: Perforce</a>
+  <a class="new" href="#errors">Popups &amp; errors</a>
+  <a class="new" href="#config">Config &amp; files</a>
+  <a href="#nav">Navigation</a>
+  <a href="#fileops">File operations</a>
+  <a href="#select">Selection</a>
+  <a href="#paths">Copy paths</a>
+  <a href="#find">Filter / find / search</a>
+  <a href="#sort">Sorting</a>
+  <a href="#tabs">Tabs</a>
+  <a href="#cfg">Yazi config</a>
+</nav>
+<main>
+
+<h2 class="part new" id="depot">gitp4v: the depot view</h2>
+<div class="legend">
+  <span><span class="tag git">git</span> GitHub (your org) via <code>gh</code></span>
+  <span><span class="tag p4">p4</span> Perforce via <code>p4</code></span>
+  <span><span class="tag both">both</span> same key, vendor wording differs</span>
+  <span><span class="tri-y">yellow triangle</span> = not committed / default changelist</span>
+  <span><span class="tri-g">green triangle</span> = committed / CL pending</span>
+</div>
+<div class="grid">
+  <div class="card new"><h3>Enter and move around</h3><table>
+    <tr><td class="k"><kbd>g</kbd><kbd>v</kbd></td><td class="d">"Go to network locations": the depot view. <code>//</code> lists GitHub orgs and Perforce depots (different icons)</td></tr>
+    <tr><td class="k"><kbd>l</kbd> / <kbd>Right</kbd></td><td class="d">On a git repo: load its tree and enter. On a p4 folder: list that folder (one level, lazily). On a file: open its history</td></tr>
+    <tr><td class="k"><kbd>h</kbd> / <kbd>Left</kbd></td><td class="d">Back (from a history list: back to the file, hovered)</td></tr>
+    <tr><td class="k"><kbd>o</kbd> / <kbd>Enter</kbd></td><td class="d">On a file: read the current version (read-only). On a folder/repo: same as <kbd>l</kbd></td></tr>
+    <tr><td class="k"><kbd>e</kbd> <kbd>q</kbd></td><td class="d">Leave the depot view (back to where you were)</td></tr>
+    <tr><td class="k"><kbd>e</kbd> <kbd>l</kbd></td><td class="d">Refresh the repo / folder (local changes are re-applied)</td></tr>
+  </table>
+  <p class="note">Header shows <code>//org/repo/dir</code> or <code>//depot/dir</code>. Search, filter, find, marks and sorting all work as usual on the listed level.</p></div>
+
+  <div class="card new"><h3>Right pane</h3><table>
+    <tr><td class="k">hover a folder</td><td class="d">Its contents (git: the tree; Perforce: listed on demand)</td></tr>
+    <tr><td class="k">hover a file</td><td class="d">Its history: <code>commit / CL#</code>, date, author/user, description</td></tr>
+    <tr><td class="k">hover a history entry</td><td class="d">Commit or CL message and that file's patch (colored)</td></tr>
+    <tr><td class="k"><kbd>J</kbd> / <kbd>K</kbd></td><td class="d">Scroll the preview (stock yazi)</td></tr>
+    <tr><td class="k">hover an unloaded git repo</td><td class="d">"Not loaded yet. Press l or Enter to load this repo."</td></tr>
+  </table></div>
+</div>
+
+<h2 class="part new" id="history">gitp4v: file history, view and diff</h2>
+<div class="grid">
+  <div class="card new"><h3>History list (press <kbd>l</kbd> on a file)</h3><table>
+    <tr><td class="k">colors</td><td class="d">Index, id, date and author/user are colored like the preview</td></tr>
+    <tr><td class="k">order</td><td class="d">Newest at the top. The index is larger for newer revisions (git: commit order; p4: <code>#rev</code>). Your sort is forced to natural-descending and restored on <kbd>h</kbd></td></tr>
+    <tr><td class="k"><kbd>o</kbd> / <kbd>Enter</kbd></td><td class="d">View the hovered version, read-only</td></tr>
+    <tr><td class="k"><kbd>Space</kbd></td><td class="d">Mark versions</td></tr>
+    <tr><td class="k">1 marked + <kbd>o</kbd></td><td class="d">View that version</td></tr>
+    <tr><td class="k">2 marked + <kbd>o</kbd></td><td class="d">Diff them, <b>newer on the left</b>, files named <code>name#index</code></td></tr>
+    <tr><td class="k">3+ marked</td><td class="d">Error popup: "Diff 2 versions at a time"</td></tr>
+    <tr><td class="k"><kbd>O</kbd></td><td class="d">Edit the underlying file (see Editing)</td></tr>
+    <tr><td class="k"><kbd>h</kbd> / <kbd>Left</kbd></td><td class="d">Back to the file; marks are cleared</td></tr>
+  </table>
+  <p class="note">Diff program: <code>diff</code> in your <code>gitp4v_opts</code> (for example <code>nvim -d</code>). Unset = git diff in less.</p></div>
+</div>
+
+<h2 class="part new" id="pins">gitp4v: pinned files</h2>
+<div class="grid">
+  <div class="card new"><h3>Pin anything, find it again</h3><table>
+    <tr><td class="k"><kbd>E</kbd></td><td class="d">Pin / unpin the hovered (or marked) files. Works on local, git and Perforce files, and from a history list. In the pinned list: unpin the hovered one</td></tr>
+    <tr><td class="k"><kbd>g</kbd><kbd>p</kbd></td><td class="d">Go to the pinned list</td></tr>
+    <tr><td class="k">in the list</td><td class="d">Header shows the path that was on screen when you pinned it. Right pane is a normal preview</td></tr>
+    <tr><td class="k"><kbd>o</kbd> / <kbd>Enter</kbd></td><td class="d">Local pin: opens normally (symlink). git/p4 pin: current version, view-only</td></tr>
+    <tr><td class="k"><kbd>h</kbd></td><td class="d">Return to where you were</td></tr>
+  </table>
+  <p class="note">Stored in <code>~/.local/state/yazi/gitp4v/pins.tsv</code> (created on first pin).</p></div>
+</div>
+
+<h2 class="part new" id="edit">gitp4v: editing</h2>
+<div class="grid">
+  <div class="card new"><h3>Change files <span class="tag both">both</span></h3><table>
+    <tr><td class="k"><kbd>O</kbd></td><td class="d">Edit the hovered (or all marked) files with the first opener yazi.toml's <code>[open]</code> rules pick (else <code>$EDITOR</code>). git: clone + branch. p4: sync + <code>p4 edit</code></td></tr>
+    <tr><td class="k"><kbd>a</kbd></td><td class="d">Add a file to the current folder (name popup, then opens it)</td></tr>
+    <tr><td class="k"><kbd>d</kbd></td><td class="d">Delete hovered / marked files or folders (confirm popup)</td></tr>
+    <tr><td class="k"><kbd>r</kbd></td><td class="d">Rename the hovered file (name popup). p4: files only</td></tr>
+  </table>
+  <p class="note">The first change asks for setup: a <b>branch name</b> (git, default <code>$USER&lt;yyyymmdd&gt;</code>, clones to <code>&lt;clones&gt;/&lt;repo&gt;-&lt;branch&gt;</code> with a "Cloning into ..." popup) or a <b>workspace root</b> (p4, a depot folder containing the file; default = its folder).</p></div>
+
+  <div class="card git"><h3>git: one branch, one commit, one PR</h3><table>
+    <tr><td class="k">after committing</td><td class="d">Error popup on any further change until the PR is opened; then until it is merged or closed</td></tr>
+    <tr><td class="k">PR merged / closed</td><td class="d">Next change starts a new branch (new name popup); the old clone is deleted</td></tr>
+    <tr><td class="k">clone speed</td><td class="d">Blobless + sparse clone: a second or two; only the files you edit are fetched</td></tr>
+  </table></div>
+
+  <div class="card p4"><h3>Perforce: one pending CL</h3><table>
+    <tr><td class="k">files opened</td><td class="d">Go to the <b>default changelist</b></td></tr>
+    <tr><td class="k">CL pending</td><td class="d">Error popup on any further change until it is submitted or reverted</td></tr>
+    <tr><td class="k">checkout refused</td><td class="d">Error popup with p4's reason (permissions, exclusive lock, not mapped)</td></tr>
+    <tr><td class="k">workspace lifetime</td><td class="d">A client exists only while it has work: revert-all (<kbd>e x</kbd>) or a successful submit deletes it</td></tr>
+  </table></div>
+</div>
+
+<h2 class="part new" id="emenu-git">gitp4v: <kbd>e</kbd> menu inside a GitHub repo</h2>
+<div class="grid">
+  <div class="card git"><h3>Press <kbd>e</kbd>, then</h3><table>
+    <tr><td class="k"><kbd>c</kbd></td><td class="d">Commit all changes (message popup)</td></tr>
+    <tr><td class="k"><kbd>p</kbd></td><td class="d">Pull request: error popup if nothing committed; asks for title and description; rebases onto the default branch if it moved (conflict: popup says fix it in the clone); pushes; <code>gh pr create</code>; URL copied</td></tr>
+    <tr><td class="k"><kbd>s</kbd></td><td class="d">Changed-files popup (see below) or "Working tree clean"</td></tr>
+    <tr><td class="k"><kbd>x</kbd></td><td class="d">Discard the local branch, its changes <b>and its clone</b> (confirm). A pushed copy is left alone</td></tr>
+    <tr><td class="k"><kbd>l</kbd> / <kbd>q</kbd></td><td class="d">Refresh / leave</td></tr>
+  </table></div>
+  <div class="card git"><h3>Changed-files popup</h3><table>
+    <tr><td class="k">header</td><td class="d"><span class="tri-y">yellow triangle</span> branch (not committed) or <span class="tri-g">green triangle</span> branch (committed)</td></tr>
+    <tr><td class="k">markers</td><td class="d"><code>A</code> added, <code>M</code> modified, <code>D</code> deleted, <code>R</code> renamed</td></tr>
+    <tr><td class="k"><kbd>j</kbd>/<kbd>k</kbd> or <kbd>Up</kbd>/<kbd>Down</kbd></td><td class="d">Move the selection (the list scrolls)</td></tr>
+    <tr><td class="k"><kbd>Enter</kbd></td><td class="d">View the diff for that file</td></tr>
+    <tr><td class="k"><kbd>d</kbd></td><td class="d">Discard your change to that file (not committed only; confirm popup)</td></tr>
+    <tr><td class="k"><kbd>Esc</kbd></td><td class="d">Close</td></tr>
+  </table></div>
+</div>
+
+<h2 class="part new" id="emenu-p4">gitp4v: <kbd>e</kbd> menu inside a Perforce depot</h2>
+<div class="grid">
+  <div class="card p4"><h3>Press <kbd>e</kbd>, then</h3><table>
+    <tr><td class="k"><kbd>c</kbd></td><td class="d">Create changelist from the default changelist (description popup)</td></tr>
+    <tr><td class="k"><kbd>p</kbd></td><td class="d">Submit the pending CL (confirm popup; out-of-date files are reported with the workspace path)</td></tr>
+    <tr><td class="k"><kbd>v</kbd></td><td class="d">Shelve the pending CL</td></tr>
+    <tr><td class="k"><kbd>s</kbd></td><td class="d">Opened-files popup, or "No opened files"</td></tr>
+    <tr><td class="k"><kbd>x</kbd></td><td class="d">Revert everything, delete the pending CL <b>and the workspace (client + local folder)</b> (confirm)</td></tr>
+    <tr><td class="k"><kbd>w</kbd></td><td class="d">Make the current folder a workspace root (creates a small client)</td></tr>
+    <tr><td class="k"><kbd>D</kbd></td><td class="d">Delete this workspace: the client and its local folder (confirm)</td></tr>
+    <tr><td class="k"><kbd>l</kbd> / <kbd>q</kbd></td><td class="d">Refresh / leave</td></tr>
+  </table></div>
+  <div class="card p4"><h3>Opened-files popup</h3><table>
+    <tr><td class="k">header</td><td class="d"><span class="tri-y">yellow</span> "default changelist" or <span class="tri-g">green</span> "CL 123456 (pending, not submitted)" plus <code>[shelved]</code></td></tr>
+    <tr><td class="k">markers</td><td class="d"><code>A</code> add, <code>M</code> edit, <code>D</code> delete, <code>R</code> move</td></tr>
+    <tr><td class="k"><kbd>Enter</kbd></td><td class="d"><code>p4 diff</code> of that file</td></tr>
+    <tr><td class="k"><kbd>d</kbd></td><td class="d">Revert that file (default changelist only; confirm popup)</td></tr>
+    <tr><td class="k"><kbd>Esc</kbd></td><td class="d">Close</td></tr>
+  </table></div>
+</div>
+
+<h2 class="part new" id="errors">gitp4v: popups and errors</h2>
+<div class="grid">
+  <div class="card new"><h3>What you will see</h3><table>
+    <tr><td class="k">toasts (corner)</td><td class="d">Loading ... (first entry of a repo/depot only), Cloning into ..., Pinned/Unpinned, results</td></tr>
+    <tr><td class="k">changed-files popup</td><td class="d">yazi's own popup (the <kbd>Tab</kbd> one): <kbd>j</kbd>/<kbd>k</kbd> or arrows move, <kbd>Enter</kbd> diff, <kbd>d</kbd> discard / revert (confirm), <kbd>Esc</kbd> closes</td></tr>
+    <tr><td class="k">text popups</td><td class="d">Branch name, new file, rename, commit message, PR title/description, CL description, workspace root. <kbd>Enter</kbd> accepts, <kbd>Esc</kbd> cancels</td></tr>
+    <tr><td class="k">confirm popups</td><td class="d">Delete, discard/revert, submit, uncommitted-changes warning</td></tr>
+    <tr><td class="k">Authentication box</td><td class="d">Perforce or GitHub login problem; offers to run <code>p4 login</code> / <code>gh auth login</code></td></tr>
+    <tr><td class="k">permission box</td><td class="d">Access denied, checkout not allowed</td></tr>
+  </table></div>
+</div>
+
+<h2 class="part new" id="config">gitp4v: config and files</h2>
+<div class="grid">
+  <div class="card new"><h3><code>gitp4v_opts</code> in your <code>init.lua</code> (defaults: <code>plugins/gitp4v.yazi/config.lua</code>)</h3><table>
+    <tr><td class="k"><code>org</code></td><td class="d">GitHub org to list (every non-archived repo)</td></tr>
+    <tr><td class="k"><code>depots</code></td><td class="d">Extra git repos: <code>name = "URL"</code></td></tr>
+    <tr><td class="k"><code>p4</code></td><td class="d"><code>{ port = ..., user = ... }</code> (login uses your p4 ticket)</td></tr>
+    <tr><td class="k"><code>clones</code></td><td class="d">Where clones / p4 workspaces live</td></tr>
+    <tr><td class="k"><code>diff</code></td><td class="d">Diff program, run as <code>diff left right</code></td></tr>
+    <tr><td class="k"><code>icons</code></td><td class="d">Glyphs for git / p4 entries</td></tr>
+    <tr><td class="k"><code>ttl</code>, <code>limit</code></td><td class="d">Tree refresh minutes; commits per path</td></tr>
+  </table></div>
+  <div class="card new"><h3>Where things live</h3><table>
+    <tr><td class="k">shadow trees</td><td class="d"><code>/tmp/$USER/gitp4v/</code> (view, commits, pinned)</td></tr>
+    <tr><td class="k">pins</td><td class="d"><code>~/.local/state/yazi/gitp4v/pins.tsv</code></td></tr>
+    <tr><td class="k">clones, workspaces</td><td class="d"><code>&lt;clones&gt;/</code> and <code>&lt;clones&gt;/.gitp4v/</code> (state)</td></tr>
+    <tr><td class="k">plugin</td><td class="d"><code>~/.config/yazi/plugins/gitp4v.yazi/</code></td></tr>
+    <tr><td class="k">keys</td><td class="d">Source: <code>plugins/gitp4v.yazi/keymap.toml</code>; <code>install.sh</code> copies it (and the previewer rules) into <code>~/.config/yazi/</code> as marked blocks</td></tr>
+  </table></div>
+</div>
+
+<h2 class="part" id="nav">Navigation</h2>
+<div class="grid"><div class="card"><h3>Move</h3><table>
+  <tr><td class="k"><kbd>k</kbd> / <kbd>Up</kbd></td><td class="d">Cursor up</td></tr>
+  <tr><td class="k"><kbd>j</kbd> / <kbd>Down</kbd></td><td class="d">Cursor down</td></tr>
+  <tr><td class="k"><kbd>l</kbd> / <kbd>Right</kbd></td><td class="d">Enter directory <span class="tag">gitp4v overloads this in the depot</span></td></tr>
+  <tr><td class="k"><kbd>h</kbd> / <kbd>Left</kbd></td><td class="d">Parent directory</td></tr>
+  <tr><td class="k"><kbd>K</kbd> / <kbd>J</kbd></td><td class="d">Seek preview up / down</td></tr>
+  <tr><td class="k"><kbd>g</kbd><kbd>g</kbd> / <kbd>G</kbd></td><td class="d">Top / bottom</td></tr>
+  <tr><td class="k"><kbd>g</kbd><kbd>h</kbd> / <kbd>g</kbd><kbd>c</kbd> / <kbd>g</kbd><kbd>d</kbd></td><td class="d">Go to ~ / ~/.config / ~/Downloads</td></tr>
+  <tr><td class="k"><kbd>g</kbd><kbd>Space</kbd> / <kbd>g</kbd><kbd>f</kbd> / <kbd>g</kbd><kbd>t</kbd></td><td class="d">cd interactively / follow symlink / trash</td></tr>
+  <tr><td class="k"><kbd>g</kbd><kbd>v</kbd> / <kbd>g</kbd><kbd>p</kbd></td><td class="d"><b>gitp4v:</b> "Go to network locations" / "Go to pinned"</td></tr>
+  <tr><td class="k"><kbd>z</kbd> / <kbd>Z</kbd></td><td class="d">zoxide jump / fzf jump</td></tr>
+</table></div></div>
+
+<h2 class="part" id="fileops">File operations</h2>
+<div class="grid"><div class="card"><h3>Open, copy, delete</h3><table>
+  <tr><td class="k"><kbd>o</kbd> / <kbd>Enter</kbd></td><td class="d">Open <span class="tag">depot: read current version</span></td></tr>
+  <tr><td class="k"><kbd>O</kbd></td><td class="d">Open interactively <span class="tag">depot: edit</span></td></tr>
+  <tr><td class="k"><kbd>Tab</kbd></td><td class="d">File info</td></tr>
+  <tr><td class="k"><kbd>y</kbd> / <kbd>x</kbd> / <kbd>p</kbd> / <kbd>P</kbd></td><td class="d">Yank / cut / paste / paste overwriting</td></tr>
+  <tr><td class="k"><kbd>Y</kbd> / <kbd>X</kbd></td><td class="d">Cancel yank</td></tr>
+  <tr><td class="k"><kbd>d</kbd> / <kbd>D</kbd></td><td class="d">Trash / delete permanently <span class="tag">depot: d deletes from the repo</span></td></tr>
+  <tr><td class="k"><kbd>a</kbd></td><td class="d">Create file (end with / for a directory) <span class="tag">depot: add a file</span></td></tr>
+  <tr><td class="k"><kbd>r</kbd></td><td class="d">Rename <span class="tag">depot: rename in the repo</span></td></tr>
+  <tr><td class="k"><kbd>.</kbd></td><td class="d">Toggle hidden files</td></tr>
+  <tr><td class="k"><kbd>;</kbd> / <kbd>:</kbd></td><td class="d">Shell command / shell command, blocking</td></tr>
+  <tr><td class="k"><kbd>-</kbd> / <kbd>_</kbd> / <kbd>Ctrl</kbd>+<kbd>-</kbd></td><td class="d">Symlink (abs) / symlink (rel) / hardlink yanked</td></tr>
+</table></div></div>
+
+<h2 class="part" id="select">Selection</h2>
+<div class="grid"><div class="card"><h3>Mark files</h3><table>
+  <tr><td class="k"><kbd>Space</kbd></td><td class="d">Toggle selection (also marks history versions)</td></tr>
+  <tr><td class="k"><kbd>v</kbd> / <kbd>V</kbd></td><td class="d">Visual mode / visual unset</td></tr>
+  <tr><td class="k"><kbd>Ctrl</kbd>+<kbd>a</kbd> / <kbd>Ctrl</kbd>+<kbd>r</kbd></td><td class="d">Select all / invert</td></tr>
+  <tr><td class="k"><kbd>Esc</kbd></td><td class="d">Cancel selection</td></tr>
+</table></div></div>
+
+<h2 class="part" id="paths">Copy paths</h2>
+<div class="grid"><div class="card"><h3>To clipboard</h3><table>
+  <tr><td class="k"><kbd>c</kbd><kbd>c</kbd> / <kbd>c</kbd><kbd>d</kbd></td><td class="d">File path / directory path</td></tr>
+  <tr><td class="k"><kbd>c</kbd><kbd>f</kbd> / <kbd>c</kbd><kbd>n</kbd></td><td class="d">Filename / filename without extension</td></tr>
+</table></div></div>
+
+<h2 class="part" id="find">Filter, find, search</h2>
+<div class="grid"><div class="card"><h3>Find things</h3><table>
+  <tr><td class="k"><kbd>f</kbd></td><td class="d">Filter files in this folder</td></tr>
+  <tr><td class="k"><kbd>/</kbd> / <kbd>?</kbd></td><td class="d">Find next / previous</td></tr>
+  <tr><td class="k"><kbd>n</kbd> / <kbd>N</kbd></td><td class="d">Next / previous match</td></tr>
+  <tr><td class="k"><kbd>s</kbd> / <kbd>S</kbd></td><td class="d">Search by name (fd) / content (ripgrep)</td></tr>
+  <tr><td class="k"><kbd>Ctrl</kbd>+<kbd>s</kbd></td><td class="d">Cancel search</td></tr>
+</table>
+<p class="note">In the depot view these act on what has been listed: all files of a git repo, or the folders you have opened in a Perforce depot.</p></div></div>
+
+<h2 class="part" id="sort">Sorting</h2>
+<div class="grid"><div class="card"><h3><kbd>,</kbd> then (lowercase ascending, UPPERCASE reverse)</h3><table>
+  <tr><td class="k"><kbd>m</kbd> / <kbd>M</kbd></td><td class="d">Modified time</td></tr>
+  <tr><td class="k"><kbd>b</kbd> / <kbd>B</kbd></td><td class="d">Birth time</td></tr>
+  <tr><td class="k"><kbd>e</kbd> / <kbd>E</kbd></td><td class="d">Extension</td></tr>
+  <tr><td class="k"><kbd>a</kbd> / <kbd>A</kbd></td><td class="d">Alphabetical</td></tr>
+  <tr><td class="k"><kbd>n</kbd> / <kbd>N</kbd></td><td class="d">Natural</td></tr>
+  <tr><td class="k"><kbd>s</kbd> / <kbd>S</kbd></td><td class="d">Size</td></tr>
+  <tr><td class="k"><kbd>r</kbd></td><td class="d">Random</td></tr>
+</table></div></div>
+
+<h2 class="part" id="tabs">Tabs</h2>
+<div class="grid"><div class="card"><h3>Multi-tab</h3><table>
+  <tr><td class="k"><kbd>t</kbd></td><td class="d">New tab here</td></tr>
+  <tr><td class="k"><kbd>1</kbd> ... <kbd>9</kbd></td><td class="d">Switch to tab n</td></tr>
+  <tr><td class="k"><kbd>[</kbd> / <kbd>]</kbd></td><td class="d">Previous / next tab</td></tr>
+  <tr><td class="k"><kbd>{</kbd> / <kbd>}</kbd></td><td class="d">Swap tab with previous / next</td></tr>
+  <tr><td class="k"><kbd>Ctrl</kbd>+<kbd>c</kbd></td><td class="d">Close tab</td></tr>
+  <tr><td class="k"><kbd>w</kbd></td><td class="d">Task manager (kept; pinning is on <kbd>E</kbd>)</td></tr>
+</table></div></div>
+
+<h2 class="part" id="cfg">Yazi config files</h2>
+<div class="grid"><div class="card"><h3><code>~/.config/yazi/</code></h3><table>
+  <tr><td class="k"><code>yazi.toml</code></td><td class="d">General settings, openers, previewers (gitp4v adds previewer rules)</td></tr>
+  <tr><td class="k"><code>keymap.toml</code></td><td class="d">Key bindings (gitp4v keys use <code>prepend_keymap</code> only)</td></tr>
+  <tr><td class="k"><code>theme.toml</code></td><td class="d">Colors and icons</td></tr>
+  <tr><td class="k"><code>init.lua</code></td><td class="d">Your gitp4v settings (<code>gitp4v_opts</code>) and the one-line hook</td></tr>
+</table></div></div>
+
+</main>
+<footer>
+  Stock keys follow the yazi defaults (see also ricoberger.de/cheat-sheets/yazi). gitp4v keys: see
+  <code>plugins/gitp4v.yazi/README.md</code> (install), <code>notes.md</code> (usage) and <code>DESIGN.md</code>.
+</footer>
+</body>
+</html>

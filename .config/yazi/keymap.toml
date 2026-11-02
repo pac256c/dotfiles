@@ -1,0 +1,125 @@
+# >>> gitp4v (managed by plugins/gitp4v.yazi/install.sh; edit the files in that folder) >>>
+# gitp4v keybinds. Only prepend_keymap is used. `g v`, `g p`, `e` and `E` were
+# unbound in yazi's [mgr] defaults. The rest are overloaded: inside the depot
+# view they do depot things, everywhere else the plugin hands off to yazi's own
+# action (open, open --interactive, enter, leave, create, remove, rename), so
+# they behave exactly as before. `e` is a single key that opens a menu inside
+# the depot and does nothing outside it.
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "v" ]
+run  = "plugin gitp4v -- depot"
+desc = "Go to network locations"
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "p" ]
+run  = "plugin gitp4v -- pins"
+desc = "Go to pinned"
+
+[[mgr.prepend_keymap]]
+on   = "E"
+run  = "plugin gitp4v -- pin"
+desc = "gitp4v: pin / unpin the hovered file (in the pinned list: unpin)"
+
+[[mgr.prepend_keymap]]
+on   = "e"
+run  = "plugin gitp4v -- e"
+desc = "gitp4v: depot menu (commit, pull request, discard, ...)"
+
+[[mgr.prepend_keymap]]
+on   = "o"
+run  = "plugin gitp4v -- o"
+desc = "Open selected files (depot: read current version)"
+
+[[mgr.prepend_keymap]]
+on   = "<Enter>"
+run  = "plugin gitp4v -- o"
+desc = "Open selected files (depot: read current version)"
+
+[[mgr.prepend_keymap]]
+on   = "O"
+run  = "plugin gitp4v -- O"
+desc = "Open selected files interactively (depot: edit on the review branch)"
+
+[[mgr.prepend_keymap]]
+on   = "l"
+run  = "plugin gitp4v -- l"
+desc = "Enter directory (depot: load a repo / open a file's history)"
+
+[[mgr.prepend_keymap]]
+on   = "<Right>"
+run  = "plugin gitp4v -- l"
+desc = "Enter directory (depot: load a repo / open a file's history)"
+
+[[mgr.prepend_keymap]]
+on   = "h"
+run  = "plugin gitp4v -- h"
+desc = "Leave directory (depot: back from a history list to the file)"
+
+[[mgr.prepend_keymap]]
+on   = "<Left>"
+run  = "plugin gitp4v -- h"
+desc = "Leave directory (depot: back from a history list to the file)"
+
+[[mgr.prepend_keymap]]
+on   = "a"
+run  = "plugin gitp4v -- a"
+desc = "Create a file (depot: add a file to the repo)"
+
+[[mgr.prepend_keymap]]
+on   = "r"
+run  = "plugin gitp4v -- r"
+desc = "Rename selected file(s) (depot: rename a file in the repo)"
+
+[[mgr.prepend_keymap]]
+on   = "d"
+run  = "plugin gitp4v -- d"
+desc = "Trash selected files (depot: delete from the repo)"
+
+# The changed-files popup (`e s`) is yazi's spot popup. The first four keep the
+# normal selection movement and also tell the plugin which row is selected;
+# Enter shows that file's diff, d discards / reverts it. Esc and friends close
+# it and tell the plugin. With any other spot popup (<Tab> on a file) these keys
+# behave as before.
+[[spot.prepend_keymap]]
+on   = "j"
+run  = [ "arrow next", "plugin gitp4v -- spot-down" ]
+
+[[spot.prepend_keymap]]
+on   = "<Down>"
+run  = [ "arrow next", "plugin gitp4v -- spot-down" ]
+
+[[spot.prepend_keymap]]
+on   = "k"
+run  = [ "arrow prev", "plugin gitp4v -- spot-up" ]
+
+[[spot.prepend_keymap]]
+on   = "<Up>"
+run  = [ "arrow prev", "plugin gitp4v -- spot-up" ]
+
+[[spot.prepend_keymap]]
+on   = "<Enter>"
+run  = "plugin gitp4v -- spot-enter"
+desc = "gitp4v: diff of the selected changed file"
+
+[[spot.prepend_keymap]]
+on   = "d"
+run  = "plugin gitp4v -- spot-d"
+desc = "gitp4v: discard / revert the selected changed file"
+
+[[spot.prepend_keymap]]
+on   = "<Esc>"
+run  = [ "close", "plugin gitp4v -- spot-closed" ]
+
+[[spot.prepend_keymap]]
+on   = "<C-[>"
+run  = [ "close", "plugin gitp4v -- spot-closed" ]
+
+[[spot.prepend_keymap]]
+on   = "<C-c>"
+run  = [ "close", "plugin gitp4v -- spot-closed" ]
+
+[[spot.prepend_keymap]]
+on   = "<Tab>"
+run  = [ "close", "plugin gitp4v -- spot-closed" ]
+# <<< gitp4v <<<

@@ -26,14 +26,12 @@ prepend_rules = [
   { url = "*/", use = [] },
 
   # text & source code
-  { mime = "text/*"            , use =   "nvim"             },
-  { url  = "*.py"              , use = [ "nvim", "python" ] },
-  { url  = "*.sv"              , use = [ "nvim",          ] },
-  { url  = "*.js"              , use = [ "nvim",          ] },
-  { url  = "*.ts"              , use = [ "nvim",          ] },
-  { url  = "*.o"               , use = [ "nvim",          ] },
-  { mime = "application/json"  , use =   "nvim"             },
-  { mime = "application/ndjson", use =   "nvim"             },
+  { mime = "text/*", use =   "nvim"             },
+  { url  = "*.py"  , use = [ "nvim", "python" ] },
+  { url  = "*.sv"  , use = [ "nvim",          ] },
+  { url  = "*.js"  , use = [ "nvim",          ] },
+  { url  = "*.ts"  , use = [ "nvim",          ] },
+  { url  = "*.o"   , use = [ "nvim",          ] },
 
   # web pages
   { mime = "text/html", use = "browser" },
@@ -96,3 +94,23 @@ prepend_rules = [
 
 
 ]
+
+# >>> gitp4v (managed by plugins/gitp4v.yazi/install.sh; edit the files in that folder) >>>
+# gitp4v rules: inside the depot's shadow trees the right pane shows history
+# (files) or the folder contents (folders) instead of a file preview, and <Tab>
+# (the spot popup) is handled by the plugin so `e s` can draw the changed-files
+# list in it (for anything else the plugin shows yazi's stock info).
+[plugin]
+prepend_previewers = [
+	{ url = "**/gitp4v/view/**", run = "gitp4v" },
+	{ url = "**/gitp4v/view/**/", run = "gitp4v" },
+	{ url = "**/gitp4v/commits/**", run = "gitp4v" },
+	{ url = "**/gitp4v/commits/**/", run = "gitp4v" },
+]
+prepend_spotters = [
+	{ url = "**/gitp4v/view/**", run = "gitp4v" },
+	{ url = "**/gitp4v/view/**/", run = "gitp4v" },
+	{ url = "**/gitp4v/commits/**", run = "gitp4v" },
+	{ url = "**/gitp4v/commits/**/", run = "gitp4v" },
+]
+# <<< gitp4v <<<

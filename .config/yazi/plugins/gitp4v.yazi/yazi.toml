@@ -1,0 +1,17 @@
+# gitp4v rules: inside the depot's shadow trees the right pane shows history
+# (files) or the folder contents (folders) instead of a file preview, and <Tab>
+# (the spot popup) is handled by the plugin so `e s` can draw the changed-files
+# list in it (for anything else the plugin shows yazi's stock info).
+[plugin]
+prepend_previewers = [
+	{ url = "**/gitp4v/view/**", run = "gitp4v" },
+	{ url = "**/gitp4v/view/**/", run = "gitp4v" },
+	{ url = "**/gitp4v/commits/**", run = "gitp4v" },
+	{ url = "**/gitp4v/commits/**/", run = "gitp4v" },
+]
+prepend_spotters = [
+	{ url = "**/gitp4v/view/**", run = "gitp4v" },
+	{ url = "**/gitp4v/view/**/", run = "gitp4v" },
+	{ url = "**/gitp4v/commits/**", run = "gitp4v" },
+	{ url = "**/gitp4v/commits/**/", run = "gitp4v" },
+]
