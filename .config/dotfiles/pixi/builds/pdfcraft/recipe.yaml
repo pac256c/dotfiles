@@ -1,14 +1,14 @@
 context:
   name: "pdfcraft"
-  version: "0.9.0"
+  version: "0.17.0"
 
 package:
   name: ${{ name | lower }}
   version: ${{ version }}
 
 source:
-  url: https://github.com/storytold/pdfcraft/releases/download/v0.9.0/pdfcraft-0.9.0-linux-x86_64.tar.gz
-  sha256: ff5f7da36a1089340e3fdba696b286cc317ac8f0705cc8c44c1c49d9ca4c54e0
+  url: https://github.com/storytold/pdfcraft/releases/download/v0.17.0/pdfcraft-0.17.0-linux-x86_64.tar.gz
+  sha256: f9814a7a0af77b905adba1c3079caedee537586797043cf5af9503914f6abec5
 
 build:
   number: 2

@@ -47,8 +47,6 @@ export PYTHONSTARTUP=$XDG_CONFIG_HOME/python/pythonrc.py
 export PYTHON_HISTORY=$XDG_STATE_HOME/python/history
 export TS_NODE_HISTORY=$XDG_STATE_HOME/ts_node_repl_history
 export OCTAVE_HISTFILE=$XDG_STATE_HOME/octave_hist
-export CONDARC=$XDG_CONFIG_HOME/conda/condarc
-export CONDA_PREFIX=$HOME/.local/opt/miniforge3
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java
 export NODE_REPL_HISTORY=$XDG_STATE_HOME/node_repl_history
 export RUSTUP_HOME=$HOME/.local/opt/rustup
@@ -71,6 +69,7 @@ export SVN_CONFIG_DIR=$XDG_CONFIG_HOME/subversion
 export NVIM_NOTTYFAST=1
 export XINITRC=$XDG_CONFIG_HOME/X11/xinitrc
 export GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0/gtkrc
+export PIXI_HOME=$HOME/.local/opt/pixi
 
 # edit path variable (only add directories that exist)
 path_append() { [[ -d "$1" ]] && export PATH="${PATH:+$PATH:}$1"; }
@@ -83,29 +82,7 @@ path_append $HOME/.local/lib/binutils-2.39/bin
 path_append $HOME/.local/lib/nvim/bin
 path_append $HOME/.local/opt/cargo/bin
 path_append $HOME/.local/opt/musl/bin
-
-# Conda's activation prepends its bin/, so conda-installed programs shadow
-# system/global ones. For tools that exist outside conda too (kitty, git, ...)
-# we want the global build to win; keep conda as a fallback instead. Call this
-# after `conda activate` to move conda's dirs to the end of $PATH and drop
-# duplicate entries (repeated activations re-prepend without removing).
-# (POSIX-only: this file is shared by bash and zsh, so avoid array/read -a.)
-conda_defer_path() {
-  [ -n "$CONDA_PREFIX" ] || return 0
-  # Drop the active env's dirs and any duplicates (keep first occurrence),
-  # then append the active env's real dirs at the very end. Entries are
-  # whitespace-trimmed first (a stray newline can sneak in on activation).
-  PATH=$(printf '%s' "$PATH" | awk -v RS=: \
-    -v cb="$CONDA_PREFIX/bin" -v cc="$CONDA_PREFIX/condabin" '
-    { gsub(/^[ \t\r\n]+|[ \t\r\n]+$/, "", $0) }
-    $0 == cb || $0 == cc { next }
-    seen[$0]++ { next }
-    { printf "%s%s", sep, $0; sep = ":" }')
-  [ -d "$CONDA_PREFIX/bin" ] && PATH="${PATH:+$PATH:}$CONDA_PREFIX/bin"
-  [ -d "$CONDA_PREFIX/condabin" ] && PATH="${PATH:+$PATH:}$CONDA_PREFIX/condabin"
-  export PATH
-  hash -r 2>/dev/null || true
-}
+path_append $PIXI_HOME/bin
 
 # remove duplicates from $PATH if they exist
 export PATH=$(echo "$PATH" | awk -v RS=: -v ORS=: '!a[$0]++' | sed 's/:$//')

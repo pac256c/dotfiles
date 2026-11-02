@@ -1,14 +1,14 @@
 context:
   name: "filmcraft"
-  version: "0.9.0"
+  version: "0.16.0"
 
 package:
   name: ${{ name | lower }}
   version: ${{ version }}
 
 source:
-  url: https://github.com/storytold/filmcraft/releases/download/v0.9.0/filmcraft-0.9.0-linux-x86_64.tar.gz
-  sha256: ea67953cc754bfd8272e0e5fa940518e16068ae96f6b72a2dce566ed69a61632
+  url: https://github.com/storytold/filmcraft/releases/download/v0.16.0/filmcraft-0.16.0-linux-x86_64.tar.gz
+  sha256: 588390eee5d7e1634f05794c4f877ddf29494d9cf74405111d67c16cbe215ae9
 
 build:
   number: 2

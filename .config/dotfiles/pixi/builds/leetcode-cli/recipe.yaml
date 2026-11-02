@@ -22,4 +22,4 @@ requirements:
 about:
   homepage: https://github.com/night-slayer18/leetcode-cli
   license: Apache-2.0
-  summary: "A modern LeetCode CLI built with TypeScript"
+  summary: "A powerful command-line interface (CLI) tool for LeetCode, enabling developers to fetch coding problems, submit solutions, manage accounts, and streamline competitive programming workflows directly from the terminal."

@@ -8,10 +8,12 @@ package:
 
 # kitty's official prebuilt Linux bundle (bin/ lib/ share/ at the top level).
 # conda-forge's kitty package is abandoned (0.23.1, 2022).
+# Do not set file_name here: rattler-build decides whether to extract from the
+# URL extension, and the release asset is .txz. Renaming it to .tar.xz made it
+# copy the archive into the work dir unextracted, so build.sh found no bin/lib.
 source:
   url: https://github.com/kovidgoyal/kitty/releases/download/v${{ version }}/kitty-${{ version }}-x86_64.txz
   sha256: d573618b911e9c461bd421b96c13c74c7f1cb2f1ac9c327818d4ff84366cf5c6
-  file_name: kitty-${{ version }}-x86_64.tar.xz
 
 build:
   number: 0

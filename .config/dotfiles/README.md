@@ -5,7 +5,7 @@ To install programs and check out files with the following commands, keep these 
 * Dotfiles live in a bare git repo at `~/.config/dotfiles` with the work-tree set to `$HOME`.
 * Two install flows are provided:
   * **arch** (`arch/sync.sh`) - system packages via `yay` (official repos + AUR) from `arch/packages.txt`, plus locally-built PKGBUILDs from `arch/manlist.txt`. Requires sudo.
-  * **local** (`local/sync.sh`) - no sudo/root needed. Installs Miniforge3 (conda) to `~/.local/opt/miniforge3`, conda-forge packages from `local/packages.txt`, and locally-built conda recipes from `local/manlist.txt`.
+  * **pixi** (`pixi/sync.sh`) - no sudo/root needed. Installs pixi to `~/.local/opt/pixi`, conda-forge packages from `pixi/packages.txt`, and locally-built recipes from `pixi/manlist.txt`.
 * The expected terminal emulator is kitty - the sync script sets it as default, and kitty is personalized in `.config/kitty`.
 
 ```bash
@@ -22,8 +22,8 @@ Then run the install flow for your machine:
 # On Arch (system packages via yay/pacman):
 $HOME/.config/dotfiles/arch/sync.sh
 
-# Anywhere else (local, no sudo, via conda):
-$HOME/.config/dotfiles/local/sync.sh
+# Anywhere else (no sudo, via pixi):
+$HOME/.config/dotfiles/pixi/sync.sh
 ```
 
 The scripts are executable in the repo; if a checkout drops the bit, `chmod +x` the `sync.sh`/`manfind.sh`/`extra.sh` you need.

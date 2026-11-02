@@ -14,15 +14,20 @@
 # compilers: conda-forge installs them only under the target-triple name, but
 # tree-sitter (nvim-treesitter) and others invoke a bare cc/c++, so expose those
 gcc_linux-64 --with gxx_linux-64 --expose cc=x86_64-conda-linux-gnu-cc --expose gcc=x86_64-conda-linux-gnu-gcc --expose c++=x86_64-conda-linux-gnu-c++ --expose g++=x86_64-conda-linux-gnu-g++
-# python with the libraries that used to live in the conda base env
-python --with numpy --with tomli --with pint --expose python=python --expose python3=python3 --expose pip=pip
+# python with the libraries that used to live in the conda base env. conda-forge's
+# python does not ship pip, so install it with --with before exposing it.
+python --with pip --with numpy --with tomli --with pint --expose python=python --expose python3=python3 --expose pip=pip
 
 7zip
 bun
-clangdev
+# clangdev is a metapackage: its binaries come from dependencies (clang,
+# clangxx, clang-tools), whose executables pixi does not expose automatically.
+# Expose the ones we use, same pattern as gcc_linux-64 above.
+clangdev --expose clang-repl
 cmake
 curl
-fd
+# conda-forge's `fd` is an unrelated package; the file finder is `fd-find`.
+fd-find
 ffmpeg
 fzf
 git
@@ -33,6 +38,8 @@ jq
 lua
 ninja
 nodejs
+# TypeScript compiler (tsc/tsserver); conda-forge's package, not the npm one.
+typescript
 nvim
 octave
 openjdk

@@ -1,14 +1,14 @@
 context:
   name: "gridcraft"
-  version: "0.8.0"
+  version: "0.15.0"
 
 package:
   name: ${{ name | lower }}
   version: ${{ version }}
 
 source:
-  url: https://github.com/storytold/gridcraft/releases/download/v0.8.0/gridcraft-0.8.0-linux-x86_64.tar.gz
-  sha256: 4a029e20da86bad46706339ce4516a20445c131c0d82f6a114772208c5d831b3
+  url: https://github.com/storytold/gridcraft/releases/download/v0.15.0/gridcraft-0.15.0-linux-x86_64.tar.gz
+  sha256: 6810f8ce7394b5a7cdfaf39838257b6384dceb9f8325024d475db895ee59daaa
 
 build:
   number: 2

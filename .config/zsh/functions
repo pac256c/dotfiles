@@ -1,51 +1,6 @@
 # put functions in here
 # echo "running zfunctions"
 
-# Run a command from a specific conda env, activating it first and restoring
-# the previously active env afterward. Used by repl() for languages whose tools
-# live in their own env (clang-repl in "clang", octave in "octave") because
-# installing them into base would downgrade/conflict with the base toolchain.
-# Leaves PATH ordering (conda_defer_path) intact. If the env is unavailable,
-# falls back to running the command as-is (works if it's already on PATH).
-_conda_env_run() {
-  local env="$1" cmd="$2"; shift 2
-  local prev_env="${CONDA_DEFAULT_ENV:-}"
-  local have_env=false
-  if command -v conda >/dev/null 2>&1 \
-     && conda env list 2>/dev/null | awk '{print $1}' | grep -qx "$env"; then
-    have_env=true
-  fi
-
-  if $have_env; then
-    conda activate "$env" >/dev/null 2>&1 || {
-      echo "$cmd: failed to activate '$env' env" >&2
-      return 1
-    }
-    hash -r 2>/dev/null
-    "$cmd" "$@"
-    local rc=$?
-    if [ -n "$prev_env" ]; then
-      conda activate "$prev_env" >/dev/null 2>&1
-    else
-      conda deactivate >/dev/null 2>&1
-    fi
-    hash -r 2>/dev/null
-    type conda_defer_path >/dev/null 2>&1 && conda_defer_path
-    return $rc
-  fi
-
-  if command -v "$cmd" >/dev/null 2>&1; then
-    "$cmd" "$@"
-  else
-    echo "$cmd not found. Run 'dotfiles pull' to create the '$env' conda env." >&2
-    return 127
-  fi
-}
-
-# convenience wrapper preserved for the C/C++ cases.
-_clang_repl() { _conda_env_run clang clang-repl "$@"; }
-
-
 #choose one language of read-eval-print loop (REPL)  
 repl() {
   local input
@@ -75,11 +30,10 @@ repl() {
 
     case "$input" in
       "${OPTIONS[Python]}")
-        # conda's python is the one with the PYTHONSTARTUP imports (pint/numpy),
-        # but conda's bin is deferred to the end of PATH, so bare `python3` would
-        # pick the system interpreter. Use conda's explicitly.
-        if [ -x "${CONDA_PREFIX:-$HOME/.local/opt/miniforge3}/bin/python3" ]; then
-          "${CONDA_PREFIX:-$HOME/.local/opt/miniforge3}/bin/python3"
+        # pixi's python (has pint/numpy via --with). pixi's bin is deferred
+        # to the end of PATH, so bare `python3` would pick the system interpreter.
+        if [ -x "${PIXI_HOME:-$HOME/.local/opt/pixi}/bin/python3" ]; then
+          "${PIXI_HOME:-$HOME/.local/opt/pixi}/bin/python3"
         else
           python3
         fi
@@ -97,20 +51,20 @@ repl() {
         ;;
       "${OPTIONS[C++]}")
         echo -e "\e[1;32m=== Entering C++ REPL ===\e[0m"
-        HOME=$XDG_CACHE_HOME _clang_repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/cpp_init.h"
+        HOME=$XDG_CACHE_HOME clang-repl -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/cpp_init.h"
         valid=true
         ;;
       "${OPTIONS[C]}")
         echo -e "\e[1;36m=== Entering Plain C REPL ===\e[0m"
-        HOME=$XDG_CACHE_HOME _clang_repl --Xcc=-x --Xcc=c -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/c_init.h"
+        HOME=$XDG_CACHE_HOME clang-repl --Xcc=-x --Xcc=c -Xcc=-include -Xcc="$XDG_CONFIG_HOME/clang-repl/c_init.h"
         valid=true
         ;;
       "${OPTIONS[Octave]}")
         # --no-line-editing: octave's bundled readline line editor doesn't
-        # accept input in this environment (WSL2 + conda pty) -- it shows the
+        # accept input in this environment (WSL2 + pty) -- it shows the
         # prompt but swallows keystrokes, leaving ctrl-z as the only way out.
         # Disabling it makes octave read the terminal directly.
-        _conda_env_run octave octave --no-line-editing
+        octave --no-line-editing
         valid=true
         ;;
       "${OPTIONS[Java]}")
@@ -271,25 +225,16 @@ PY
 }
 
 # dotfiles - wrap git for the bare dotfiles repo at ~/.config/dotfiles
-# (work-tree = $HOME). Precedence: if conda is present use the local (conda)
-# flow; otherwise if pacman is present use the arch (yay) flow.
-# `push` regenerates + commits the corresponding packages.txt (and, for the
-# local flow, one envs/<name>.txt per extra conda env) from each env's
-# explicitly-requested packages (minus locally-built manlist.txt packages);
+# (work-tree = $HOME). Flow: pixi if installed, else arch (pacman).
 # `pull` runs the matching sync.sh afterward.
 dotfiles() {
   local gitdir="$HOME/.config/dotfiles"
   local worktree="$HOME"
   [ -d "/proj/geip_users01/petecook" ] && worktree="/proj/geip_users01/petecook"
   local g=(git --git-dir="$gitdir" --work-tree="$worktree")
-  local flow=""  # "local" or "arch"
-  local conda=""
-  if [[ -x "$HOME/.local/opt/miniforge3/bin/conda" ]]; then
-    conda="$HOME/.local/opt/miniforge3/bin/conda"
-    flow="local"
-  elif command -v conda >/dev/null 2>&1; then
-    conda="$(command -v conda)"
-    flow="local"
+  local flow=""  # "pixi" or "arch"
+  if [[ -x "${PIXI_HOME:-$HOME/.local/opt/pixi}/bin/pixi" ]]; then
+    flow="pixi"
   elif command -v pacman >/dev/null 2>&1; then
     flow="arch"
   fi
@@ -312,8 +257,8 @@ dotfiles() {
     fi
     case "$reply" in
       [Yy]*)
-        if [[ "$flow" == "local" && -x "$gitdir/local/sync.sh" ]]; then
-          "$gitdir/local/sync.sh"
+        if [[ "$flow" == "pixi" && -x "$gitdir/pixi/sync.sh" ]]; then
+          "$gitdir/pixi/sync.sh"
         elif [[ "$flow" == "arch" && -x "$gitdir/arch/sync.sh" ]]; then
           "$gitdir/arch/sync.sh"
         fi

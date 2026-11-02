@@ -89,6 +89,20 @@ fi
 export PIXI_HOME="$HOME/.local/opt/pixi"
 PIXI_BIN="$PIXI_HOME/bin/pixi"
 export PATH="$PIXI_HOME/bin:$PATH"
+
+# pixi falls back to ~/.pixi when PIXI_HOME is unset, so a manual
+# `pixi global install` in a shell without the export silently installs
+# somewhere else. Point that out instead of leaving the package "missing".
+STRAY_PIXI_HOME="$HOME/.pixi"
+if [[ -f "$STRAY_PIXI_HOME/manifests/pixi-global.toml" ]]; then
+  stray_envs=$(sed -n 's/^\[envs\.\(.*\)\]$/\1/p' "$STRAY_PIXI_HOME/manifests/pixi-global.toml" | tr '\n' ' ')
+  log ""
+  log "Warning: found a second pixi home at $STRAY_PIXI_HOME (pixi's default)."
+  log "  Environments there: ${stray_envs:-<none>}"
+  log "  They are not on PATH. Reinstall them under $PIXI_HOME (or add them to"
+  log "  packages.txt), then remove $STRAY_PIXI_HOME."
+fi
+
 if [[ ! -x $PIXI_BIN ]]; then
   log "=== Installing pixi ==="
   case "$(uname -m)" in

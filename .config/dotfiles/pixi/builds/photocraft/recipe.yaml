@@ -1,14 +1,14 @@
 context:
   name: "photocraft"
-  version: "0.10.0"
+  version: "0.19.0"
 
 package:
   name: ${{ name | lower }}
   version: ${{ version }}
 
 source:
-  url: https://github.com/storytold/photocraft/releases/download/v0.10.0/photocraft-0.10.0-linux-x86_64.tar.gz
-  sha256: c5d455785d9c2eaf695bf8e6327c4d6d23a39ddb956a6114f0c5b64326f984e1
+  url: https://github.com/storytold/photocraft/releases/download/v0.19.0/photocraft-0.19.0-linux-x86_64.tar.gz
+  sha256: 123385b1730ace18f12bc0f494606e6a4cd3f4ab891f93036cd4e71b8aea70f7
 
 build:
   number: 2

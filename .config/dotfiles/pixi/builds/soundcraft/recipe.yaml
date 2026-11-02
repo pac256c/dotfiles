@@ -1,14 +1,14 @@
 context:
   name: "soundcraft"
-  version: "0.8.0"
+  version: "0.16.0"
 
 package:
   name: ${{ name | lower }}
   version: ${{ version }}
 
 source:
-  url: https://github.com/storytold/soundcraft/releases/download/v0.8.0/soundcraft-0.8.0-linux-x86_64.tar.gz
-  sha256: 57a2b8776d51880cee69118568a396c09faca6949dcbf50f19879d71d596f5cc
+  url: https://github.com/storytold/soundcraft/releases/download/v0.16.0/soundcraft-0.16.0-linux-x86_64.tar.gz
+  sha256: 25c6b0cb8924198f22e3a6f2771d7dcc9e041a3244a4be445cbde9d00e7dc19e
 
 build:
   number: 2

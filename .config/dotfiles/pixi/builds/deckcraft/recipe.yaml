@@ -1,14 +1,14 @@
 context:
   name: "deckcraft"
-  version: "0.8.0"
+  version: "0.14.1"
 
 package:
   name: ${{ name | lower }}
   version: ${{ version }}
 
 source:
-  url: https://github.com/storytold/deckcraft/releases/download/v0.8.0/deckcraft-0.8.0-linux-x86_64.tar.gz
-  sha256: 227b8c9cdd2c06b7866807f995fe5d2d0675523a61208f9bc26cf2760fddcb8f
+  url: https://github.com/storytold/deckcraft/releases/download/v0.14.1/deckcraft-0.14.1-linux-x86_64.tar.gz
+  sha256: e86c7fa0ecb55f1a553ee425b93dcfdc806b7b3798f272b41f1d1ff74ac5c12a
 
 build:
   number: 2
