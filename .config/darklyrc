@@ -1,0 +1,10 @@
+[Style]
+DolphinSidebarOpacity=85
+DolphinViewOpacity=85
+MenuBarOpacity=85
+MenuOpacity=85
+TabBGColor=170,85,127
+TabBarAltStyle=true
+TabBarOpacity=85
+TabUseHighlightColor=true
+ToolBarOpacity=85

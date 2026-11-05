@@ -21,6 +21,9 @@ fi
 # initialize zoxide
 eval "$(zoxide init zsh --cmd cd)"
 
+# initialize atuin
+eval "$(atuin init zsh)"
+
 # trigger bell on any task longer than 3 seconds, but turn sound off
 unsetopt beep
 beep() {

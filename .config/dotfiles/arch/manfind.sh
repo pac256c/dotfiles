@@ -7,7 +7,7 @@
 #   <name> <github-owner/repo> [overrides]
 #
 # Overrides (semicolon-separated, no spaces):
-#   type=release|go|npm|font  where the version/source comes from (default: release)
+#   type=release|go|npm|font|git  where the version/source comes from (default: release)
 #   depends=a,b,c         extra runtime depends for the PKGBUILD
 #   asset=<filename>      (release/font) exact release asset to use
 #   dir=<subdir>          (font) subdirectory under share/fonts to install into
@@ -510,6 +510,7 @@ process_app() { # $1=name $2=repo $3=extra
   go) process_go "$name" "$repo" "$depends_csv" "$license_ov" ;;
   npm) process_npm "$name" "$repo" "$npm_pkg" "$scripts_csv" "$depends_csv" "$license_ov" ;;
   font) process_font "$name" "$repo" "$asset_ov" "$fontdir" ;;
+  git) log "  skipping regeneration (git/manual) for $name"; R_OK+=("$name"); return 0 ;;
   *)
     log "  ERROR: unknown type '$type'"
     R_FAIL+=("$name"); FAILED=1

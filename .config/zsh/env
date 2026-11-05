@@ -70,6 +70,10 @@ export NVIM_NOTTYFAST=1
 export XINITRC=$XDG_CONFIG_HOME/X11/xinitrc
 export GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0/gtkrc
 export PIXI_HOME=$HOME/.local/opt/pixi
+export ATUIN_CONFIG_DIR=$XDG_CONFIG_HOME/atuin
+export ATUIN_HOME=$XDG_CONFIG_HOME/atuin
+export GTK_THEME=SimpleGlass
+export GTK_CSD=0
 
 # edit path variable (only add directories that exist)
 path_append() { [[ -d "$1" ]] && export PATH="${PATH:+$PATH:}$1"; }

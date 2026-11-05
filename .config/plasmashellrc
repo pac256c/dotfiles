@@ -1,10 +1,8 @@
-[PlasmaViews][Panel 2]
-alignment=132
-floating=0
-floatingApplets=1
+[PlasmaViews][Panel 392]
+floating=1
 shell=org.kde.plasma.desktop
 
-[PlasmaViews][Panel 2][Defaults]
+[PlasmaViews][Panel 392][Defaults]
 thickness=46
 
 [Updates]

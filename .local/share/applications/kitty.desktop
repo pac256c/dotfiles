@@ -1,12 +1,13 @@
 [Desktop Entry]
-Encoding=UTF-8
+Version=1.0
 Type=Application
-NoDisplay=false
-Exec=/home/peter8pie/.local/opt/pixi/bin/kitty
-TryExec=/home/peter8pie/.local/opt/pixi/bin/kitty
-Name=Kitty
-Comment=Custom definition for Kitty
-Icon=utilities-terminal
+Name=kitty
+GenericName=Terminal emulator
+Comment=Fast, feature-rich, GPU based terminal
+TryExec=kitty
+StartupNotify=true
+Exec=kitty
+Icon=Terminal
 Categories=System;TerminalEmulator;
 X-TerminalArgExec=--
 X-TerminalArgTitle=--title

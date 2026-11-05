@@ -24,12 +24,9 @@
       * example triggers cmd, ft, keys, or event
     * lazy.nvim automatically installs from github
   * can add plugins to the table returned in init.lua
-* for languages we want to recognize, do these things:
-  * in plugins/init.lua, add to ensure_installed list for treesitter. this ensures proper syntax highlighting / errors etc.
-  * follow directions in https://nvchad.com/docs/config/lsp
-  * check :help lspconfig-all to see if lsp for our language is there.
-  * in $XDG_CONFIG_HOME/nvim/lua/configs/lspconfig.lua add to the server list.
-  * run :MasonInstall + server name
+* for languages we want to recognize, install the syntax highlighting and lsp:
+  * in plugins/init.lua, add to ensure_installed list for treesitter
+  * in configs/lspconfig.lua, add mason pkg name for lsp from :Mason list to servers. then :MasonInstallAll.
 
 # TMux
 * changes to tmux
@@ -73,3 +70,9 @@
 * uninstall nano with pacman -R nano
 * install git and which, with "sudo pacman -Sy git which"
 
+
+# Other stuff to do on a new linux PC
+* use beeper for SMS, telegram, signal, groupme, linkedin?
+* use browser for whatsapp, messenger, teams
+* use apps for slack and discord
+* can run whitakers words with "words"

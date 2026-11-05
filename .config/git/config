@@ -1,5 +1,5 @@
 [user]
-	email = peter8pie@gmail.com
+	email = pac256c@example.com
 	name = pac256c
 [diff]
 	tool = nvim
@@ -9,3 +9,5 @@
 	prompt = false
 [init]
 	defaultBranch = main
+[safe]
+	directory = /home/peter8pie/documents/projects/simple-glass-kde

@@ -35,6 +35,8 @@ return {
         "verilog",
         "systemverilog",
         "ruby",
+        "javascript",
+        "typescript",
       },
     },
   },
@@ -132,7 +134,7 @@ return {
         local role = roles[info.mode] or "Normal"
         local label = info.mode .. "-MULTI"
 
-        local mode = ("%%#St_%sMode# \u{E7C5} %s %%#St_%sModeSep#\u{E0BC}")
+        local mode = ("%%#St_%sMode# \u{E7C5} %s %%#St_%sModeSep#\u{E0B4}")
           :format(role, label, role)
         local count = ("%%#St_file# %d/%d "):format(info.current, info.total)
 

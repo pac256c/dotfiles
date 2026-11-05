@@ -4,15 +4,22 @@
 
 ---@type ChadrcConfig
 local M = {}
+local gray_ovr = "#757575"
 
 M.base46 = {
         theme = "catppuccin",
         transparency = true,
 
-        -- hl_override = {
-        --      Comment = { italic = true },
-        --      ["@comment"] = { italic = true },
-        -- },
+        hl_override = {
+            Comment = { fg = gray_ovr, italic = false },
+            ["@comment"] = { fg = gray_ovr, italic = false },
+            LineNr = { fg = gray_ovr },
+            TbBufOff = { fg = gray_ovr },
+            St_cwd_text = { bg = "#f38ba8", fg = "#000000"},
+            St_pos_sep = { bg = "#f38ba8" },
+            St_pos_text = { bg = "#abe9b3", fg = "#000000"},
+            St_mode_sep = { bg = "statusline_bg" },
+        },
 }
 
 -- M.nvdash = { load_on_startup = true }

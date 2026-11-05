@@ -36,7 +36,6 @@ fzf
 git
 github-cli
 gridcraft-bin
-gtk-nocsd
 hyperv
 imagemagick
 jdk-openjdk
@@ -150,7 +149,6 @@ sudo
 svt-hevc
 svt-vp9
 systemsettings
-tela-icon-theme-git
 tesseract
 tlrc
 tmux
@@ -171,7 +169,6 @@ vulkan-mesa-layers
 vulkan-tools
 wget
 which
-willow-theme-aurorae
 win32yank-bin
 wl-clipboard
 wordcraft-bin

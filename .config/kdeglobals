@@ -1,140 +1,112 @@
 [ColorEffects:Disabled]
 ChangeSelectionColor=
-Color=56,56,56
-ColorAmount=0
-ColorEffect=0
-ContrastAmount=0.65
-ContrastEffect=1
+Color=43,43,43
+ColorAmount=0.5
+ColorEffect=3
+ContrastAmount=0.5
+ContrastEffect=0
 Enable=
-IntensityAmount=0.1
-IntensityEffect=2
-
-[ColorEffects:Inactive]
-ChangeSelectionColor=true
-Color=112,111,110
-ColorAmount=0.025
-ColorEffect=2
-ContrastAmount=0.1
-ContrastEffect=2
-Enable=false
 IntensityAmount=0
 IntensityEffect=0
 
+[ColorEffects:Inactive]
+ChangeSelectionColor=true
+Color=43,43,43
+ColorAmount=0.4
+ColorEffect=3
+ContrastAmount=0.4
+ContrastEffect=0
+Enable=true
+IntensityAmount=-0.2
+IntensityEffect=0
+
 [Colors:Button]
-BackgroundAlternate=149,51,90
-BackgroundNormal=41,44,48
-DecorationFocus=196,54,108
-DecorationHover=196,54,108
-ForegroundActive=196,54,108
-ForegroundInactive=161,169,177
-ForegroundLink=244,182,198
+BackgroundAlternate=154,57,94
+BackgroundNormal=43,43,43
+DecorationFocus=202,63,116
+DecorationHover=202,63,116
+ForegroundActive=202,63,116
+ForegroundInactive=199,199,199
+ForegroundLink=242,185,200
 ForegroundNegative=218,68,83
 ForegroundNeutral=246,116,0
-ForegroundNormal=252,252,252
-ForegroundPositive=39,174,96
-ForegroundVisited=155,89,182
+ForegroundNormal=241,241,241
+ForegroundPositive=36,173,89
+ForegroundVisited=115,115,158
 
 [Colors:Complementary]
-BackgroundAlternate=30,87,116
-BackgroundNormal=32,35,38
-DecorationFocus=196,54,108
-DecorationHover=196,54,108
-ForegroundActive=196,54,108
-ForegroundInactive=161,169,177
-ForegroundLink=244,182,198
-ForegroundNegative=218,68,83
-ForegroundNeutral=246,116,0
-ForegroundNormal=252,252,252
-ForegroundPositive=39,174,96
-ForegroundVisited=155,89,182
-
-[Colors:Header]
-BackgroundAlternate=32,35,38
-BackgroundNormal=41,44,48
-DecorationFocus=196,54,108
-DecorationHover=196,54,108
-ForegroundActive=196,54,108
-ForegroundInactive=161,169,177
-ForegroundLink=244,182,198
-ForegroundNegative=218,68,83
-ForegroundNeutral=246,116,0
-ForegroundNormal=252,252,252
-ForegroundPositive=39,174,96
-ForegroundVisited=155,89,182
-
-[Colors:Header][Inactive]
-BackgroundAlternate=41,44,48
-BackgroundNormal=32,35,38
-DecorationFocus=61,174,233
-DecorationHover=61,174,233
-ForegroundActive=61,174,233
-ForegroundInactive=161,169,177
-ForegroundLink=29,153,243
-ForegroundNegative=218,68,83
-ForegroundNeutral=246,116,0
-ForegroundNormal=252,252,252
-ForegroundPositive=39,174,96
-ForegroundVisited=155,89,182
+BackgroundAlternate=59,64,69
+BackgroundNormal=43,43,43
+DecorationFocus=202,63,116
+DecorationHover=202,63,116
+ForegroundActive=202,63,116
+ForegroundInactive=175,176,179
+ForegroundLink=242,185,200
+ForegroundNegative=237,21,21
+ForegroundNeutral=201,206,59
+ForegroundNormal=239,240,241
+ForegroundPositive=17,209,22
+ForegroundVisited=61,174,230
 
 [Colors:Selection]
-BackgroundAlternate=143,44,82
-BackgroundNormal=143,44,82
-DecorationFocus=196,54,108
-DecorationHover=196,54,108
-ForegroundActive=196,54,108
+BackgroundAlternate=154,57,94
+BackgroundNormal=154,57,94
+DecorationFocus=202,63,116
+DecorationHover=202,63,116
+ForegroundActive=202,63,116
 ForegroundInactive=255,255,255
-ForegroundLink=143,39,79
-ForegroundNegative=176,55,69
-ForegroundNeutral=198,92,0
+ForegroundLink=242,185,200
+ForegroundNegative=218,68,83
+ForegroundNeutral=246,116,0
 ForegroundNormal=255,255,255
-ForegroundPositive=23,104,57
-ForegroundVisited=155,89,182
+ForegroundPositive=36,173,89
+ForegroundVisited=115,115,158
 
 [Colors:Tooltip]
-BackgroundAlternate=32,35,38
-BackgroundNormal=41,44,48
-DecorationFocus=196,54,108
-DecorationHover=196,54,108
-ForegroundActive=196,54,108
-ForegroundInactive=161,169,177
-ForegroundLink=244,182,198
+BackgroundAlternate=77,77,77
+BackgroundNormal=43,43,43
+DecorationFocus=202,63,116
+DecorationHover=202,63,116
+ForegroundActive=202,63,116
+ForegroundInactive=199,199,199
+ForegroundLink=242,185,200
 ForegroundNegative=218,68,83
 ForegroundNeutral=246,116,0
-ForegroundNormal=252,252,252
-ForegroundPositive=39,174,96
-ForegroundVisited=155,89,182
+ForegroundNormal=239,240,241
+ForegroundPositive=36,173,89
+ForegroundVisited=115,115,158
 
 [Colors:View]
-BackgroundAlternate=29,31,34
-BackgroundNormal=20,22,24
-DecorationFocus=196,54,108
-DecorationHover=196,54,108
-ForegroundActive=196,54,108
-ForegroundInactive=161,169,177
-ForegroundLink=244,182,198
+BackgroundAlternate=54,54,54
+BackgroundNormal=44,44,44
+DecorationFocus=202,63,116
+DecorationHover=202,63,116
+ForegroundActive=202,63,116
+ForegroundInactive=199,199,199
+ForegroundLink=242,185,200
 ForegroundNegative=218,68,83
 ForegroundNeutral=246,116,0
-ForegroundNormal=252,252,252
-ForegroundPositive=39,174,96
-ForegroundVisited=155,89,182
+ForegroundNormal=241,241,241
+ForegroundPositive=36,173,89
+ForegroundVisited=115,115,158
 
 [Colors:Window]
-BackgroundAlternate=41,44,48
-BackgroundNormal=32,35,38
-DecorationFocus=196,54,108
-DecorationHover=196,54,108
-ForegroundActive=196,54,108
-ForegroundInactive=161,169,177
-ForegroundLink=244,182,198
+BackgroundAlternate=77,77,77
+BackgroundNormal=34,34,34
+DecorationFocus=202,63,116
+DecorationHover=202,63,116
+ForegroundActive=202,63,116
+ForegroundInactive=199,199,199
+ForegroundLink=242,185,200
 ForegroundNegative=218,68,83
 ForegroundNeutral=246,116,0
-ForegroundNormal=252,252,252
-ForegroundPositive=39,174,96
-ForegroundVisited=155,89,182
+ForegroundNormal=239,240,241
+ForegroundPositive=36,173,89
+ForegroundVisited=115,115,158
 
 [General]
-AccentColor=196,54,108
-ColorSchemeHash=27363f5706202c1c8261fbda7381ddaab8ad48f3
+AccentColor=202,63,116
+ColorSchemeHash=e52aba0c17367f3a9299cab5d22f5b9141c62cf9
 LastUsedCustomAccentColor=61,212,37
 TerminalApplication=kitty
 TerminalService=kitty.desktop
@@ -143,20 +115,16 @@ XftHintStyle=hintslight
 XftSubPixel=none
 accentColorFromWallpaper=true
 fixed=UbuntuMono Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0
-font=Ubuntu Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0
+font=Ubuntu Nerd Font,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0
 menuFont=Ubuntu Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0
 smallestReadableFont=Ubuntu Nerd Font,8,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0
 toolBarFont=Ubuntu Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0
 
-[Icons]
-Theme=Tela-dark
-
 [KDE]
 AnimationDurationFactor=1.5
-LookAndFeelPackage=org.kde.breezedark.desktop
-contrast=4
+LookAndFeelPackage=com.github.pac256c.SimpleGlass
+contrast=0
 frameContrast=0.2
-widgetStyle=Union
 
 [KFileDialog Settings]
 Allow Expansion=false
@@ -173,13 +141,13 @@ Sort directories first=true
 Sort hidden files last=false
 Sort reversed=false
 Speedbar Width=140
-View Style=Detail
+View Style=DetailTree
 
 [WM]
-activeBackground=39,44,49
-activeBlend=252,252,252
+activeBackground=34,34,34
+activeBlend=255,255,255
 activeFont=Ubuntu Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0
-activeForeground=252,252,252
-inactiveBackground=32,36,40
-inactiveBlend=161,169,177
-inactiveForeground=161,169,177
+activeForeground=204,204,204
+inactiveBackground=44,44,44
+inactiveBlend=44,44,44
+inactiveForeground=144,144,144
