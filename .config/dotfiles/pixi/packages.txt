@@ -59,3 +59,5 @@ which
 yazi
 zoxide
 zsh
+
+atuin
